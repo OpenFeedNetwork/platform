@@ -1,0 +1,217 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# OPEN FEED PLATFORM — Docker Compose
+# Runs all microservices + infrastructure locally
+#
+# Usage:
+#   docker compose up -d          # Start all services
+#   docker compose logs -f        # Stream logs
+#   docker compose down           # Stop all services
+#   docker compose down -v        # Stop + delete all data
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+networks:
+  ofa-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  redis-data:
+  sqlite-data:
+  ipfs-data:
+
+services:
+
+  # ── API GATEWAY ──────────────────────────────────────────────────────────
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    container_name: ofa-gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - TRUTH_SHIELD_URL=http://truth-shield:3001
+      - GUARDIAN_SHIELD_URL=http://guardian-shield:3002
+      - OFA_FEED_URL=http://ofa-feed:3003
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    depends_on:
+      - truth-shield
+      - guardian-shield
+      - ofa-feed
+    networks:
+      - ofa-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "ofa.service=gateway"
+      - "ofa.description=API Gateway — single entry point for all services"
+
+  # ── TRUTH SHIELD ─────────────────────────────────────────────────────────
+  truth-shield:
+    build:
+      context: .
+      dockerfile: services/truth-shield/Dockerfile
+    container_name: ofa-truth-shield
+    restart: unless-stopped
+    ports:
+      - "${TRUTH_SHIELD_PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3001
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DB_PATH=/data/truth_shield.db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - IPFS_ENABLED=${IPFS_ENABLED:-false}
+      - IPFS_API=http://ipfs:5001
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - sqlite-data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ofa-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "ofa.service=truth-shield"
+      - "ofa.description=Disinformation detection — Claude Haiku powered"
+
+  # ── GUARDIAN SHIELD ──────────────────────────────────────────────────────
+  guardian-shield:
+    build:
+      context: .
+      dockerfile: services/guardian-shield/Dockerfile
+    container_name: ofa-guardian-shield
+    restart: unless-stopped
+    ports:
+      - "${GUARDIAN_SHIELD_PORT:-3002}:3002"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - GUARDIAN_PORT=3002
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GUARDIAN_DB_PATH=/data/guardian_shield.db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - OFA_ZK_PUBLIC_KEY=${OFA_ZK_PUBLIC_KEY:-}
+      - PERSONA_ZK_PUBLIC_KEY=${PERSONA_ZK_PUBLIC_KEY:-}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - sqlite-data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ofa-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "ofa.service=guardian-shield"
+      - "ofa.description=Child protection — 7-layer minor detection"
+
+  # ── OFA FEED ENGINE ──────────────────────────────────────────────────────
+  ofa-feed:
+    build:
+      context: .
+      dockerfile: services/ofa-feed/Dockerfile
+    container_name: ofa-feed
+    restart: unless-stopped
+    ports:
+      - "${OFA_FEED_PORT:-3003}:3003"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3003
+      - DB_PATH=/data/ofa_feed.db
+      - TRUTH_SHIELD_URL=http://truth-shield:3001
+      - GUARDIAN_SHIELD_URL=http://guardian-shield:3002
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - IPFS_ENABLED=${IPFS_ENABLED:-false}
+      - IPFS_API=http://ipfs:5001
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - sqlite-data:/data
+    depends_on:
+      - redis
+      - truth-shield
+      - guardian-shield
+    networks:
+      - ofa-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "ofa.service=ofa-feed"
+      - "ofa.description=Feed ranking engine — transparent, governance-controlled"
+
+  # ── REDIS (Job Queue) ─────────────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: ofa-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: >
+      redis-server
+      --save 60 1
+      --loglevel warning
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - ofa-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "ofa.service=redis"
+      - "ofa.description=Job queue for async Truth Shield & Guardian Shield processing"
+
+  # ── IPFS NODE (Optional — enable with IPFS_ENABLED=true) ─────────────────
+  ipfs:
+    image: ipfs/kubo:v0.28.0
+    container_name: ofa-ipfs
+    restart: unless-stopped
+    profiles:
+      - ipfs
+    ports:
+      - "4001:4001"    # P2P
+      - "5001:5001"    # API
+      - "8080:8080"    # Gateway
+    volumes:
+      - ipfs-data:/data/ipfs
+    networks:
+      - ofa-net
+    environment:
+      - IPFS_PROFILE=server
+    healthcheck:
+      test: ["CMD", "ipfs", "id"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "ofa.service=ipfs"
+      - "ofa.description=Decentralized storage — enable with --profile ipfs"

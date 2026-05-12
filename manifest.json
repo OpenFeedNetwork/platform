@@ -1,0 +1,50 @@
+{
+  "name": "Open Feed Platform",
+  "short_name": "OFA",
+  "description": "The social platform that can't suppress your voice. Truth Shield integrated. Community governed.",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#06080D",
+  "theme_color": "#00E676",
+  "categories": ["social", "news", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    { "src": "/icons/icon-72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-128.png",  "sizes": "128x128", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-144.png",  "sizes": "144x144", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-152.png",  "sizes": "152x152", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-384.png",  "sizes": "384x384", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/feed.png",  "sizes": "390x844", "type": "image/png", "form_factor": "narrow",  "label": "Open Feed — anti-suppression timeline" },
+    { "src": "/screenshots/truth.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow",  "label": "Truth Shield — real-time analysis" },
+    { "src": "/screenshots/wide.png",  "sizes": "1280x800","type": "image/png", "form_factor": "wide",    "label": "OFA desktop view" }
+  ],
+  "shortcuts": [
+    { "name": "New Post",        "url": "/?compose=true",    "description": "Create a new post", "icons": [{"src":"/icons/shortcut-compose.png","sizes":"96x96"}] },
+    { "name": "Truth Shield",    "url": "/?tab=truthshield", "description": "Analyze content",   "icons": [{"src":"/icons/shortcut-shield.png","sizes":"96x96"}] },
+    { "name": "Governance",      "url": "/?tab=governance",  "description": "Vote on proposals", "icons": [{"src":"/icons/shortcut-vote.png","sizes":"96x96"}] }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text":  "text",
+      "url":   "url"
+    }
+  },
+  "protocol_handlers": [
+    { "protocol": "web+ofa", "url": "/?handle=%s" }
+  ]
+}

@@ -1,0 +1,197 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# OFA PLATFORM — GitHub Actions CI/CD Pipeline
+#
+# SETUP:
+#   GitHub repo → Settings → Secrets → Add:
+#     FLY_API_TOKEN        (from: fly tokens create deploy)
+#     ANTHROPIC_API_KEY    (your Anthropic key)
+#     TELEGRAM_BOT_TOKEN   (your bot token)
+#
+# WORKFLOW:
+#   Push to main → tests → security scan → deploy to Fly.io
+#   Pull request  → tests + security scan only (no deploy)
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: OFA Platform — CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+  FLY_APP: "open-feed-platform"
+
+jobs:
+
+  # ── 1. TEST ────────────────────────────────────────────────────────────────
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Initialize test databases
+        run: node scripts/migrate.js
+        env:
+          TRUTH_DB_PATH:    ./data/test_truth.db
+          GUARDIAN_DB_PATH: ./data/test_guardian.db
+          OFA_DB_PATH:      ./data/test_ofa.db
+
+      - name: Run tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+
+  # ── 2. SECURITY SCAN ──────────────────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: NPM audit (no high/critical)
+        run: npm audit --audit-level=high
+
+      - name: Check for secrets in code
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+
+      - name: SAST scan (CodeQL)
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+
+  # ── 3. BUILD & PUSH DOCKER IMAGE ──────────────────────────────────────────
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context:    .
+          file:       Dockerfile.prod
+          push:       true
+          tags:       ${{ steps.meta.outputs.tags }}
+          labels:     ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+
+  # ── 4. DEPLOY TO FLY.IO ───────────────────────────────────────────────────
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://openfeed.network
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only --strategy rolling
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Verify deployment
+        run: |
+          sleep 15
+          STATUS=$(curl -sf https://openfeed.network/health | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))")
+          echo "Platform status: $STATUS"
+          [ "$STATUS" = "ok" ] || exit 1
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Notify on success
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.ADMIN_TELEGRAM_ID }}" \
+            -d "text=✅ OFA Platform deployed successfully — $(date '+%Y-%m-%d %H:%M UTC')" \
+            -d "parse_mode=HTML"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.ADMIN_TELEGRAM_ID }}" \
+            -d "text=❌ OFA deployment FAILED — check GitHub Actions" \
+            -d "parse_mode=HTML"
+
+  # ── 5. TELEGRAM BOT DEPLOY (separate service) ─────────────────────────────
+  deploy-bot:
+    name: Deploy Telegram Bot
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy Telegram Bot to Fly.io
+        run: flyctl deploy --config fly.bot.toml --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
