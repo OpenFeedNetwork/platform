@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════
+# OFA TELEGRAM BOT — Fly.io Config (separate from main platform)
+# ═══════════════════════════════════════════════════════════════
+app            = "ofa-telegram-bot"
+primary_region = "mia"
+kill_signal    = "SIGINT"
+kill_timeout   = 10
+
+[build]
+  dockerfile = "Dockerfile.bot"
+
+[env]
+  NODE_ENV     = "production"
+  OFA_API_BASE = "https://open-feed-platform.fly.dev"
+
+[[services]]
+  protocol      = "tcp"
+  internal_port = 8080
+
+  [[services.ports]]
+    port     = 443
+    handlers = ["tls", "http"]
+
+  [[services.http_checks]]
+    interval     = 30000
+    timeout      = 5000
+    grace_period = "10s"
+    method       = "get"
+    path         = "/health"

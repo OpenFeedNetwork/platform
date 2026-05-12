@@ -1,0 +1,10 @@
+# OFA Telegram Bot — Dockerfile
+FROM node:20-alpine
+RUN addgroup -g 1001 -S ofa && adduser -u 1001 -S ofa -G ofa
+WORKDIR /app
+COPY package.json ./
+RUN npm install node-telegram-bot-api @anthropic-ai/sdk dotenv uuid \
+ && npm cache clean --force
+COPY --chown=ofa:ofa telegram-bot.js ./
+USER ofa
+CMD ["node", "telegram-bot.js"]

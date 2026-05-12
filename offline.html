@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>OFA — Offline</title>
+<style>
+  :root {
+    --bg: #06080D; --green: #00E676; --text: #C8D6F0;
+    --dim: #5A6B8A; --muted: #2E3D58; --border: #1E2840;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', 'Courier New', monospace; padding: 24px;
+  }
+  .card {
+    max-width: 380px; width: 100%; text-align: center;
+    background: #0D1017; border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px 32px;
+    box-shadow: 0 0 60px #00E67611;
+  }
+  .logo { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: 4px; margin-bottom: 24px; }
+  .logo span { color: var(--green); text-shadow: 0 0 20px var(--green); }
+  .icon { font-size: 48px; margin-bottom: 16px; }
+  h1 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: 1px; }
+  p { font-size: 11px; color: var(--dim); line-height: 1.7; margin-bottom: 24px; }
+  .note {
+    background: #0A0D15; border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; font-size: 10px; color: var(--muted); line-height: 1.8;
+    text-align: left; margin-bottom: 24px;
+  }
+  .note span { color: var(--green); }
+  button {
+    background: #00E67618; border: 1px solid var(--green); border-radius: 8px;
+    color: var(--green); font-family: inherit; font-weight: 800;
+    font-size: 11px; padding: 10px 24px; cursor: pointer;
+    letter-spacing: 1px; width: 100%;
+    box-shadow: 0 0 20px #00E67622;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); margin-right: 6px;
+    animation: pulse 1.5s ease infinite;
+    box-shadow: 0 0 8px var(--green);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap');
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">OFA <span>◆</span></div>
+  <div class="icon">📡</div>
+  <h1>YOU'RE OFFLINE</h1>
+  <p>No internet connection detected. Your cached feed and previously loaded content are still available.</p>
+  <div class="note">
+    <div><span>✓</span> Cached feed available for reading</div>
+    <div><span>✓</span> Posts queued for sync when reconnected</div>
+    <div><span>✓</span> Truth Shield verdicts cached locally</div>
+    <div><span>◆</span> IPFS content may still load via cached CIDs</div>
+  </div>
+  <button onclick="window.location.reload()">
+    <span class="dot"></span>TRY RECONNECTING
+  </button>
+</div>
+<script>
+  window.addEventListener('online', () => window.location.href = '/');
+  setInterval(() => { if (navigator.onLine) window.location.href = '/'; }, 3000);
+</script>
+</body>
+</html>

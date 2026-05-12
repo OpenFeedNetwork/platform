@@ -1,0 +1,71 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# OFA PLATFORM — Fly.io Deployment Configuration
+# Cheapest production option: ~$10-20/month for the full stack
+#
+# SETUP:
+#   1. Install flyctl: curl -L https://fly.io/install.sh | sh
+#   2. fly auth login
+#   3. fly launch --no-deploy (first time only)
+#   4. fly secrets set ANTHROPIC_API_KEY=sk-ant-xxx TELEGRAM_BOT_TOKEN=xxx
+#   5. fly deploy
+#
+# SCALE UP:
+#   fly scale memory 512    # More RAM for Truth Shield
+#   fly scale count 2       # Two instances for redundancy
+# ═══════════════════════════════════════════════════════════════════════════
+
+app        = "open-feed-platform"
+primary_region = "mia"   # Miami — closest to Florida
+kill_signal    = "SIGINT"
+kill_timeout   = 30
+
+[build]
+  dockerfile = "Dockerfile.prod"
+
+[env]
+  NODE_ENV         = "production"
+  PORT             = "3000"
+  GATEWAY_PORT     = "3000"
+  TRUTH_SHIELD_PORT= "3001"
+  GUARDIAN_PORT    = "3002"
+  OFA_FEED_PORT    = "3003"
+  IPFS_ENABLED     = "false"
+  LOG_LEVEL        = "info"
+  LOG_FORMAT       = "json"
+
+[[services]]
+  protocol    = "tcp"
+  internal_port = 3000
+  auto_stop_machines  = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.ports]]
+    port     = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port     = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type       = "connections"
+    hard_limit = 100
+    soft_limit = 80
+
+  [[services.http_checks]]
+    interval      = 10000
+    timeout       = 5000
+    grace_period  = "10s"
+    method        = "get"
+    path          = "/health"
+    protocol      = "http"
+
+[mounts]
+  source      = "ofa_data"
+  destination = "/data"
+
+[metrics]
+  port = 9091
+  path = "/metrics"
