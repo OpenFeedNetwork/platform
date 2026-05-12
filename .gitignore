@@ -1,0 +1,43 @@
+# Environment variables — NEVER commit these
+.env
+env.txt
+*.env
+MY_KEYS.txt
+
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Database files
+data/
+*.db
+*.sqlite
+
+# Build output
+dist/
+build/
+.next/
+
+# ZK ceremony files — keep private
+*.zkey
+*.ptau
+zk/
+
+# Arweave wallet — keep private
+arweave-key.json
+config/
+
+# Contract deployment addresses — keep private
+contract-addresses.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Cache
+.cache/
+*.cache
