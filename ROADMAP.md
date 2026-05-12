@@ -40,6 +40,8 @@
 - [ ] Truth Shield API commercial tiers ($29/$199/month)
 - [ ] Coordination Detection Engine — anti-bot-farm system
 - [ ] Browser extension — Truth Shield for any website
+- [ ] - [ ] WhatsApp Bot — Truth Shield for mainstream communities
+- [ ] Truth Shield source links — credible sources with every verdict
 - [ ] Mobile app — React Native (iOS + Android)
 - [ ] Multilingual support — Spanish first
 - [ ] Community governance — first on-chain vote
@@ -58,6 +60,7 @@
 - [ ] NSF SBIR Phase II application ($1,000,000)
 - [ ] Full community governance — all parameters on-chain
 - [ ] Open Feed Foundation established
+- [ ] - [ ] WhatsApp Business API integration — full OFA platform on WhatsApp
 
 ## 🔴 Phase 4 — Protocol (12-24 Months)
 
