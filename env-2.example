@@ -1,0 +1,59 @@
+# ─────────────────────────────────────────────────────────────
+# OPEN FEED PLATFORM — Environment Configuration
+# Copy this file to .env and fill in your values
+# NEVER commit .env to version control
+# ─────────────────────────────────────────────────────────────
+
+# ── ANTHROPIC API ─────────────────────────────────────────────
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# ── SERVICE PORTS ─────────────────────────────────────────────
+GATEWAY_PORT=3000
+TRUTH_SHIELD_PORT=3001
+GUARDIAN_SHIELD_PORT=3002
+OFA_FEED_PORT=3003
+
+# ── DATABASE PATHS ────────────────────────────────────────────
+TRUTH_DB_PATH=./data/truth_shield.db
+GUARDIAN_DB_PATH=./data/guardian_shield.db
+OFA_DB_PATH=./data/ofa_feed.db
+
+# ── REDIS (Job Queue) ─────────────────────────────────────────
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# ── IPFS ──────────────────────────────────────────────────────
+IPFS_ENABLED=false
+IPFS_API=http://localhost:5001
+IPFS_GATEWAY=https://ipfs.io/ipfs
+
+# ── ARWEAVE ───────────────────────────────────────────────────
+ARWEAVE_ENABLED=false
+ARWEAVE_HOST=arweave.net
+ARWEAVE_PORT=443
+ARWEAVE_PROTOCOL=https
+ARWEAVE_KEY_FILE=./config/arweave-key.json
+
+# ── ZK AGE VERIFICATION ───────────────────────────────────────
+OFA_ZK_PUBLIC_KEY=
+PERSONA_ZK_PUBLIC_KEY=
+VERIFF_ZK_PUBLIC_KEY=
+
+# ── SECURITY ──────────────────────────────────────────────────
+JWT_SECRET=change_this_to_a_long_random_string_minimum_64_chars
+CORS_ORIGIN=http://localhost:3000
+NODE_ENV=development
+
+# ── RATE LIMITING ─────────────────────────────────────────────
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX=60
+
+# ── LOGGING ───────────────────────────────────────────────────
+LOG_LEVEL=info
+LOG_FORMAT=pretty
+
+# ── PLATFORM ──────────────────────────────────────────────────
+PLATFORM_NAME=Open Feed Platform
+PLATFORM_URL=http://localhost:3000
+ADMIN_EMAIL=admin@openfeed.network
