@@ -171,3 +171,22 @@ See CONTRIBUTING.md for guidelines.
 
 ---
 *Open Feed Platform — Truth through transparency, not suppression.*
+
+## 🛡 Child Safety
+
+Open Feed Network, Inc. maintains a zero-tolerance policy for Child Sexual 
+Abuse Material (CSAM) across all platforms we operate.
+
+We are actively pursuing:
+- Microsoft PhotoDNA integration for hash-based CSAM detection
+- NCMEC CyberTipline Electronic Service Provider registration
+- Legal Compliance Quarantine (LCQ) system — built and deployed
+
+All content submitted to our platforms is scanned before permanent 
+storage. Any detected CSAM is immediately quarantined, never reaches 
+our IPFS storage layer, and is reported to NCMEC within 24 hours 
+in compliance with 18 U.S.C. § 2258A.
+
+**Contact:** safety@openfeed.network  
+**NCMEC CyberTipline:** missingkids.org/cybertipline  
+**Platform:** openfeed.network
