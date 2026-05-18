@@ -1,3 +1,5 @@
+Support Open Feed Network: opencollective.com/openfeed
+
 # Open Feed Platform (OFA) 🛡
 
 > Anti-suppression social media platform with Truth Shield disinformation detection and Guardian Shield child protection.
