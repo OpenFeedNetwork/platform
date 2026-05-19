@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Open Feed Network</title>
+<meta name="description" content="Open Feed Network Terms of Service">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,700;9..144,1,300&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#050F1E;--navy2:#0A1628;--teal:#00C9B1;--white:#F0F4FF;--dim:#7A8BA8;--dim2:#4A5A72;--border:#1E3A5F;--green:#00C47A;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--navy);color:var(--white);font-family:'IBM Plex Sans',sans-serif;font-weight:300;line-height:1.8;overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;background:rgba(5,15,30,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,201,177,0.1);}
+.nav-logo{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-back{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:var(--teal);}
+.container{max-width:760px;margin:0 auto;padding:8rem 2rem 6rem;}
+.doc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:1rem;}
+h1{font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700;line-height:1.1;letter-spacing:-1px;margin-bottom:0.5rem;}
+.meta{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid var(--border);}
+h2{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--white);margin:2.5rem 0 1rem;}
+h3{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin:1.5rem 0 0.5rem;}
+p{font-size:0.95rem;color:rgba(240,244,255,0.8);margin-bottom:1rem;}
+ul,ol{padding-left:1.5rem;margin-bottom:1rem;}
+li{font-size:0.95rem;color:rgba(240,244,255,0.8);margin-bottom:0.4rem;}
+.highlight{color:var(--teal);font-weight:500;}
+.callout{background:rgba(0,201,177,0.06);border:1px solid rgba(0,201,177,0.2);border-radius:10px;padding:1.2rem 1.5rem;margin:1.5rem 0;}
+.callout p{margin:0;font-size:0.9rem;}
+.warning{background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.2);border-radius:10px;padding:1.2rem 1.5rem;margin:1.5rem 0;}
+.warning p{margin:0;font-size:0.9rem;color:rgba(245,166,35,0.9);}
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim2);}
+footer a{color:var(--dim);text-decoration:none;margin:0 0.75rem;}
+footer a:hover{color:var(--teal);}
+@media(max-width:768px){.container{padding:6rem 1.2rem 4rem;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">Open Feed <span>Network</span></a>
+  <a href="/" class="nav-back">← Back to platform</a>
+</nav>
+
+<div class="container">
+  <div class="doc-label">Legal · Terms of Service</div>
+  <h1>Terms of Service</h1>
+  <div class="meta">Effective Date: May 19, 2026 &nbsp;·&nbsp; Open Feed Network, Inc. &nbsp;·&nbsp; Wyoming C-Corporation &nbsp;·&nbsp; legal@openfeed.network</div>
+
+  <div class="callout">
+    <p><span class="highlight">Plain English summary:</span> We built a platform that cannot suppress your voice. These terms explain your rights, our responsibilities, and the rules that keep the community safe. We don't sell your data. We don't run ads. Every moderation decision is public on the blockchain.</p>
+  </div>
+
+  <h2>1. Acceptance of Terms</h2>
+  <p>By accessing or using the Open Feed Network platform ("Platform"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Platform. These Terms form a legally binding agreement between you and Open Feed Network, Inc., a Wyoming corporation.</p>
+
+  <h2>2. Description of Service</h2>
+  <p>Open Feed Network is an open-source, anti-suppression social media platform. Every moderation decision is stored on IPFS and auditable on the Polygon blockchain. The community governs algorithm parameters through on-chain governance voting.</p>
+  <div class="callout">
+    <p><span class="highlight">suppress_post is hardcoded to false.</span> No administrator, employee, algorithm, or governance vote can suppress, hide, shadow-ban, or de-amplify your content. This is verifiable in our open-source code at github.com/OpenFeedNetwork/platform.</p>
+  </div>
+
+  <h2>3. Eligibility</h2>
+  <ul>
+    <li>You must be at least 18 years of age, or 13 years of age with verified parental consent via Guardian Shield.</li>
+    <li>You must not be prohibited from using the Platform under applicable law.</li>
+    <li>You must not be on any U.S. government sanctions list.</li>
+  </ul>
+
+  <h2>4. Account Types</h2>
+  <p>We offer three account tiers with varying privacy protections:</p>
+  <ul>
+    <li><span class="highlight">Standard</span> — Username and email. Full platform access.</li>
+    <li><span class="highlight">Anonymous</span> — Username only. Zero PII collected or required.</li>
+    <li><span class="highlight">Whistleblower</span> — End-to-end encrypted. Source protection. Document leaks.</li>
+  </ul>
+  <p>You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</p>
+
+  <h2>5. The Anti-Suppression Guarantee</h2>
+  <p>Open Feed Network guarantees that no person or system can suppress your content. However, the following content may be removed in compliance with applicable law:</p>
+  <ul>
+    <li>Child sexual abuse material (CSAM) — reported to NCMEC CyberTipline immediately</li>
+    <li>Terrorism content confirmed by GIFCT hash matching — reported to FBI IC3</li>
+    <li>Content subject to valid DMCA takedown notices</li>
+    <li>Content that violates our Acceptable Use Policy</li>
+  </ul>
+  <p>Every removal is logged on IPFS and publicly auditable. We never silently suppress.</p>
+
+  <h2>6. Community Governance</h2>
+  <p>Algorithm parameters are governed by token holders through on-chain voting on the Polygon blockchain. All governance votes are public and permanent. No parameter change takes effect without a recorded governance vote.</p>
+
+  <h2>7. Content Safety Systems</h2>
+  <p>The Platform uses the Open Shield Suite to protect the community:</p>
+  <ul>
+    <li><span class="highlight">Truth Shield</span> — AI disinformation detection. Every verdict publicly auditable on IPFS.</li>
+    <li><span class="highlight">Guardian Shield</span> — 7-layer child protection. COPPA/KOSA/GDPR-K compliant.</li>
+    <li><span class="highlight">Care Shield</span> — Mental health crisis detection. Never suppresses. Always connects.</li>
+    <li><span class="highlight">Terrorism Shield</span> — GIFCT hash matching + AI. Automatic FBI IC3 reporting.</li>
+  </ul>
+
+  <h2>8. Intellectual Property</h2>
+  <p>You retain ownership of content you post. By posting, you grant Open Feed Network a non-exclusive, royalty-free license to display, store, and distribute your content on the Platform. The Platform codebase is open source under the MIT License at github.com/OpenFeedNetwork/platform.</p>
+
+  <h2>9. Prohibited Content</h2>
+  <p>The following content is prohibited and may result in account termination:</p>
+  <ul>
+    <li>Child sexual abuse material (CSAM) — zero tolerance</li>
+    <li>Terrorism support, recruitment, coordination, or fundraising for designated FTOs</li>
+    <li>Non-consensual intimate imagery</li>
+    <li>Content designed to facilitate real-world violence against specific individuals</li>
+    <li>Malware, phishing, or content designed to compromise third-party systems</li>
+  </ul>
+
+  <h3>Protected Speech</h3>
+  <p>The following is explicitly permitted and protected on Open Feed Network:</p>
+  <ul>
+    <li>Counter-extremism journalism and academic research about terrorism</li>
+    <li>Political speech, satire, and commentary including criticism of governments</li>
+    <li>Whistleblowing and publication of documents in the public interest</li>
+    <li>Discussion of mental health, substance use, and lived experience</li>
+    <li>Controversial, unpopular, or minority viewpoints</li>
+  </ul>
+
+  <h2>10. Decentralized Storage</h2>
+  <p>Content is stored on IPFS and Arweave — decentralized networks that no single entity controls. Content stored on IPFS is permanent and cannot be deleted by Open Feed Network or by you after publication. Do not post content you wish to retract.</p>
+
+  <h2>11. Disclaimers</h2>
+  <div class="warning">
+    <p>THE PLATFORM IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. OPEN FEED NETWORK DOES NOT WARRANT THAT THE PLATFORM WILL BE UNINTERRUPTED OR ERROR-FREE. TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED.</p>
+  </div>
+
+  <h2>12. Limitation of Liability</h2>
+  <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, OPEN FEED NETWORK SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES. OUR TOTAL LIABILITY SHALL NOT EXCEED $100.</p>
+
+  <h2>13. Section 230</h2>
+  <p>Open Feed Network operates in good faith compliance with Section 230 of the Communications Decency Act. We maintain full Section 230 compliance documentation available to law enforcement upon valid legal process.</p>
+
+  <h2>14. DMCA</h2>
+  <p>Open Feed Network is a registered DMCA Designated Agent (Registration No. <span class="highlight">DMCA-1072812</span>). To submit a takedown notice or counter-notification, contact <span class="highlight">legal@openfeed.network</span>. All DMCA actions are logged on IPFS and permanently auditable.</p>
+
+  <h2>15. Governing Law & Disputes</h2>
+  <p>These Terms are governed by the laws of the State of Wyoming, without regard to conflict of law principles. Disputes shall be resolved by binding arbitration in Hillsborough County, Florida, under AAA rules. You waive any right to a jury trial.</p>
+
+  <h2>16. Changes to Terms</h2>
+  <p>We may update these Terms at any time. Material changes will be announced via the Platform. Continued use after changes constitutes acceptance. All historical versions of these Terms are stored on IPFS and permanently accessible.</p>
+
+  <h2>17. Contact</h2>
+  <p>Open Feed Network, Inc. &nbsp;·&nbsp; <span class="highlight">legal@openfeed.network</span> &nbsp;·&nbsp; openfeed.network &nbsp;·&nbsp; Wyoming C-Corporation &nbsp;·&nbsp; Florida, United States</p>
+</div>
+
+<footer>
+  © 2026 Open Feed Network, Inc. &nbsp;·&nbsp; Wyoming C-Corporation &nbsp;·&nbsp; MIT License
+  <br><br>
+  <a href="/">Home</a>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
+  <a href="mailto:legal@openfeed.network">legal@openfeed.network</a>
+  <a href="https://github.com/OpenFeedNetwork/platform" target="_blank">GitHub</a>
+  <a href="https://opencollective.com/openfeed" target="_blank">Open Collective</a>
+</footer>
+</body>
+</html>

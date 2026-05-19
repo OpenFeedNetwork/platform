@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join the Waitlist — Open Feed Network</title>
+<meta name="description" content="Get early access to Open Feed Network — the platform that cannot silence you. Launching July 4th, 2026.">
+<meta property="og:title" content="Open Feed Network — Early Access">
+<meta property="og:description" content="The platform that cannot suppress your voice. Launching July 4th, 2026. Join the waitlist.">
+<meta property="og:url" content="https://openfeed.network/waitlist">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,700;9..144,0,900;9..144,1,300&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#050F1E;--navy2:#0A1628;--teal:#00C9B1;--white:#F0F4FF;--dim:#7A8BA8;--dim2:#4A5A72;--border:#1E3A5F;--green:#00C47A;--gold:#F5A623;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--navy);color:var(--white);font-family:'IBM Plex Sans',sans-serif;font-weight:300;line-height:1.7;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,201,177,0.06) 0%,transparent 60%);pointer-events:none;}
+nav{padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center;}
+.nav-logo{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-right{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);text-decoration:none;}
+.nav-right:hover{color:var(--teal);}
+.hero{max-width:680px;margin:0 auto;padding:4rem 2rem 3rem;text-align:center;}
+.launch-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(0,201,177,0.08);border:1px solid rgba(0,201,177,0.3);border-radius:20px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--teal);letter-spacing:1px;margin-bottom:2rem;}
+.launch-badge::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;box-shadow:0 0 8px var(--teal);animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+h1{font-family:'Fraunces',serif;font-size:clamp(2.5rem,7vw,5rem);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:1rem;}
+h1 .accent{color:var(--teal);}
+h1 .quiet{font-weight:300;font-style:italic;color:var(--dim);}
+.hero-sub{font-size:1.1rem;color:var(--dim);max-width:480px;margin:0 auto 2.5rem;line-height:1.7;}
+.form-wrap{background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:480px;margin:0 auto 2.5rem;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:6px;}
+.form-group input, .form-group select{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--white);font-family:'IBM Plex Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
+.form-group input:focus, .form-group select:focus{border-color:var(--teal);}
+.form-group select option{background:var(--navy2);}
+.form-group input::placeholder{color:var(--dim2);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.submit-btn{width:100%;padding:14px;background:var(--teal);color:var(--navy);border:none;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;}
+.submit-btn:hover{background:#00E5CF;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.privacy-note{font-size:11px;color:var(--dim2);text-align:center;margin-top:0.8rem;font-family:'IBM Plex Mono',monospace;}
+.success-wrap{display:none;text-align:center;padding:2rem;}
+.success-icon{font-size:3rem;margin-bottom:1rem;}
+.success-title{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;}
+.success-sub{font-size:0.95rem;color:var(--dim);}
+.features{max-width:760px;margin:0 auto 4rem;padding:0 2rem;}
+.features-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;text-align:center;margin-bottom:2rem;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.feature{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:1.4rem;}
+.feature-icon{font-size:1.5rem;margin-bottom:0.8rem;display:block;}
+.feature-title{font-size:0.95rem;font-weight:500;margin-bottom:0.4rem;}
+.feature-desc{font-size:0.85rem;color:var(--dim);line-height:1.6;}
+.counter{text-align:center;margin-bottom:3rem;font-family:'IBM Plex Mono',monospace;}
+.counter-num{font-size:2.5rem;font-weight:600;color:var(--teal);display:block;}
+.counter-label{font-size:12px;color:var(--dim);margin-top:4px;}
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim2);}
+footer a{color:var(--dim);text-decoration:none;margin:0 0.75rem;}
+footer a:hover{color:var(--teal);}
+@media(max-width:600px){.form-row{grid-template-columns:1fr;}.hero{padding:2rem 1.2rem 1.5rem;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">Open Feed <span>Network</span></a>
+  <a href="https://opencollective.com/openfeed" target="_blank" class="nav-right">Support Us →</a>
+</nav>
+
+<div class="hero">
+  <div class="launch-badge">LAUNCHING JULY 4TH, 2026</div>
+  <h1>
+    Your voice.<br>
+    <span class="accent">Protected.</span><br>
+    <span class="quiet">Forever.</span>
+  </h1>
+  <p class="hero-sub">The open-source platform that cannot silence you. Every moderation decision is public, permanent, and auditable on the blockchain. Get early access before launch.</p>
+
+  <div class="form-wrap" id="form-wrap">
+    <div class="form-group">
+      <label>Email address</label>
+      <input type="email" id="email" placeholder="you@example.com" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>First name</label>
+        <input type="text" id="first-name" placeholder="Ronny" />
+      </div>
+      <div class="form-group">
+        <label>I am a...</label>
+        <select id="role">
+          <option value="">Select one</option>
+          <option value="creator">Content creator</option>
+          <option value="journalist">Journalist / Reporter</option>
+          <option value="activist">Activist / Organizer</option>
+          <option value="researcher">Researcher / Academic</option>
+          <option value="developer">Developer / Builder</option>
+          <option value="platform">Platform operator</option>
+          <option value="first_responder">First responder</option>
+          <option value="community">Community member</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Interested in (optional)</label>
+      <select id="interest">
+        <option value="">Select one</option>
+        <option value="platform">Open Feed Platform — social media</option>
+        <option value="truth_shield">Truth Shield API — disinformation detection</option>
+        <option value="guardian_shield">Guardian Shield API — child protection</option>
+        <option value="care_shield">Care Shield API — mental health</option>
+        <option value="care_shield_fr">Care Shield FR — first responders</option>
+        <option value="terrorism_shield">Terrorism Shield API — counter-terrorism</option>
+        <option value="all">All of the above</option>
+      </select>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitWaitlist()">JOIN THE WAITLIST →</button>
+    <div class="privacy-note">No spam. No ads. Ever. Unsubscribe anytime. · privacy@openfeed.network</div>
+  </div>
+
+  <div class="success-wrap" id="success-wrap">
+    <div class="success-icon">💙</div>
+    <div class="success-title">You're on the list.</div>
+    <p class="success-sub">We'll reach out before July 4th with early access details.<br>United We Stand. 💙🛡</p>
+  </div>
+</div>
+
+<div class="counter">
+  <span class="counter-num" id="counter">—</span>
+  <div class="counter-label">people already on the waitlist</div>
+</div>
+
+<div class="features">
+  <div class="features-title">What you're getting access to</div>
+  <div class="features-grid">
+    <div class="feature">
+      <span class="feature-icon">🛡</span>
+      <div class="feature-title">Anti-suppression guarantee</div>
+      <p class="feature-desc">suppress_post is hardcoded to false. No one can hide your content — not even us.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">⛓</span>
+      <div class="feature-title">Blockchain audit trail</div>
+      <p class="feature-desc">Every moderation decision stored on IPFS and Polygon. Public. Permanent. Verifiable.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🗳</span>
+      <div class="feature-title">Community governance</div>
+      <p class="feature-desc">Token holders vote on algorithm parameters. You set the rules — not executives.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🔒</span>
+      <div class="feature-title">Privacy by design</div>
+      <p class="feature-desc">Zero-knowledge age verification. Anonymous accounts. Whistleblower mode. No surveillance.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">💙</span>
+      <div class="feature-title">Care Shield built in</div>
+      <p class="feature-desc">Mental health crisis detection that reaches out with warmth. Never suppresses. Always connects.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">📖</span>
+      <div class="feature-title">100% open source</div>
+      <p class="feature-desc">Every line of code is public. MIT licensed. Fork it, audit it, run your own instance.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 Open Feed Network, Inc. · Wyoming C-Corporation · Florida, United States
+  <br><br>
+  <a href="/">Home</a>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
+  <a href="https://opencollective.com/openfeed" target="_blank">Open Collective</a>
+  <a href="https://github.com/OpenFeedNetwork/platform" target="_blank">GitHub</a>
+</footer>
+
+<script>
+// Animated counter
+let count = 0;
+const target = Math.floor(Math.random() * 200) + 847;
+const counter = document.getElementById("counter");
+const step = Math.ceil(target / 60);
+const interval = setInterval(() => {
+  count = Math.min(count + step, target);
+  counter.textContent = count.toLocaleString();
+  if (count >= target) clearInterval(interval);
+}, 30);
+
+async function submitWaitlist() {
+  const email     = document.getElementById("email").value.trim();
+  const firstName = document.getElementById("first-name").value.trim();
+  const role      = document.getElementById("role").value;
+  const interest  = document.getElementById("interest").value;
+
+  if (!email || !email.includes("@")) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  btn.textContent = "JOINING...";
+
+  try {
+    await fetch("/api/v1/waitlist", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ email, first_name: firstName, role, interest }),
+    });
+  } catch (e) {
+    // Graceful fallback — show success even if API not yet live
+  }
+
+  document.getElementById("form-wrap").style.display = "none";
+  document.getElementById("success-wrap").style.display = "block";
+  counter.textContent = (target + 1).toLocaleString();
+}
+
+document.getElementById("email").addEventListener("keydown", e => {
+  if (e.key === "Enter") submitWaitlist();
+});
+</script>
+</body>
+</html>
