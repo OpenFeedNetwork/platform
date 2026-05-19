@@ -1,0 +1,47 @@
+# Guardian Shield API — Fly.io deployment configuration
+# Deploy: fly deploy --config fly.guardian.toml
+
+app    = "guardian-shield-api"
+primary_region = "mia"
+
+[build]
+  dockerfile = "Dockerfile.prod"
+
+[env]
+  NODE_ENV        = "production"
+  GUARDIAN_API_PORT = "3005"
+  GUARDIAN_DB_PATH  = "/data/guardian_api.db"
+
+[mounts]
+  source      = "guardian_data"
+  destination = "/data"
+
+[[services]]
+  protocol    = "tcp"
+  internal_port = 3005
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [services.concurrency]
+    type       = "requests"
+    hard_limit = 200
+    soft_limit = 150
+
+  [[services.http_checks]]
+    interval      = 10000
+    timeout       = 5000
+    grace_period  = "10s"
+    method        = "get"
+    path          = "/health"
+    protocol      = "http"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
