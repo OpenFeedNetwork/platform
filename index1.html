@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Feed Network — Your voice. Protected. Forever.</title>
+<meta name="description" content="The platform that cannot silence you. Free expression with a conscience. Open source, community governed, blockchain auditable.">
+<meta name="keywords" content="free speech, open source, social media, content safety, disinformation, child protection, mental health">
+<meta property="og:title" content="Open Feed Network">
+<meta property="og:description" content="Your voice. Protected. Forever.">
+<meta property="og:url" content="https://openfeed.network">
+<meta property="og:type" content="website">
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00C9B1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OFA">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72.png">
+<link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96.png">
+<link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+<!-- Microsoft -->
+<meta name="msapplication-TileColor" content="#050F1E">
+<meta name="msapplication-TileImage" content="/icons/icon-144.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,700;9..144,0,900;9..144,1,300;9..144,1,700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #050F1E;
+  --navy2: #0A1628;
+  --navy3: #0F1E35;
+  --teal: #00C9B1;
+  --teal2: #00A896;
+  --gold: #F5A623;
+  --heart: #E8547A;
+  --white: #F0F4FF;
+  --dim: #7A8BA8;
+  --dim2: #4A5A72;
+  --border: #1E3A5F;
+  --green: #00C47A;
+  --blue: #4A9EFF;
+  --purple: #9B72CF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(5,15,30,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,201,177,0.1);
+}
+.nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.nav-shield { width: 36px; height: 42px; }
+.nav-wordmark { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--white); letter-spacing: -0.3px; }
+.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links a { color: var(--dim); text-decoration: none; font-size: 13px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; transition: color 0.2s; }
+.nav-links a:hover { color: var(--teal); }
+.nav-cta { padding: 8px 20px; background: rgba(0,201,177,0.1); border: 1px solid var(--teal); border-radius: 6px; color: var(--teal) !important; font-weight: 600 !important; transition: all 0.2s !important; }
+.nav-cta:hover { background: rgba(0,201,177,0.2) !important; color: var(--teal) !important; }
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 8rem 2rem 4rem; position: relative;
+}
+.hero::after {
+  content: ''; position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,201,177,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px; background: rgba(0,201,177,0.08); border: 1px solid rgba(0,201,177,0.3);
+  border-radius: 20px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+  color: var(--teal); letter-spacing: 1px; margin-bottom: 2.5rem;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-badge::before {
+  content: ''; width: 6px; height: 6px; background: var(--teal); border-radius: 50%;
+  box-shadow: 0 0 8px var(--teal); animation: pulse 2s ease infinite;
+}
+.hero-headline { font-family: 'Fraunces', serif; font-size: clamp(3rem, 8vw, 7rem); font-weight: 900; line-height: 1; letter-spacing: -3px; margin-bottom: 0.5rem; animation: fadeUp 0.8s ease 0.1s both; }
+.hero-headline .accent { color: var(--teal); }
+.hero-headline-2 { font-family: 'Fraunces', serif; font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 300; font-style: italic; line-height: 1; letter-spacing: -2px; color: var(--dim); margin-bottom: 2rem; animation: fadeUp 0.8s ease 0.2s both; }
+.hero-sub { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--dim); max-width: 600px; margin: 0 auto 3rem; font-weight: 300; animation: fadeUp 0.8s ease 0.3s both; }
+.hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.8s ease 0.4s both; }
+.btn-primary { padding: 14px 32px; background: var(--teal); color: var(--navy); border: none; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-block; }
+.btn-primary:hover { background: #00E5CF; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,201,177,0.3); }
+.btn-secondary { padding: 14px 32px; background: transparent; color: var(--white); border: 1px solid var(--border); border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-block; }
+.btn-secondary:hover { border-color: var(--dim); color: var(--teal); }
+.hero-shield-wrap { margin-top: 5rem; animation: fadeUp 0.8s ease 0.5s both; }
+.stat-strip { display: flex; justify-content: center; gap: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
+.stat-item { flex: 1; min-width: 140px; padding: 2rem 1.5rem; text-align: center; border-right: 1px solid var(--border); position: relative; }
+.stat-item:last-child { border-right: none; }
+.stat-number { font-family: 'IBM Plex Mono', monospace; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 600; color: var(--teal); display: block; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--dim); letter-spacing: 1px; font-family: 'IBM Plex Mono', monospace; }
+section { padding: 6rem 2rem; position: relative; z-index: 1; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--teal); margin-bottom: 1rem; text-transform: uppercase; }
+.section-title { font-family: 'Fraunces', serif; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -1px; margin-bottom: 1.5rem; }
+.section-body { font-size: 1.1rem; color: var(--dim); max-width: 600px; margin-bottom: 3rem; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 3rem; }
+.product-card { background: var(--navy2); border: 1px solid var(--border); border-radius: 14px; padding: 1.8rem; position: relative; overflow: hidden; transition: all 0.3s; }
+.product-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent-color, var(--teal)); }
+.product-card:hover { transform: translateY(-4px); border-color: var(--accent-color, var(--teal)); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.product-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+.product-name { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+.product-tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 3px; margin-bottom: 0.8rem; }
+.product-desc { font-size: 0.9rem; color: var(--dim); line-height: 1.6; margin-bottom: 1rem; }
+.product-price { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent-color, var(--teal)); }
+.principle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 3rem; }
+.principle-card { background: var(--navy2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s; }
+.principle-card:hover { border-color: var(--dim2); }
+.principle-number { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); margin-bottom: 0.8rem; letter-spacing: 1px; }
+.principle-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.principle-body { font-size: 0.88rem; color: var(--dim); line-height: 1.6; }
+.quote-section { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.quote-block { max-width: 800px; margin: 0 auto; text-align: center; }
+.quote-mark { font-family: 'Fraunces', serif; font-size: 5rem; color: var(--teal); line-height: 0.5; margin-bottom: 1rem; display: block; opacity: 0.4; }
+.quote-text { font-family: 'Fraunces', serif; font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 300; font-style: italic; line-height: 1.5; color: var(--white); margin-bottom: 1.5rem; }
+.quote-source { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); letter-spacing: 2px; }
+.compliance-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; }
+.compliance-badge { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--navy2); border: 1px solid var(--border); border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim); }
+.compliance-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.compliance-badge .dot.pending { background: var(--gold); }
+.cta-section { text-align: center; background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 50%, var(--navy) 100%); }
+.cta-title { font-family: 'Fraunces', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 1.5rem; }
+.cta-title .accent { color: var(--teal); }
+
+/* ── FOR PLATFORMS SECTION ─────────────────────────── */
+.platforms-section { background: var(--navy3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.platforms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 2.5rem; }
+.platform-tile { background: var(--navy2); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem 1.6rem; transition: all 0.25s; }
+.platform-tile:hover { border-color: var(--teal); transform: translateY(-3px); }
+.platform-tile-icon { font-size: 1.5rem; margin-bottom: 0.6rem; display: block; }
+.platform-tile-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1.5px; color: var(--teal); margin-bottom: 0.5rem; text-transform: uppercase; }
+.platform-tile-body { font-size: 0.85rem; color: var(--dim); line-height: 1.55; }
+.platforms-cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+
+footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-left { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim2); }
+.footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.footer-links a { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim2); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--teal); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--teal); } 50% { opacity: 0.5; box-shadow: 0 0 4px var(--teal); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.float { animation: float 4s ease-in-out infinite; }
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .stat-strip { flex-wrap: wrap; }
+  .stat-item { min-width: 50%; border-bottom: 1px solid var(--border); }
+  .footer-inner { flex-direction: column; text-align: center; }
+  .platforms-cta-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ──────────────────────────────────── -->
+<nav>
+  <a href="/" class="nav-logo">
+    <svg class="nav-shield" viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#0A1628" d="M90 8 L165 35 L165 125 Q165 185 90 215 Q15 185 15 125 L15 35 Z"/>
+      <path fill="#0F1E35" d="M90 25 L150 48 L150 122 Q150 174 90 198 Q30 174 30 122 L30 48 Z"/>
+      <circle fill="#00C9B1" cx="90" cy="132" r="7"/>
+      <path fill="none" stroke="#00C9B1" stroke-width="4" stroke-linecap="round" d="M63 112 Q90 93 117 112"/>
+      <path fill="none" stroke="#00C9B1" stroke-width="3.5" stroke-linecap="round" opacity="0.7" d="M47 98 Q90 72 133 98"/>
+      <path fill="none" stroke="#00C9B1" stroke-width="3" stroke-linecap="round" opacity="0.45" d="M33 84 Q90 51 147 84"/>
+      <path fill="none" stroke="#00C9B1" stroke-width="4" stroke-linecap="round" d="M63 152 Q90 171 117 152"/>
+      <path fill="none" stroke="#00C9B1" stroke-width="3.5" stroke-linecap="round" opacity="0.7" d="M47 166 Q90 190 133 166"/>
+    </svg>
+    <span class="nav-wordmark">Open Feed Network</span>
+  </a>
+  <div class="nav-links">
+    <a href="#products">Products</a>
+    <a href="#platforms">For Platforms</a>
+    <a href="#principles">How it works</a>
+    <a href="#compliance">Compliance</a>
+    <a href="https://github.com/OpenFeedNetwork/platform" target="_blank">GitHub</a>
+    <a href="https://opencollective.com/openfeed" target="_blank" class="nav-cta">Support Us</a>
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-badge">LAUNCHING JULY 4TH, 2026</div>
+  <h1 class="hero-headline">
+    Your voice.<br>
+    <span class="accent">Protected.</span>
+  </h1>
+  <h2 class="hero-headline-2">Forever.</h2>
+  <p class="hero-sub">
+    The open-source platform that cannot silence you.
+    Every moderation decision is public, permanent, and auditable
+    on the blockchain. The community governs the algorithm.
+    Free expression with a conscience.
+  </p>
+  <div class="hero-actions">
+    <a href="https://opencollective.com/openfeed" target="_blank" class="btn-primary">
+      SUPPORT THE MISSION →
+    </a>
+    <a href="https://github.com/OpenFeedNetwork/platform" target="_blank" class="btn-secondary">
+      VIEW SOURCE CODE
+    </a>
+  </div>
+  <div class="hero-shield-wrap float">
+    <svg width="160" height="190" viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg" style="margin-top:3rem;opacity:0.15">
+      <path fill="#00C9B1" d="M90 8 L165 35 L165 125 Q165 185 90 215 Q15 185 15 125 L15 35 Z"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ── STAT STRIP ───────────────────────────────────── -->
+<div class="stat-strip reveal">
+  <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">COMMERCIAL APIS</span></div>
+  <div class="stat-item"><span class="stat-number">83</span><span class="stat-label">OPEN SOURCE FILES</span></div>
+  <div class="stat-item"><span class="stat-number">$0</span><span class="stat-label">SUPPRESSED POSTS</span></div>
+  <div class="stat-item"><span class="stat-number">∞</span><span class="stat-label">AUDIT TRAIL (IPFS)</span></div>
+  <div class="stat-item"><span class="stat-number">100%</span><span class="stat-label">COMMUNITY GOVERNED</span></div>
+</div>
+
+<!-- ── PRODUCTS ─────────────────────────────────────── -->
+<section id="products">
+  <div class="section-inner">
+    <p class="section-label">THE OPEN SHIELD SUITE</p>
+    <h2 class="section-title reveal">Five products.<br>One mission.</h2>
+    <p class="section-body reveal">
+      We built the content safety infrastructure that every platform needs —
+      and made it available as commercial APIs. Every tool we use to protect
+      our own community is available to protect yours.
+    </p>
+    <div class="product-grid">
+
+      <div class="product-card reveal" style="--accent-color: #00C9B1">
+        <span class="product-icon">🛡</span>
+        <div class="product-tag" style="background:rgba(0,201,177,0.1);color:#00C9B1">PLATFORM</div>
+        <h3 class="product-name">Open Feed Platform</h3>
+        <p class="product-desc">
+          Anti-suppression social media. suppress_post is hardcoded to false — no administrator
+          can hide your content. Every moderation decision is stored on IPFS and auditable forever.
+          The community votes on algorithm parameters.
+        </p>
+        <span class="product-price">FREE · OPEN SOURCE</span>
+      </div>
+
+      <div class="product-card reveal" style="--accent-color: #4A9EFF">
+        <span class="product-icon">🔍</span>
+        <div class="product-tag" style="background:rgba(74,158,255,0.1);color:#4A9EFF">DISINFORMATION</div>
+        <h3 class="product-name">Truth Shield API</h3>
+        <p class="product-desc">
+          AI-powered disinformation detection for newsrooms and fact-checkers.
+          Every verdict stored on IPFS — publicly auditable. Distinguishes
+          disinformation from satire, opinion, and contested claims.
+        </p>
+        <span class="product-price">FROM $29/MONTH</span>
+      </div>
+
+      <div class="product-card reveal" style="--accent-color: #00C47A">
+        <span class="product-icon">👶</span>
+        <div class="product-tag" style="background:rgba(0,196,122,0.1);color:#00C47A">CHILD PROTECTION</div>
+        <h3 class="product-name">Guardian Shield API</h3>
+        <p class="product-desc">
+          7-layer child protection for COPPA, KOSA, and GDPR-K compliance.
+          Zero-knowledge age verification — proves age without collecting
+          any personally identifiable information.
+        </p>
+        <span class="product-price">FROM $79.99/MONTH</span>
+      </div>
+
+      <div class="product-card reveal" style="--accent-color: #E8547A">
+        <span class="product-icon">💙</span>
+        <div class="product-tag" style="background:rgba(232,84,122,0.1);color:#E8547A">MENTAL HEALTH</div>
+        <h3 class="product-name">Care Shield</h3>
+        <p class="product-desc">
+          Mental health crisis detection built from lived experience.
+          Reaches out with warmth. Never suppresses a voice in pain.
+          Connects people in crisis to real human support.
+        </p>
+        <span class="product-price">FROM $99/MONTH</span>
+      </div>
+
+      <div class="product-card reveal" style="--accent-color: #F5A623">
+        <span class="product-icon">🚨</span>
+        <div class="product-tag" style="background:rgba(245,166,35,0.1);color:#F5A623">FIRST RESPONDERS</div>
+        <h3 class="product-name">Care Shield FR</h3>
+        <p class="product-desc">
+          Mental health monitoring tuned for police, fire, EMS, dispatch,
+          corrections, and military. Understands gallows humor. Career-safe —
+          never alerts supervisors. Routes only to Peer Support Officers.
+        </p>
+        <span class="product-price">FROM $99/MONTH</span>
+      </div>
+
+      <!-- ── TERRORISM SHIELD — UPDATED ── -->
+      <div class="product-card reveal" style="--accent-color: #9B72CF">
+        <span class="product-icon">⚡</span>
+        <div class="product-tag" style="background:rgba(155,114,207,0.1);color:#9B72CF">COUNTER-TERRORISM</div>
+        <h3 class="product-name">Terrorism Shield API</h3>
+        <p class="product-desc">
+          Four-layer terrorism content detection that protects counter-extremism
+          journalism, academic research, and political speech.<br><br>
+          Layer 1: GIFCT hash database matching in real time.
+          Layer 2: AI semantic classification that distinguishes violent extremism
+          from journalism, satire, and protected political speech.
+          Layer 3: Contextual override — researchers, reporters, and educators
+          are never silenced for studying extremism.
+          Layer 4: Every verdict stored on IPFS and recorded on the Polygon
+          blockchain — publicly auditable, permanent, tamper-proof.<br><br>
+          Confirmed matches trigger automatic FBI IC3 reporting protocol.
+          No human decision required. No delay. No liability gap.
+        </p>
+        <span class="product-price">FROM $99/MONTH</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── QUOTE ────────────────────────────────────────── -->
+<section class="quote-section">
+  <div class="section-inner">
+    <div class="quote-block reveal">
+      <span class="quote-mark">"</span>
+      <p class="quote-text">
+        On my darkest day I just wished for someone to see me,
+        validate my pain, and help me survive another day.
+        That is why we built Care Shield.
+      </p>
+      <span class="quote-source">— RONNY CRUZ ALVAREZ · FOUNDER · OPEN FEED NETWORK</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOR PLATFORMS — NEW SECTION ──────────────────── -->
+<section id="platforms" class="platforms-section">
+  <div class="section-inner">
+    <p class="section-label">BUILT FOR PLATFORMS</p>
+    <h2 class="section-title reveal">
+      The safety infrastructure<br>we built for ourselves —<br>
+      <span style="color:var(--teal)">available for every platform</span><br>that needs it.
+    </h2>
+    <p class="section-body reveal">
+      Open Feed Network is not just a social platform. It is a content safety company.
+      Every tool we use to protect our own community is available as a commercial API
+      for platforms, newsrooms, governments, and researchers who need the same protection.
+      The Open Shield Suite is open source, blockchain-auditable, and built compliance-first —
+      not bolted on.
+    </p>
+    <div class="platforms-grid reveal">
+      <div class="platform-tile">
+        <span class="platform-tile-icon">🏛</span>
+        <div class="platform-tile-title">Newsrooms</div>
+        <p class="platform-tile-body">Truth Shield flags disinformation before it publishes. Every verdict is auditable and defensible.</p>
+      </div>
+      <div class="platform-tile">
+        <span class="platform-tile-icon">🏫</span>
+        <div class="platform-tile-title">Education platforms</div>
+        <p class="platform-tile-body">Guardian Shield handles COPPA, KOSA, and GDPR-K compliance with zero-knowledge age verification.</p>
+      </div>
+      <div class="platform-tile">
+        <span class="platform-tile-icon">🚔</span>
+        <div class="platform-tile-title">Government & public safety</div>
+        <p class="platform-tile-body">Care Shield FR monitors first responder mental health. Career-safe. Routes only to Peer Support Officers.</p>
+      </div>
+      <div class="platform-tile">
+        <span class="platform-tile-icon">🔬</span>
+        <div class="platform-tile-title">Research institutions</div>
+        <p class="platform-tile-body">Terrorism Shield protects counter-extremism researchers. Study extremism without triggering false flags.</p>
+      </div>
+    </div>
+    <div class="platforms-cta-row reveal">
+      <a href="mailto:hello@openfeed.network" class="btn-primary">CONTACT PARTNERSHIPS →</a>
+      <a href="https://github.com/OpenFeedNetwork/platform" target="_blank" class="btn-secondary">VIEW API DOCUMENTATION</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRINCIPLES ────────────────────────────────────── -->
+<section id="principles">
+  <div class="section-inner">
+    <p class="section-label">HOW IT WORKS</p>
+    <h2 class="section-title reveal">Built different.<br>By design.</h2>
+    <div class="principle-grid">
+      <div class="principle-card reveal">
+        <div class="principle-number">01 · ANTI-SUPPRESSION</div>
+        <h3 class="principle-title">Content cannot be hidden</h3>
+        <p class="principle-body">suppress_post: false is hardcoded into the platform architecture. No administrator, no algorithm, and no governance vote can change this. Your content reaches your audience. Every time.</p>
+      </div>
+      <div class="principle-card reveal">
+        <div class="principle-number">02 · BLOCKCHAIN AUDIT</div>
+        <h3 class="principle-title">Every decision is public</h3>
+        <p class="principle-body">Every moderation decision, every Truth Shield verdict, every governance vote is stored on IPFS and recorded on the Polygon blockchain. Anyone can verify any decision. Forever.</p>
+      </div>
+      <div class="principle-card reveal">
+        <div class="principle-number">03 · COMMUNITY GOVERNANCE</div>
+        <h3 class="principle-title">You govern the algorithm</h3>
+        <p class="principle-body">Token holders vote on algorithm parameters. The community sets the rules the algorithm follows — not executives optimizing for ad revenue. Every vote is on-chain and permanent.</p>
+      </div>
+      <div class="principle-card reveal">
+        <div class="principle-number">04 · ZERO KNOWLEDGE</div>
+        <h3 class="principle-title">Privacy by architecture</h3>
+        <p class="principle-body">Age verification uses zero-knowledge proofs — we confirm you meet requirements without learning who you are. No PII collected. No data to sell. No surveillance.</p>
+      </div>
+      <div class="principle-card reveal">
+        <div class="principle-number">05 · DECENTRALIZED STORAGE</div>
+        <h3 class="principle-title">Content stored forever</h3>
+        <p class="principle-body">All content is stored on IPFS and Arweave — decentralized networks that no single entity controls. Your posts cannot be deleted by a server shutdown or a corporate decision.</p>
+      </div>
+      <div class="principle-card reveal">
+        <div class="principle-number">06 · OPEN SOURCE</div>
+        <h3 class="principle-title">Every line of code is public</h3>
+        <p class="principle-body">The entire platform — every microservice, every API, every smart contract — is open source on GitHub. Anyone can audit, fork, and verify that we do exactly what we say we do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPLIANCE ────────────────────────────────────── -->
+<section id="compliance" style="background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="section-inner">
+    <p class="section-label">COMPLIANCE AND SAFETY</p>
+    <h2 class="section-title reveal">
+      Safety is not an afterthought.<br>It is the architecture.
+    </h2>
+    <p class="section-body reveal">
+      Open Feed Network completed every major content safety registration
+      before writing a single line of platform code. Compliance is built in —
+      not bolted on.
+    </p>
+    <div class="compliance-grid reveal">
+      <div class="compliance-badge"><div class="dot"></div>DMCA Designated Agent · DMCA-1072812</div>
+      <div class="compliance-badge"><div class="dot"></div>NCMEC CyberTipline ESP · Registered</div>
+      <div class="compliance-badge"><div class="dot pending"></div>PhotoDNA · Application submitted</div>
+      <div class="compliance-badge"><div class="dot pending"></div>GIFCT Membership · Application submitted</div>
+      <div class="compliance-badge"><div class="dot"></div>Section 230 · Full compliance documentation</div>
+      <div class="compliance-badge"><div class="dot"></div>COPPA · Guardian Shield active</div>
+      <div class="compliance-badge"><div class="dot"></div>KOSA · Guardian Shield + Care Shield</div>
+      <div class="compliance-badge"><div class="dot"></div>Open Source · MIT License · GitHub</div>
+      <!-- NEW -->
+      <div class="compliance-badge"><div class="dot"></div>Open Shield Suite APIs · Available for platform licensing</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="section-inner" style="text-align:center">
+    <p class="section-label" style="text-align:center">LAUNCHING JULY 4TH, 2026</p>
+    <h2 class="cta-title reveal">
+      The platform<br>
+      <span class="accent">others will</span><br>
+      aspire to be.
+    </h2>
+    <p style="color:var(--dim);max-width:500px;margin:0 auto 3rem;font-size:1.1rem" class="reveal">
+      No venture capital. No ads. No suppression. Ever.
+      Built by one family. Funded by this community.
+    </p>
+    <div class="hero-actions reveal">
+      <a href="https://opencollective.com/openfeed" target="_blank" class="btn-primary">SUPPORT ON OPEN COLLECTIVE →</a>
+      <a href="https://github.com/OpenFeedNetwork/platform" target="_blank" class="btn-secondary">STAR ON GITHUB ⭐</a>
+    </div>
+    <p style="margin-top:3rem;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim2);letter-spacing:1px" class="reveal">
+      United We Stand. 💙
+    </p>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">
+      © 2026 Open Feed Network, Inc. · openfeed.network<br>
+      Open source under MIT License · Florida, United States
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/OpenFeedNetwork/platform" target="_blank">GitHub</a>
+      <a href="https://opencollective.com/openfeed" target="_blank">Open Collective</a>
+      <a href="mailto:hello@openfeed.network">hello@openfeed.network</a>
+      <a href="mailto:safety@openfeed.network">safety@openfeed.network</a>
+      <a href="mailto:legal@openfeed.network">legal@openfeed.network</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── SCROLL REVEAL ────────────────────────────────── -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => { entry.target.classList.add('visible'); }, i * 60);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+<!-- PWA Install Banner -->
+<div id="install-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0A1628;border:1px solid #00C9B1;border-radius:14px;padding:14px 20px;align-items:center;gap:14px;z-index:999;max-width:340px;width:90%;">
+  <img src="/icons/icon-72.png" alt="OFA" style="width:40px;height:40px;border-radius:8px;">
+  <div style="flex:1">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#00C9B1;margin-bottom:2px;">Install Open Feed Network</div>
+    <div style="font-size:12px;color:#7A8BA8;">Add to your home screen</div>
+  </div>
+  <button id="install-btn" style="padding:8px 16px;background:#00C9B1;color:#050F1E;border:none;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;">INSTALL</button>
+  <button onclick="document.getElementById('install-banner').style.display='none'" style="background:none;border:none;color:#7A8BA8;cursor:pointer;font-size:16px;">✕</button>
+</div>
+
+<script>
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  banner.style.display = 'flex';
+});
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('install-banner').style.display = 'none';
+  }
+});
+</script>
+
+</body>
+</html>
