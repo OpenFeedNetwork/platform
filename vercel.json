@@ -2,14 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.html",
+      "src": "*.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/terms", "dest": "/terms.html" },
+    { "src": "/privacy", "dest": "/privacy.html" },
+    { "src": "/waitlist", "dest": "/waitlist.html" },
+    { "src": "/status", "dest": "/status.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
