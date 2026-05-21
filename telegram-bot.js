@@ -318,3 +318,11 @@ bot.getMe().then(me => {
 ║  https://t.me/${me.username.padEnd(36)}║
 ╚══════════════════════════════════════════════╝`);
 }).catch(err => console.error("❌ Bot startup failed:",err.message));
+
+// ── HEALTH CHECK SERVER ───────────────────────────────────────────────────────
+import http from "http";
+http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end("OK");
+}).listen(8080, "0.0.0.0");
+console.log("[health] Health check server running on port 8080");
