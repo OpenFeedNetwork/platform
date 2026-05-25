@@ -220,13 +220,13 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
 
 <!-- ── HERO ────────────────────────────────────────── -->
 <section class="hero">
-  <div class="hero-badge">LAUNCHING JULY 4TH, 2026</div>
+  <div class="hero-badge" data-i18n="hero_badge">LAUNCHING JULY 4TH, 2026</div>
   <h1 class="hero-headline">
     Your voice.<br>
     <span class="accent">Protected.</span>
   </h1>
-  <h2 class="hero-headline-2">Forever.</h2>
-  <p class="hero-sub">
+  <h2 class="hero-headline-2" data-i18n="hero_h2">Forever.</h2>
+  <p class="hero-sub" data-i18n="hero_sub">
     The open-source platform that cannot silence you.
     Every moderation decision is public, permanent, and auditable
     on the blockchain. The community governs the algorithm.
@@ -256,18 +256,18 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
 
 <!-- ── STAT STRIP ───────────────────────────────────── -->
 <div class="stat-strip reveal">
-  <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">COMMERCIAL APIS</span></div>
-  <div class="stat-item"><span class="stat-number">83</span><span class="stat-label">OPEN SOURCE FILES</span></div>
-  <div class="stat-item"><span class="stat-number">$0</span><span class="stat-label">SUPPRESSED POSTS</span></div>
-  <div class="stat-item"><span class="stat-number">∞</span><span class="stat-label">AUDIT TRAIL (IPFS)</span></div>
-  <div class="stat-item"><span class="stat-number">100%</span><span class="stat-label">COMMUNITY GOVERNED</span></div>
+  <div class="stat-item"><span class="stat-number">5</span><span class="stat-label" data-i18n="stat_apis">COMMERCIAL APIS</span></div>
+  <div class="stat-item"><span class="stat-number">83</span><span class="stat-label" data-i18n="stat_files">OPEN SOURCE FILES</span></div>
+  <div class="stat-item"><span class="stat-number">$0</span><span class="stat-label" data-i18n="stat_posts">SUPPRESSED POSTS</span></div>
+  <div class="stat-item"><span class="stat-number">∞</span><span class="stat-label" data-i18n="stat_audit">AUDIT TRAIL (IPFS)</span></div>
+  <div class="stat-item"><span class="stat-number">100%</span><span class="stat-label" data-i18n="stat_governed">COMMUNITY GOVERNED</span></div>
 </div>
 
 <!-- ── PRODUCTS ─────────────────────────────────────── -->
 <section id="products">
   <div class="section-inner">
-    <p class="section-label">THE OPEN SHIELD SUITE</p>
-    <h2 class="section-title reveal">Five products.<br>One mission.</h2>
+    <p class="section-label" data-i18n="products_label">THE OPEN SHIELD SUITE</p>
+    <h2 class="section-title reveal" data-i18n="products_title">Five products.<br>One mission.</h2>
     <p class="section-body reveal">
       We built the content safety infrastructure that every platform needs —
       and made it available as commercial APIs. Every tool we use to protect
@@ -365,12 +365,12 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
   <div class="section-inner">
     <div class="quote-block reveal">
       <span class="quote-mark">"</span>
-      <p class="quote-text">
+      <p class="quote-text" data-i18n="quote_text">
         On my darkest day I just wished for someone to see me,
         validate my pain, and help me survive another day.
         That is why we built Candor Reach.
       </p>
-      <span class="quote-source">— RONNY CRUZ · FOUNDER · CANDOR: THE OPEN FEED NETWORK</span>
+      <span class="quote-source" data-i18n="quote_source">— RONNY CRUZ · FOUNDER · CANDOR: THE OPEN FEED NETWORK</span>
     </div>
   </div>
 </section>
@@ -378,7 +378,7 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
 <!-- ── FOR PLATFORMS — NEW SECTION ──────────────────── -->
 <section id="platforms" class="platforms-section">
   <div class="section-inner">
-    <p class="section-label">BUILT FOR PLATFORMS</p>
+    <p class="section-label" data-i18n="platforms_label">BUILT FOR PLATFORMS</p>
     <h2 class="section-title reveal">
       The safety infrastructure<br>we built for ourselves —<br>
       <span style="color:var(--teal)">available for every platform</span><br>that needs it.
@@ -422,8 +422,8 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
 <!-- ── PRINCIPLES ────────────────────────────────────── -->
 <section id="principles">
   <div class="section-inner">
-    <p class="section-label">HOW IT WORKS</p>
-    <h2 class="section-title reveal">Built different.<br>By design.</h2>
+    <p class="section-label" data-i18n="principles_label">HOW IT WORKS</p>
+    <h2 class="section-title reveal" data-i18n="principles_title">Built different.<br>By design.</h2>
     <div class="principle-grid">
       <div class="principle-card reveal">
         <div class="principle-number">01 · ANTI-SUPPRESSION</div>
@@ -462,11 +462,11 @@ footer { border-top: 1px solid var(--border); padding: 3rem 2rem; }
 <!-- ── COMPLIANCE ────────────────────────────────────── -->
 <section id="compliance" style="background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="section-inner">
-    <p class="section-label">COMPLIANCE AND SAFETY</p>
+    <p class="section-label" data-i18n="compliance_label">COMPLIANCE AND SAFETY</p>
     <h2 class="section-title reveal">
       Safety is not an afterthought.<br>It is the architecture.
     </h2>
-    <p class="section-body reveal">
+    <p class="section-body reveal" data-i18n="compliance_body">
       Candor completed every major content safety registration
       before writing a single line of platform code. Compliance is built in —
       not bolted on.
@@ -569,5 +569,6 @@ document.getElementById('install-btn').addEventListener('click', async () => {
 });
 </script>
 
+<script src="candor-lang.js"></script>
 </body>
 </html>
