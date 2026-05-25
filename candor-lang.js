@@ -128,6 +128,12 @@ const TRANSLATIONS = {
 
 
 
+    launch_title: 'The platform others will aspire to be.',
+    cta_sub: 'No venture capital. No ads. No suppression. Ever. Built by one family. Funded by this community.',
+    footer_unity: 'United We Stand. 💙',
+    btn_collective: 'SUPPORT ON OPEN COLLECTIVE →',
+    btn_github_star: 'STAR ON GITHUB ⭐',
+
     // Footer
     footer_terms:   "Terms",
     footer_privacy: "Privacy",
