@@ -132,6 +132,10 @@ const TRANSLATIONS = {
     launch_title: 'La plataforma<br><span class=\'accent\'>a la que otros</span><br>aspirarán.',
     footer_unity: 'United We Stand. 💙',
 
+    cta_sub: 'No venture capital. No ads. No suppression. Ever. Built by one family. Funded by this community.',
+    footer_unity: 'United We Stand. 💙',
+    btn_collective: 'SUPPORT ON OPEN COLLECTIVE →',
+    btn_github_star: 'STAR ON GITHUB ⭐',
     // Footer
     footer_terms:   "Terms",
     footer_privacy: "Privacy",
@@ -266,6 +270,14 @@ const TRANSLATIONS = {
     launch_title: 'La plataforma a la que otros aspirarán.',
     footer_unity: 'Unidos de pie. 💙',
 
+    cta_sub: 'No venture capital. No ads. No suppression. Ever. Built by one family. Funded by this community.',
+    footer_unity: 'United We Stand. 💙',
+    btn_collective: 'SUPPORT ON OPEN COLLECTIVE →',
+    btn_github_star: 'STAR ON GITHUB ⭐',
+    cta_sub: 'Sin capital de riesgo. Sin anuncios. Sin supresión. Jamás. Construido por una familia. Financiado por esta comunidad.',
+    footer_unity: 'Unidos de pie. 💙',
+    btn_collective: 'APOYA EN OPEN COLLECTIVE →',
+    btn_github_star: 'ESTRELLA EN GITHUB ⭐',
     // Footer
     footer_terms:    "Términos",
     footer_privacy:  "Privacidad",
