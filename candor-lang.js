@@ -125,17 +125,9 @@ const TRANSLATIONS = {
     compliance_body:  "We did not build compliance in after the fact. We built it first.",
 
 
-    p06_num:   '06 · OPEN SOURCE',
-    p06_title: 'Every line of code is public',
-    p06_body:  'The entire platform — every microservice, every API, every smart contract — is open source on GitHub. Anyone can audit, fork, and verify that we do exactly what we say we do.',
-    compliance_title: 'Safety is not an afterthought.<br>It is the architecture.',
-    launch_title: 'La plataforma<br><span class=\'accent\'>a la que otros</span><br>aspirarán.',
-    footer_unity: 'United We Stand. 💙',
 
-    cta_sub: 'No venture capital. No ads. No suppression. Ever. Built by one family. Funded by this community.',
-    footer_unity: 'United We Stand. 💙',
-    btn_collective: 'SUPPORT ON OPEN COLLECTIVE →',
-    btn_github_star: 'STAR ON GITHUB ⭐',
+
+
     // Footer
     footer_terms:   "Terms",
     footer_privacy: "Privacy",
@@ -260,20 +252,11 @@ const TRANSLATIONS = {
     p06_body:  'The entire platform — every microservice, every API, every smart contract — is open source on GitHub. Anyone can audit, fork, and verify that we do exactly what we say we do.',
     compliance_title: 'Safety is not an afterthought.<br>It is the architecture.',
     launch_title: 'La plataforma<br><span class=\'accent\'>a la que otros</span><br>aspirarán.',
-    footer_unity: 'United We Stand. 💙',
-
-
     p06_num:   '06 · CÓDIGO ABIERTO',
     p06_title: 'Cada línea de código es pública',
     p06_body:  'Toda la plataforma — cada microservicio, cada API, cada contrato inteligente — es de código abierto en GitHub. Cualquiera puede auditar, bifurcar y verificar que hacemos exactamente lo que decimos.',
     compliance_title: 'La seguridad no es una ocurrencia tardía.<br>Es la arquitectura.',
     launch_title: 'La plataforma a la que otros aspirarán.',
-    footer_unity: 'Unidos de pie. 💙',
-
-    cta_sub: 'No venture capital. No ads. No suppression. Ever. Built by one family. Funded by this community.',
-    footer_unity: 'United We Stand. 💙',
-    btn_collective: 'SUPPORT ON OPEN COLLECTIVE →',
-    btn_github_star: 'STAR ON GITHUB ⭐',
     cta_sub: 'Sin capital de riesgo. Sin anuncios. Sin supresión. Jamás. Construido por una familia. Financiado por esta comunidad.',
     footer_unity: 'Unidos de pie. 💙',
     btn_collective: 'APOYA EN OPEN COLLECTIVE →',
