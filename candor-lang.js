@@ -436,3 +436,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const lang = detectLanguage();
   applyLanguage(lang);
 });
+
+// Re-apply after scroll reveals
+window.addEventListener('scroll', function() {
+  const lang = localStorage.getItem('candor_lang') || detectLanguage();
+  applyLanguage(lang);
+}, { once: true });
+
+setTimeout(function() {
+  const lang = localStorage.getItem('candor_lang') || detectLanguage();
+  applyLanguage(lang);
+}, 1000);
+
+setTimeout(function() {
+  const lang = localStorage.getItem('candor_lang') || detectLanguage();
+  applyLanguage(lang);
+}, 2500);
