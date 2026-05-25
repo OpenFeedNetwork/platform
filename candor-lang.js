@@ -128,8 +128,8 @@ const TRANSLATIONS = {
     p06_num:   '06 · OPEN SOURCE',
     p06_title: 'Every line of code is public',
     p06_body:  'The entire platform — every microservice, every API, every smart contract — is open source on GitHub. Anyone can audit, fork, and verify that we do exactly what we say we do.',
-    compliance_title: 'Safety is not an afterthought. It is the architecture.',
-    launch_title: 'The platform others will aspire to be.',
+    compliance_title: 'Safety is not an afterthought.<br>It is the architecture.',
+    launch_title: 'La plataforma<br><span class=\'accent\'>a la que otros</span><br>aspirarán.',
     footer_unity: 'United We Stand. 💙',
 
     // Footer
@@ -254,15 +254,15 @@ const TRANSLATIONS = {
     p06_num:   '06 · OPEN SOURCE',
     p06_title: 'Every line of code is public',
     p06_body:  'The entire platform — every microservice, every API, every smart contract — is open source on GitHub. Anyone can audit, fork, and verify that we do exactly what we say we do.',
-    compliance_title: 'Safety is not an afterthought. It is the architecture.',
-    launch_title: 'The platform others will aspire to be.',
+    compliance_title: 'Safety is not an afterthought.<br>It is the architecture.',
+    launch_title: 'La plataforma<br><span class=\'accent\'>a la que otros</span><br>aspirarán.',
     footer_unity: 'United We Stand. 💙',
 
 
     p06_num:   '06 · CÓDIGO ABIERTO',
     p06_title: 'Cada línea de código es pública',
     p06_body:  'Toda la plataforma — cada microservicio, cada API, cada contrato inteligente — es de código abierto en GitHub. Cualquiera puede auditar, bifurcar y verificar que hacemos exactamente lo que decimos.',
-    compliance_title: 'La seguridad no es una ocurrencia tardía. Es la arquitectura.',
+    compliance_title: 'La seguridad no es una ocurrencia tardía.<br>Es la arquitectura.',
     launch_title: 'La plataforma a la que otros aspirarán.',
     footer_unity: 'Unidos de pie. 💙',
 
