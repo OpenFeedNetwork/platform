@@ -1,1 +1,2 @@
-_redirects ✅cat
+/api/*  https://open-feed-platform.fly.dev/api/:splat  200!
+/*      /index.html   200

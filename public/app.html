@@ -25,7 +25,7 @@ const { useState, useEffect, useCallback, useRef } = React;
 // Base URL switches between local dev and production
 // ─────────────────────────────────────────────────────────────────────────────
 const API_BASE = typeof window !== "undefined" && window.location.hostname !== "localhost"
-  ? "https://candortheopenfeednetwork.com/api"
+  ? "https://open-feed-platform.fly.dev/api"
   : "http://localhost:3000";
 
 const api = {
