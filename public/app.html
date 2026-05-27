@@ -136,7 +136,7 @@ const MOCK_STATS = {
 
 const MOCK_PROPOSALS = [
   { id:"g1", title:"Increase source credibility weight: 0.60 → 0.65", proposer:"@rafaelm", yes_votes:847, no_votes:213, status:"open", voting_ends_days:3 },
-  { id:"g2", title:"Add academic research content bonus (+15% OFA score)", proposer:"@priyanair", yes_votes:1240, no_votes:89, status:"open", voting_ends_days:5 },
+  { id:"g2", title:"Add academic research content bonus (+15% CANDOR score)", proposer:"@priyanair", yes_votes:1240, no_votes:89, status:"open", voting_ends_days:5 },
   { id:"g3", title:"Increase ad penalty from 30 → 35 points", proposer:"@aishaokafor", yes_votes:2100, no_votes:340, status:"passed", voting_ends_days:0 },
 ];
 
@@ -259,7 +259,7 @@ function StatusDot({ online }) {
         animation: online ? "pulse 2s infinite" : "none" }} />
       <span style={{ fontSize:9, fontFamily:"monospace",
         color: online ? T.green : T.amber, letterSpacing:1 }}>
-        {online ? "API LIVE" : "DEMO MODE"}
+        {online ? "API LIVE" : ""}
       </span>
     </div>
   );
@@ -305,7 +305,7 @@ function PostCard({ post, token, onAudit }) {
             textShadow:`0 0 20px ${post.ofa_score>70?T.green:post.ofa_score>40?T.amber:T.red}44` }}>
             {post.ofa_score}
           </div>
-          <div style={{ fontSize:8, color:T.textMuted, fontFamily:"monospace" }}>OFA SCORE</div>
+          <div style={{ fontSize:8, color:T.textMuted, fontFamily:"monospace" }}>CANDOR SCORE</div>
         </div>
       </div>
 
@@ -668,10 +668,10 @@ function AuthPanel({ onAuth }) {
         <div style={{ textAlign:"center", marginBottom:32 }}>
           <div style={{ fontSize:28, fontWeight:900, color:T.white, letterSpacing:4,
             textShadow:`0 0 40px ${T.greenGlow}` }}>
-            OFA <span style={{ color:T.green }}>◆</span>
+            CANDOR <span style={{ color:T.green }}>◆</span>
           </div>
           <div style={{ fontSize:10, color:T.textDim, letterSpacing:3, marginTop:4 }}>
-            OPEN FEED PLATFORM
+            THE OPEN FEED NETWORK
           </div>
           <div style={{ fontSize:10, color:T.textMuted, marginTop:8, lineHeight:1.6 }}>
             The platform that can't suppress your voice.
@@ -798,7 +798,7 @@ function FeedView({ token, posts, loading, onRefresh, onAudit }) {
           display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <span style={{ fontSize:11, color:T.amber }}>
             ⚠ {posts.filter(p=>p.platform_tried_suppress).length} posts were suppressed by platform algorithms
-            — OFA Truth Shield reviewed and restored them
+            — CANDOR Truth Shield reviewed and restored them
           </span>
           <Pill label="View" active={false} color={T.amber} onClick={()=>setFilter("suppressed")} />
         </div>
@@ -1244,10 +1244,10 @@ function App() {
         backdropFilter:"blur(10px)" }}>
         <div>
           <div style={{ fontSize:14, fontWeight:900, color:T.white, letterSpacing:2 }}>
-            OFA <span style={{ color:T.green, textShadow:`0 0 20px ${T.green}` }}>◆</span>
+            CANDOR <span style={{ color:T.green, textShadow:`0 0 20px ${T.green}` }}>◆</span>
           </div>
           <div style={{ fontSize:8, color:T.textMuted, letterSpacing:2, marginTop:1 }}>
-            OPEN FEED PLATFORM
+            THE OPEN FEED NETWORK
           </div>
         </div>
 
@@ -1332,7 +1332,7 @@ function App() {
               marginBottom:14 }}>Post ID: {auditPost}</div>
             {[
               { step:"Platform flagged",  detail:"Flags: sensitive_topic, health_misinformation_review", color:T.red },
-              { step:"OFA intercepted",   detail:"Queued for Truth Shield — no auto-demotion", color:T.amber },
+              { step:"CANDOR intercepted",   detail:"Queued for Truth Shield — no auto-demotion", color:T.amber },
               { step:"Truth Shield ran",  detail:"Claude Haiku analysis: LEGITIMATE (94% confidence)", color:T.cyan },
               { step:"Verdict on IPFS",   detail:`CID: QmTS${auditPost}verdict stored permanently`, color:T.purple },
               { step:"Feed restored",     detail:"Full visibility restored — context labels only", color:T.green },

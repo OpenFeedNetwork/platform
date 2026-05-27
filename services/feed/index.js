@@ -32,7 +32,7 @@ app.post("/api/v1/auth/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: "email and password required" });
   try {
-    const r = await db.query("SELECT * FROM users WHERE email=$1", [email.toLowerCase()]);
+    const r = await db.query("SELECT * FROM users WHERE email=$1 OR username=$1", [email.toLowerCase()]);
     const user = r.rows[0];
     if (!user || !(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error: "Invalid credentials" });
     const token = jwt.sign({ id: user.id, username: user.username }, JWT, { expiresIn: "30d" });
