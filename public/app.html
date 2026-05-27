@@ -49,8 +49,8 @@ const api = {
   delete: (path, token)       => api.request("DELETE", path, null, token),
 
   // Auth
-  register:  (data)        => api.post("/api/v1/users/register", data),
-  login:     (data)        => api.post("/api/v1/users/login", data),
+  register:  (data)        => api.post("/api/v1/auth/register", data),
+  login:     (data)        => api.post("/api/v1/auth/login", data),
 
   // Feed
   getFeed:   (token, opts) => api.get(`/api/v1/feed?limit=${opts?.limit||20}&include_score_breakdown=true`, token),
@@ -634,7 +634,7 @@ function AuthPanel({ onAuth }) {
       ? { tier, username: tier==="standard"?username:undefined, password }
       : { username, password };
 
-    const endpoint = mode === "register" ? "/api/v1/users/register" : "/api/v1/users/login";
+    const endpoint = mode === "register" ? "/api/v1/auth/register" : "/api/v1/auth/login";
     const result = await api.post(endpoint, payload);
 
     if (result?.token || result?.user_id) {
