@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CandorShield — Safety Intelligence Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:       #080C12;
+  --surface:  #0D1420;
+  --surface2: #111C2D;
+  --surface3: #162238;
+  --border:   rgba(255,255,255,0.06);
+  --border2:  rgba(255,255,255,0.1);
+  --text:     #D8E6F5;
+  --muted:    #6B88A8;
+  --dim:      #3A5270;
+  --white:    #FFFFFF;
+
+  /* Module colors */
+  --beacon:    #FF6B35;
+  --beacon-bg: rgba(255,107,53,0.08);
+  --threat:    #CC3333;
+  --threat-bg: rgba(204,51,51,0.08);
+  --gateway:   #29A882;
+  --gateway-bg:rgba(41,168,130,0.08);
+  --shield:    #4A90D9;
+  --shield-bg: rgba(74,144,217,0.08);
+
+  --sans:    'DM Sans', sans-serif;
+  --display: 'Bebas Neue', sans-serif;
+  --serif:   'Instrument Serif', Georgia, serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── Nav ───────────────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(8,12,18,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-shield {
+  width: 34px;
+  height: 34px;
+}
+
+.nav-brand {
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+}
+
+.nav-brand span { color: var(--muted); font-size: 13px; font-family: var(--sans); font-weight: 300; letter-spacing: 0; margin-left: 8px; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  letter-spacing: 0.02em;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border2);
+  padding: 8px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+.nav-cta:hover { background: rgba(255,255,255,0.13); color: var(--white) !important; }
+
+/* ── Hero ─────────────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74,144,217,0.06) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.hero h1 {
+  font-family: var(--display);
+  font-size: clamp(64px, 9vw, 120px);
+  letter-spacing: 0.04em;
+  color: var(--white);
+  line-height: 0.95;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.hero h1 .sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(28px, 4vw, 52px);
+  color: var(--muted);
+  letter-spacing: 0;
+  display: block;
+  margin-top: 8px;
+}
+
+.hero-desc {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 580px;
+  margin: 32px auto 48px;
+  line-height: 1.7;
+  position: relative;
+  font-weight: 300;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.btn-primary {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  background: var(--shield);
+  border: none;
+  padding: 13px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-ghost {
+  font-size: 14px;
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s;
+  background: none;
+  cursor: pointer;
+}
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+/* ── Module strip ─────────────────────────────────────────────────── */
+.module-strip {
+  display: flex;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.module-tab {
+  flex: 1;
+  padding: 20px 24px;
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.module-tab:last-child { border-right: none; }
+
+.module-tab::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.module-tab.beacon::before   { background: var(--beacon); }
+.module-tab.threat::before   { background: var(--threat); }
+.module-tab.gateway::before  { background: var(--gateway); }
+.module-tab.shield::before   { background: var(--shield); }
+
+.module-tab.active::before,
+.module-tab:hover::before { opacity: 1; }
+
+.module-tab.active   { background: var(--surface2); }
+.module-tab:hover:not(.active) { background: rgba(255,255,255,0.02); }
+
+.tab-icon { font-size: 20px; margin-bottom: 6px; display: block; }
+.tab-name {
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  display: block;
+  margin-bottom: 2px;
+}
+.tab-tagline { font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
+
+/* ── Module panels ────────────────────────────────────────────────── */
+.module-panels { background: var(--surface); }
+
+.module-panel { display: none; }
+.module-panel.active { display: block; }
+
+.panel-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.panel-left {}
+
+.panel-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.panel-title {
+  font-family: var(--display);
+  font-size: 52px;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.panel-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.panel-desc {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+
+.panel-buyers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+
+.buyer-tag {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+.panel-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+  border: none;
+}
+
+.panel-right {}
+
+.capability-list { list-style: none; }
+
+.capability {
+  display: flex;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.capability:first-child { border-top: 1px solid var(--border); }
+
+.cap-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cap-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.cap-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ── Spec strip ───────────────────────────────────────────────────── */
+.spec-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+}
+
+.spec-item {
+  padding: 28px 32px;
+  border-right: 1px solid var(--border);
+}
+.spec-item:last-child { border-right: none; }
+
+.spec-value {
+  font-family: var(--display);
+  font-size: 36px;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.spec-label {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  font-weight: 300;
+}
+
+/* ── Trust section ────────────────────────────────────────────────── */
+.trust-section {
+  padding: 80px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: var(--display);
+  font-size: 48px;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 540px;
+  margin: 0 auto 56px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.trust-card {
+  background: var(--surface);
+  padding: 36px 32px;
+  text-align: left;
+}
+
+.trust-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.trust-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.trust-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ── Contact form ─────────────────────────────────────────────────── */
+.contact-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 80px 48px;
+}
+
+.contact-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.contact-left {}
+.contact-right {}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: var(--sans);
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: rgba(74,144,217,0.5);
+}
+
+.form-group select option { background: var(--surface2); }
+
+.form-group textarea {
+  height: 100px;
+  resize: none;
+  line-height: 1.6;
+}
+
+.form-submit {
+  width: 100%;
+  background: var(--shield);
+  border: none;
+  border-radius: 6px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--white);
+  cursor: pointer;
+  font-family: var(--sans);
+  letter-spacing: 0.02em;
+  transition: opacity 0.15s;
+  margin-top: 8px;
+}
+.form-submit:hover { opacity: 0.85; }
+
+.contact-note {
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 12px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.contact-stat {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.contact-stat:last-child { border-bottom: none; margin-bottom: 0; }
+
+.contact-stat-value {
+  font-family: var(--display);
+  font-size: 42px;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.contact-stat-label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-brand {
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  font-size: 12px;
+  color: var(--dim);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-links a:hover { color: var(--muted); }
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+/* ── Success state ────────────────────────────────────────────────── */
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+.form-success.visible { display: block; }
+.success-icon { font-size: 40px; margin-bottom: 16px; }
+.success-title { font-family: var(--display); font-size: 32px; letter-spacing: 0.04em; color: var(--white); margin-bottom: 8px; }
+.success-desc { font-size: 14px; color: var(--muted); font-weight: 300; }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-logo">
+    <svg class="nav-shield" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 2L4 7V17C4 24.2 9.8 30.9 17 33C24.2 30.9 30 24.2 30 17V7L17 2Z" fill="rgba(74,144,217,0.15)" stroke="rgba(74,144,217,0.5)" stroke-width="1.5"/>
+      <path d="M12 17L15.5 20.5L22 13.5" stroke="#4A90D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div class="nav-brand">CANDORSHIELD <span>Safety Intelligence Suite</span></div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#modules">Modules</a>
+    <a href="#security">Security</a>
+    <a href="#contact">Contact</a>
+    <a href="https://reach.candor.network/docs" target="_blank">Developer docs</a>
+    <a href="#contact" class="nav-cta">Request briefing</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-eyebrow">Candor: The Open Feed Network — Closed-Source Safety Suite</div>
+
+  <h1>
+    CANDORSHIELD
+    <span class="sub">Intelligence at the edge of trust.</span>
+  </h1>
+
+  <p class="hero-desc">
+    Four closed-source safety modules protecting the people who protect others —
+    first responders, journalists, children, and communities at risk.
+    Built on the same infrastructure that powers the open feed. Operated behind a secure, encrypted API layer.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Request a briefing</a>
+    <a href="#modules" class="btn-ghost">Explore the suite</a>
+  </div>
+</section>
+
+<!-- ── Module tabs ── -->
+<div id="modules">
+  <div class="module-strip">
+    <button class="module-tab beacon active" onclick="switchModule('beacon', this)">
+      <span class="tab-icon">🚨</span>
+      <span class="tab-name">CANDOR BEACON</span>
+      <span class="tab-tagline">First responder telemetry</span>
+    </button>
+    <button class="module-tab threat" onclick="switchModule('threat', this)">
+      <span class="tab-icon">🛡</span>
+      <span class="tab-name">CANDOR THREATSHIELD</span>
+      <span class="tab-tagline">Terrorism detection</span>
+    </button>
+    <button class="module-tab gateway" onclick="switchModule('gateway', this)">
+      <span class="tab-icon">🔒</span>
+      <span class="tab-name">CANDOR GATEWAY</span>
+      <span class="tab-tagline">Child safety filter</span>
+    </button>
+    <button class="module-tab shield" onclick="switchModule('shield', this)">
+      <span class="tab-icon">📡</span>
+      <span class="tab-name">CANDOR SHIELD</span>
+      <span class="tab-tagline">Disinformation detection</span>
+    </button>
+  </div>
+
+  <div class="module-panels">
+
+    <!-- BEACON -->
+    <div class="module-panel active" id="panel-beacon">
+      <div class="panel-inner">
+        <div class="panel-left">
+          <div class="panel-eyebrow" style="color:var(--beacon)">First Responder Emergency Telemetry</div>
+          <div class="panel-title">CANDOR<br>BEACON</div>
+          <div class="panel-subtitle">Crisis alert for the people on the ground.</div>
+          <p class="panel-desc">
+            Candor Beacon monitors the open feed in real time for extreme psychological distress signals,
+            active incident escalation, and officer safety threats. When a signal triggers,
+            a live distress flare routes instantly to dispatch dashboards and peer-support coordinators —
+            measured in seconds, not minutes.
+          </p>
+          <div class="panel-buyers">
+            <span class="buyer-tag">Police Departments</span>
+            <span class="buyer-tag">Fire Services</span>
+            <span class="buyer-tag">EMS & Paramedics</span>
+            <span class="buyer-tag">Emergency Dispatchers</span>
+            <span class="buyer-tag">County OES</span>
+            <span class="buyer-tag">Federal Emergency Management</span>
+          </div>
+          <a href="#contact" class="panel-cta" style="background:var(--beacon-bg);color:var(--beacon);border:1px solid rgba(255,107,53,0.25)">
+            Schedule a department briefing →
+          </a>
+        </div>
+        <div class="panel-right">
+          <ul class="capability-list">
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--beacon-bg)">⚡</div>
+              <div>
+                <div class="cap-title">Real-time distress detection</div>
+                <div class="cap-desc">Automated pattern recognition identifies psychological crisis signals — suicidal ideation, acute stress, peer trauma — in live feed content before they escalate.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--beacon-bg)">📟</div>
+              <div>
+                <div class="cap-title">Instant dispatch routing</div>
+                <div class="cap-desc">Confirmed signals route a live distress flare directly to your CAD system, peer-support dashboard, or wellness coordinator. No manual review required for high-confidence events.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--beacon-bg)">🗺</div>
+              <div>
+                <div class="cap-title">Incident geo-correlation</div>
+                <div class="cap-desc">Cross-references signal origin with active incident locations to prioritize responders already in proximity and reduce mobilization time.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--beacon-bg)">📊</div>
+              <div>
+                <div class="cap-title">Wellness trend analytics</div>
+                <div class="cap-desc">Aggregate, anonymized reporting on responder community health trends — surfaced to department leadership without individual exposure.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="spec-strip">
+        <div class="spec-item">
+          <div class="spec-value" style="color:var(--beacon)">&lt;2s</div>
+          <div class="spec-label">Alert delivery latency</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">24/7</div>
+          <div class="spec-label">Continuous monitoring</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">99.9%</div>
+          <div class="spec-label">Uptime SLA</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">HIPAA</div>
+          <div class="spec-label">Compliance ready</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREATSHIELD -->
+    <div class="module-panel" id="panel-threat">
+      <div class="panel-inner">
+        <div class="panel-left">
+          <div class="panel-eyebrow" style="color:var(--threat)">Counter-Terrorism & Extremism Detection</div>
+          <div class="panel-title">CANDOR<br>THREATSHIELD</div>
+          <div class="panel-subtitle">Pattern recognition at network scale.</div>
+          <p class="panel-desc">
+            Candor ThreatShield runs automated real-time analysis across the feed pipeline,
+            identifying weaponized language, tactical coordination signatures, and radicalization
+            progression patterns. Detection logic operates entirely on the closed-source layer —
+            never exposed to the public feed or external repositories.
+          </p>
+          <div class="panel-buyers">
+            <span class="buyer-tag">Federal Law Enforcement</span>
+            <span class="buyer-tag">DHS & Affiliated Agencies</span>
+            <span class="buyer-tag">Intelligence Units</span>
+            <span class="buyer-tag">Fusion Centers</span>
+            <span class="buyer-tag">Campus Security</span>
+            <span class="buyer-tag">Critical Infrastructure Operators</span>
+          </div>
+          <a href="#contact" class="panel-cta" style="background:var(--threat-bg);color:var(--threat);border:1px solid rgba(204,51,51,0.25)">
+            Request a classified briefing →
+          </a>
+        </div>
+        <div class="panel-right">
+          <ul class="capability-list">
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--threat-bg)">🔍</div>
+              <div>
+                <div class="cap-title">Weaponized language detection</div>
+                <div class="cap-desc">Identifies tactical threat signatures, coded language, and escalation vocabulary using multi-layer behavioral analysis. Continuously updated without exposing detection logic.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--threat-bg)">🕸</div>
+              <div>
+                <div class="cap-title">Coordination graph analysis</div>
+                <div class="cap-desc">Maps account-level coordination patterns — shared IPs, synchronized posting, amplification networks — to surface organized threat actors before incidents occur.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--threat-bg)">📈</div>
+              <div>
+                <div class="cap-title">Radicalization trajectory scoring</div>
+                <div class="cap-desc">Tracks longitudinal behavioral shift in accounts — early-stage radicalization indicators surfaced for human analyst review before reaching actionable threat level.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--threat-bg)">🔐</div>
+              <div>
+                <div class="cap-title">Closed-source architecture</div>
+                <div class="cap-desc">All detection logic, thresholds, and signature databases operate on an isolated, encrypted cloud layer. No public repository. No reverse-engineering surface.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="spec-strip">
+        <div class="spec-item">
+          <div class="spec-value" style="color:var(--threat)">Real-time</div>
+          <div class="spec-label">Feed analysis latency</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">Closed</div>
+          <div class="spec-label">Source architecture</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">99.99%</div>
+          <div class="spec-label">Enterprise SLA</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">FedRAMP</div>
+          <div class="spec-label">Authorization path</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GATEWAY -->
+    <div class="module-panel" id="panel-gateway">
+      <div class="panel-inner">
+        <div class="panel-left">
+          <div class="panel-eyebrow" style="color:var(--gateway)">Child Safety Content Filtering</div>
+          <div class="panel-title">CANDOR<br>GATEWAY</div>
+          <div class="panel-subtitle">Every minor, protected by default.</div>
+          <p class="panel-desc">
+            Candor Gateway is a dynamic content filtering protocol that prevents minor accounts
+            from accessing adult digital spaces within the feed. Protection is applied at account
+            creation, enforced at every session, and updated continuously — with zero manual
+            review burden on your moderation team.
+          </p>
+          <div class="panel-buyers">
+            <span class="buyer-tag">Social Platforms</span>
+            <span class="buyer-tag">School Districts</span>
+            <span class="buyer-tag">EdTech Providers</span>
+            <span class="buyer-tag">Youth Community Apps</span>
+            <span class="buyer-tag">Gaming Platforms</span>
+            <span class="buyer-tag">Family Safety Organizations</span>
+          </div>
+          <a href="#contact" class="panel-cta" style="background:var(--gateway-bg);color:var(--gateway);border:1px solid rgba(41,168,130,0.25)">
+            Schedule a platform review →
+          </a>
+        </div>
+        <div class="panel-right">
+          <ul class="capability-list">
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--gateway-bg)">🧒</div>
+              <div>
+                <div class="cap-title">Age-aware content routing</div>
+                <div class="cap-desc">Minor-flagged accounts are routed through a filtered content pipeline by default. Adult content is blocked at the API layer — never reaches the client device.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--gateway-bg)">🚧</div>
+              <div>
+                <div class="cap-title">Dynamic boundary enforcement</div>
+                <div class="cap-desc">Content classifications update in real time as the feed evolves. A post that crosses a threshold after publication is retroactively filtered for minor sessions without manual intervention.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--gateway-bg)">🔗</div>
+              <div>
+                <div class="cap-title">Grooming pattern detection</div>
+                <div class="cap-desc">Identifies adult-to-minor private messaging patterns that match known grooming signatures — escalating intimacy, secrecy requests, isolation tactics — and routes to your safety team.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--gateway-bg)">📋</div>
+              <div>
+                <div class="cap-title">COPPA & KOSA compliance tools</div>
+                <div class="cap-desc">Built-in audit logs, parental consent workflows, and age verification hooks designed to meet US federal child online safety requirements.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="spec-strip">
+        <div class="spec-item">
+          <div class="spec-value" style="color:var(--gateway)">0ms</div>
+          <div class="spec-label">Content delivery to minors</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">COPPA</div>
+          <div class="spec-label">Compliance framework</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">API</div>
+          <div class="spec-label">Integration method</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">Real-time</div>
+          <div class="spec-label">Filter updates</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHIELD -->
+    <div class="module-panel" id="panel-shield">
+      <div class="panel-inner">
+        <div class="panel-left">
+          <div class="panel-eyebrow" style="color:var(--shield)">AI Disinformation Detection for Newsrooms</div>
+          <div class="panel-title">CANDOR<br>SHIELD</div>
+          <div class="panel-subtitle">Truth verification at publication speed.</div>
+          <p class="panel-desc">
+            Candor Shield gives newsrooms and media organizations a real-time disinformation
+            detection layer — identifying AI-generated content, coordinated narrative campaigns,
+            and synthetic media in the feed before they reach editorial pipelines.
+            Designed for the speed of breaking news, not the pace of post-publication correction.
+          </p>
+          <div class="panel-buyers">
+            <span class="buyer-tag">Newsrooms</span>
+            <span class="buyer-tag">Broadcast Media</span>
+            <span class="buyer-tag">Wire Services</span>
+            <span class="buyer-tag">Fact-Check Organizations</span>
+            <span class="buyer-tag">Academic Research</span>
+            <span class="buyer-tag">Election Integrity Bodies</span>
+          </div>
+          <a href="#contact" class="panel-cta" style="background:var(--shield-bg);color:var(--shield);border:1px solid rgba(74,144,217,0.25)">
+            Request an editorial demo →
+          </a>
+        </div>
+        <div class="panel-right">
+          <ul class="capability-list">
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--shield-bg)">🤖</div>
+              <div>
+                <div class="cap-title">AI-generated content detection</div>
+                <div class="cap-desc">Identifies LLM-generated text, deepfake image signatures, and synthetic audio patterns in feed content — with confidence scoring and provenance analysis.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--shield-bg)">📣</div>
+              <div>
+                <div class="cap-title">Narrative campaign mapping</div>
+                <div class="cap-desc">Detects coordinated messaging campaigns — identical talking points, synchronized publication timing, and amplification networks — before they reach mainstream coverage.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--shield-bg)">⚖️</div>
+              <div>
+                <div class="cap-title">Source credibility scoring</div>
+                <div class="cap-desc">Evaluates account history, network provenance, and content consistency to produce a source credibility score journalists can reference before citing feed content.</div>
+              </div>
+            </li>
+            <li class="capability">
+              <div class="cap-icon" style="background:var(--shield-bg)">🔔</div>
+              <div>
+                <div class="cap-title">Breaking news alert integration</div>
+                <div class="cap-desc">Integrates with editorial workflow tools — Slack, newsroom CMS, wire desks — to surface disinformation flags exactly where your journalists already work.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="spec-strip">
+        <div class="spec-item">
+          <div class="spec-value" style="color:var(--shield)">&lt;500ms</div>
+          <div class="spec-label">Detection latency</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">Editorial</div>
+          <div class="spec-label">Workflow integration</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">99.9%</div>
+          <div class="spec-label">Uptime SLA</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-value">SOC 2</div>
+          <div class="spec-label">Compliance path</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Trust section ── -->
+<section id="security">
+  <div class="trust-section">
+    <div class="section-label">Architecture & Security</div>
+    <div class="section-title">BUILT TO STAY CLOSED</div>
+    <p class="section-desc">
+      The open feed earns trust through transparency. The safety suite earns trust
+      through impenetrability. Both principles are non-negotiable.
+    </p>
+
+    <div class="trust-grid">
+      <div class="trust-card">
+        <span class="trust-icon">🏗</span>
+        <div class="trust-title">Encrypted API layer</div>
+        <div class="trust-desc">All CandorShield modules operate on an isolated, encrypted cloud architecture separate from the public Candor Reach feed. Detection logic never touches the open repository.</div>
+      </div>
+      <div class="trust-card">
+        <span class="trust-icon">🔁</span>
+        <div class="trust-title">Hash-based data pipeline</div>
+        <div class="trust-desc">Content flows from the Reach pipeline into the Shield environment via encrypted hash tokens — not raw content. No post text ever leaves your infrastructure unencrypted.</div>
+      </div>
+      <div class="trust-card">
+        <span class="trust-icon">🚫</span>
+        <div class="trust-title">Zero public exposure</div>
+        <div class="trust-desc">Detection thresholds, scoring weights, and signature databases are never published. No open-source repository. No public documentation of internal logic. No bypass surface.</div>
+      </div>
+      <div class="trust-card">
+        <span class="trust-icon">🌐</span>
+        <div class="trust-title">Multi-region deployment</div>
+        <div class="trust-desc">Infrastructure deployed across iad, lax, and ams regions via Fly.io. Geographic redundancy ensures uptime commitments are maintained even during regional incidents.</div>
+      </div>
+      <div class="trust-card">
+        <span class="trust-icon">📜</span>
+        <div class="trust-title">Compliance-ready</div>
+        <div class="trust-desc">CandorShield modules are architected for HIPAA, COPPA, FedRAMP, and SOC 2 compliance paths depending on module. Compliance documentation available under NDA.</div>
+      </div>
+      <div class="trust-card">
+        <span class="trust-icon">🤝</span>
+        <div class="trust-title">Access by agreement only</div>
+        <div class="trust-desc">No self-serve access. All CandorShield modules are deployed under signed agreements with use case review. Government and enterprise procurement processes supported.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact ── -->
+<section id="contact" class="contact-section">
+  <div class="contact-inner">
+    <div class="contact-left">
+      <div class="section-label" style="text-align:left;margin-bottom:16px;">Request Access</div>
+      <div class="section-title" style="font-size:40px;text-align:left;margin-bottom:16px;">LET'S TALK</div>
+      <p style="font-size:15px;color:var(--muted);font-weight:300;line-height:1.8;margin-bottom:40px;">
+        CandorShield modules are deployed under agreement following a briefing
+        with our team. Tell us about your organization and use case — we'll
+        respond within one business day.
+      </p>
+
+      <div class="contact-stat">
+        <div class="contact-stat-value">4</div>
+        <div class="contact-stat-label">Safety modules in the suite</div>
+      </div>
+      <div class="contact-stat">
+        <div class="contact-stat-value">3</div>
+        <div class="contact-stat-label">Global infrastructure regions</div>
+      </div>
+      <div class="contact-stat">
+        <div class="contact-stat-value">0</div>
+        <div class="contact-stat-label">Public code repositories for safety logic</div>
+      </div>
+    </div>
+
+    <div class="contact-right">
+      <div id="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First name</label>
+            <input type="text" id="fname" placeholder="Jane" />
+          </div>
+          <div class="form-group">
+            <label>Last name</label>
+            <input type="text" id="lname" placeholder="Smith" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Organization</label>
+          <input type="text" id="org" placeholder="Dept. of Homeland Security" />
+        </div>
+
+        <div class="form-group">
+          <label>Work email</label>
+          <input type="email" id="email" placeholder="jane.smith@agency.gov" />
+        </div>
+
+        <div class="form-group">
+          <label>Module of interest</label>
+          <select id="module">
+            <option value="">Select a module</option>
+            <option value="beacon">Candor Beacon — First responder telemetry</option>
+            <option value="threat">Candor ThreatShield — Terrorism detection</option>
+            <option value="gateway">Candor Gateway — Child safety filter</option>
+            <option value="shield">Candor Shield — Disinformation detection</option>
+            <option value="multiple">Multiple modules</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Use case</label>
+          <textarea id="usecase" placeholder="Briefly describe your organization's use case and what you're trying to solve..."></textarea>
+        </div>
+
+        <button class="form-submit" onclick="submitForm()">Request briefing →</button>
+        <p class="contact-note">
+          All inquiries are reviewed by our team. CandorShield access requires a signed agreement.
+          Government and enterprise procurement processes fully supported.
+        </p>
+      </div>
+
+      <div class="form-success" id="form-success">
+        <div class="success-icon">✓</div>
+        <div class="success-title">REQUEST RECEIVED</div>
+        <p class="success-desc">We'll review your inquiry and respond within one business day.<br>For urgent matters: <strong>shield@candor.network</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-brand">CANDORSHIELD</div>
+  <div class="footer-links">
+    <a href="https://reach.candor.network/docs">Reach API docs</a>
+    <a href="https://sentinel.candor.network/docs">Sentinel API docs</a>
+    <a href="mailto:shield@candor.network">shield@candor.network</a>
+  </div>
+  <div class="footer-copy">© 2026 Open Feed Network Inc. All rights reserved.</div>
+</footer>
+
+<script>
+function switchModule(name, btn) {
+  document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.module-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+function submitForm() {
+  const fname   = document.getElementById('fname').value.trim();
+  const lname   = document.getElementById('lname').value.trim();
+  const org     = document.getElementById('org').value.trim();
+  const email   = document.getElementById('email').value.trim();
+  const module  = document.getElementById('module').value;
+  const usecase = document.getElementById('usecase').value.trim();
+
+  if (!fname || !email || !org || !module) {
+    alert('Please fill in your name, organization, email, and module of interest.');
+    return;
+  }
+
+  // In production: POST to your backend / Netlify Forms / Formspree
+  console.log('Inquiry:', { fname, lname, org, email, module, usecase });
+
+  document.getElementById('contact-form').style.display = 'none';
+  document.getElementById('form-success').classList.add('visible');
+}
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

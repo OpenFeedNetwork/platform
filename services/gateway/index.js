@@ -31,7 +31,7 @@ app.use(rateLimit({ windowMs: 60000, max: 120, standardHeaders: true, message: {
 
 const proxy = (target, pathRewrite = {}) =>
   createProxyMiddleware({ target, changeOrigin: true, pathRewrite,
-    on: { error: (err, req, res) => { console.error(`[Gateway] Proxy error → ${target}:`, err.message); res.status(502).json({ error: "Service temporarily unavailable" }); }}
+    onError: (err, req, res) => { console.error("[Gateway] Proxy error:", err.message); res.status(502).json({ error: "Service temporarily unavailable" }); }
   });
 
 app.use("/api/v1/auth",      proxy(SERVICES.feed));
