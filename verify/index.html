@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Candor Verify — Real-Time Broadcast Integrity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:       #0B0F17;
+  --surface:  #111722;
+  --surface2: #1A2235;
+  --surface3: #202C42;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #E2EAF6;
+  --muted:    #7A92B4;
+  --dim:      #4A5F7A;
+  --green:    #29D08A;
+  --green-bg: rgba(41,208,138,0.08);
+  --amber:    #F5C842;
+  --amber-bg: rgba(245,200,66,0.08);
+  --red:      #FF6B6B;
+  --red-bg:   rgba(255,107,107,0.08);
+  --blue:     #3B9EFF;
+  --blue-bg:  rgba(59,158,255,0.08);
+  --mono:     'JetBrains Mono', monospace;
+  --serif:    'Fraunces', Georgia, serif;
+  --sans:     'DM Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.7;display:flex;min-height:100vh;}
+.sidebar{width:268px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);min-height:100vh;position:sticky;top:0;height:100vh;overflow-y:auto;padding:0 0 48px;}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.sidebar-top{padding:24px 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),#1a6bcc);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;color:#fff;letter-spacing:0.5px;}
+.logo-name{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.5px;}
+.badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(59,158,255,0.2);}
+.badge-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(41,208,138,0.2);}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--dim);letter-spacing:1px;text-transform:uppercase;padding:8px 8px 4px;}
+.nav-item{display:block;padding:7px 10px;border-radius:6px;color:var(--muted);font-size:13px;text-decoration:none;transition:all 0.15s;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);}
+.main{flex:1;max-width:860px;padding:48px 56px 80px;}
+.hero{margin-bottom:48px;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(59,158,255,0.25);border-radius:20px;background:var(--blue-bg);margin-bottom:20px;}
+.hero-tag-text{font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:500;letter-spacing:0.5px;}
+h1{font-family:var(--serif);font-size:42px;font-weight:400;line-height:1.15;color:var(--text);margin-bottom:16px;}
+h1 em{font-style:italic;color:var(--blue);}
+.hero-desc{font-size:17px;color:var(--muted);max-width:580px;line-height:1.75;margin-bottom:28px;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{padding:11px 24px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s;}
+.btn-primary:hover{background:#1a7ae0;transform:translateY(-1px);}
+.btn-outline{padding:11px 24px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:8px;font-family:var(--mono);font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.section{margin-bottom:56px;}
+h2{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--text);margin-bottom:6px;}
+.section-sub{font-size:14px;color:var(--muted);margin-bottom:28px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:28px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;}
+.card-icon{font-size:24px;margin-bottom:12px;}
+.card-title{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.65;}
+.pipeline{margin-bottom:28px;}
+.pipeline-step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.pipeline-step:last-child{border-bottom:none;}
+.step-num{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--blue);width:24px;flex-shrink:0;padding-top:2px;}
+.step-content{flex:1;}
+.step-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.step-time{font-family:var(--mono);font-size:10px;color:var(--green);margin-top:4px;}
+.alert-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:0 12px 12px 0;padding:20px 24px;margin-bottom:16px;}
+.alert-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--blue);margin-bottom:6px;letter-spacing:0.5px;}
+.alert-desc{font-size:14px;color:var(--muted);line-height:1.65;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;}
+.stat-num{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--blue);margin-bottom:4px;}
+.stat-label{font-size:12px;color:var(--muted);}
+.live-demo{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:28px;position:relative;overflow:hidden;}
+.live-demo::before{content:"LIVE";position:absolute;top:16px;right:16px;font-family:var(--mono);font-size:10px;color:var(--red);background:var(--red-bg);border:1px solid rgba(255,107,107,0.2);border-radius:20px;padding:3px 10px;letter-spacing:1px;}
+.live-bar{height:4px;background:var(--surface2);border-radius:2px;margin:16px 0;overflow:hidden;}
+.live-bar-fill{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--blue));animation:stream 3s ease-in-out infinite;}
+@keyframes stream{0%{width:0%;}70%{width:85%;}100%{width:100%;}}
+.claim-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.claim-row:last-child{border-bottom:none;}
+.claim-text{flex:1;color:var(--muted);}
+.claim-score{font-family:var(--mono);font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;}
+.score-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(41,208,138,0.2);}
+.score-amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,200,66,0.2);}
+.score-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,107,107,0.2);}
+.api-block{background:#080C12;border:1px solid var(--border);border-radius:10px;padding:20px;font-family:var(--mono);font-size:12px;line-height:1.8;overflow-x:auto;margin-bottom:16px;}
+.api-block .comment{color:var(--dim);}
+.api-block .key{color:#7FDBFF;}
+.api-block .val{color:var(--green);}
+.api-block .str{color:var(--amber);}
+.divider{height:1px;background:var(--border);margin:40px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-family:var(--mono);font-size:11px;color:var(--dim);font-weight:500;text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);letter-spacing:0.5px;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--muted);}
+td:first-child{color:var(--text);font-family:var(--mono);font-size:12px;}
+.callout{background:var(--blue-bg);border:1px solid rgba(59,158,255,0.2);border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+.callout-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--blue);margin-bottom:8px;letter-spacing:0.5px;}
+.callout-desc{font-size:14px;color:var(--muted);line-height:1.65;}
+.footer{margin-top:64px;padding-top:32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-text{font-size:13px;color:var(--dim);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:13px;color:var(--muted);text-decoration:none;}
+.footer-links a:hover{color:var(--blue);}
+@media(max-width:768px){body{flex-direction:column;}.sidebar{width:100%;height:auto;position:relative;}.main{padding:32px 20px 60px;}.stat-grid{grid-template-columns:1fr 1fr;}.cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="logo">
+      <div class="logo-mark">CV</div>
+      <div>
+        <div class="logo-name">Candor Verify</div>
+        <div class="logo-sub">Live Broadcast Integrity</div>
+      </div>
+    </div>
+    <span class="badge badge-blue"><span class="pulse"></span> LIVE · v1.0</span>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a href="#overview" class="nav-item active">What is Verify?</a>
+    <a href="#pipeline" class="nav-item">The Pipeline</a>
+    <a href="#demo" class="nav-item">Live Demo</a>
+    <a href="#threat" class="nav-item">The Threat</a>
+    <a href="#stats" class="nav-item">Statistics</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Integration</div>
+    <a href="#api" class="nav-item">API Reference</a>
+    <a href="#webhooks" class="nav-item">Webhooks</a>
+    <a href="#targets" class="nav-item">Target Markets</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Products</div>
+    <a href="/reach" class="nav-item">Candor Reach</a>
+    <a href="/beacon" class="nav-item">Candor Beacon</a>
+    <a href="/beaconfr" class="nav-item">Beacon FR</a>
+    <a href="/shield" class="nav-item">Candor Shield</a>
+    <a href="/sentinel" class="nav-item">Candor Sentinel</a>
+    <a href="/gateway" class="nav-item">Candor Gateway</a>
+    <a href="/canary" class="nav-item">Candor Canary</a>
+    <a href="/verify" class="nav-item active">Candor Verify</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="hero" id="overview">
+    <div class="hero-tag">
+      <span class="pulse"></span>
+      <span class="hero-tag-text">CANDOR VERIFY · REAL-TIME BROADCAST INTEGRITY</span>
+    </div>
+    <h1>Truth-rating live feeds, podcasts, and broadcasts <em>as they happen</em></h1>
+    <p class="hero-desc">Candor Verify ingests live audio and video streams, transcribes speech in real time, extracts factual claims, and delivers a CANDOR score verdict within 3–4 seconds of the spoken word — stored permanently on IPFS and the Polygon blockchain.</p>
+    <div class="hero-actions">
+      <a href="#api" class="btn-primary">View API Docs</a>
+      <a href="mailto:hello@openfeed.network" class="btn-outline">Partner With Us</a>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">⚠ THE THREAT CANDOR VERIFY SOLVES</div>
+    <div class="callout-desc">A paid influencer with direct access to the live feed can game the algorithm from the inside — using money, not community votes, to shape what people see and believe. Audiences cannot tell the difference. Platforms cannot detect it in real time. Candor Verify closes that gap — permanently.</div>
+  </div>
+
+  <div class="section" id="pipeline">
+    <h2>The Real-Time Pipeline</h2>
+    <p class="section-sub">Six sequential stages — end-to-end latency of 3–4 seconds from spoken word to listener alert</p>
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Live Stream Ingestion</div>
+          <div class="step-desc">Audio and video streams are ingested via RTMP, HLS, WebRTC, or direct podcast feed. Supports YouTube Live, Spotify, Apple Podcasts, broadcast news APIs, and custom RTMP endpoints.</div>
+          <div class="step-time">Latency: &lt;100ms</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Real-Time Transcription</div>
+          <div class="step-desc">Speech-to-text converts the audio stream into a rolling transcript with speaker diarization — identifying who said what, with timestamps accurate to 200ms.</div>
+          <div class="step-time">Latency: ~500ms</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Claim Extraction</div>
+          <div class="step-desc">NLP identifies factual claims within the transcript stream — distinguishing verifiable assertions from opinion, satire, and speculation. Each claim is tagged with speaker identity and timestamp.</div>
+          <div class="step-time">Latency: ~800ms</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-title">Real-Time Fact-Check</div>
+          <div class="step-desc">Claims are checked against authoritative databases including government records, peer-reviewed literature, wire services, and the CANDOR network's community-verified knowledge base.</div>
+          <div class="step-time">Latency: ~1.5s</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <div class="step-title">Influence Pattern Detection</div>
+          <div class="step-desc">Detects coordinated paid narrative signals — cross-referencing repeated talking points against known paid influence campaigns, lobbying disclosure filings, and financial influence databases.</div>
+          <div class="step-time">Latency: ~2s</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">06</div>
+        <div class="step-content">
+          <div class="step-title">CANDOR Score Verdict + Immutable Storage</div>
+          <div class="step-desc">A CANDOR score (0–100) is assigned to each verified claim. Verdicts are delivered via webhook to listeners and moderators, then stored permanently on IPFS and recorded on the Polygon blockchain.</div>
+          <div class="step-time">Total latency: 3–4 seconds · Tamper-proof forever</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="demo">
+    <h2>Live Verification in Action</h2>
+    <p class="section-sub">Real-time CANDOR scoring on claims as they are spoken</p>
+    <div class="live-demo">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px;letter-spacing:0.5px;">NOW MONITORING · LIVE STREAM · PODCAST EPISODE 247</div>
+      <div style="font-size:14px;color:var(--text);font-weight:500;margin-bottom:4px;">The Daily Report with Alex Rivera</div>
+      <div class="live-bar"></div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:16px;">CLAIMS EXTRACTED THIS SESSION: 14 · VERIFIED: 11 · FLAGGED: 2 · OPINION: 1</div>
+      <div class="claim-row">
+        <div class="claim-text">"The FDA approved this treatment in 2023 with a 94% efficacy rate."</div>
+        <span class="claim-score score-green">96 CANDOR</span>
+      </div>
+      <div class="claim-row">
+        <div class="claim-text">"Studies show this supplement reduces inflammation by 60%."</div>
+        <span class="claim-score score-amber">48 CANDOR</span>
+      </div>
+      <div class="claim-row">
+        <div class="claim-text">"The government has been hiding this data for 10 years."</div>
+        <span class="claim-score score-red">12 CANDOR</span>
+      </div>
+      <div class="claim-row">
+        <div class="claim-text">"Unemployment reached a 50-year low in Q3 2025."</div>
+        <span class="claim-score score-green">91 CANDOR</span>
+      </div>
+      <div class="claim-row">
+        <div class="claim-text">"I believe this is the most important issue of our time."</div>
+        <span class="claim-score" style="background:rgba(122,146,180,0.1);color:var(--muted);border:1px solid var(--border);">OPINION</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="threat">
+    <h2>The Paid Influence Threat</h2>
+    <p class="section-sub">Why live content requires a new category of protection</p>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🎙️</div>
+        <div class="card-title">PODCASTER CAPTURE</div>
+        <div class="card-desc">Paid sponsors shape talking points that sound like independent opinion. Listeners cannot distinguish sponsored narrative from genuine analysis. Verify detects correlation with known paid campaigns.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <div class="card-title">LIVE NEWS MANIPULATION</div>
+        <div class="card-desc">Breaking news segments are especially vulnerable — claims made live cannot be retracted from listener memory. Verify flags unverified claims in real time before they embed as fact.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗳️</div>
+        <div class="card-title">ELECTION INTEGRITY</div>
+        <div class="card-desc">Coordinated influence operations target live political content during elections. Verify cross-references claims against official election data and flags talking points matching foreign influence patterns.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💊</div>
+        <div class="card-title">HEALTH MISINFORMATION</div>
+        <div class="card-desc">Medical misinformation spread live is the most dangerous category — listeners act on health claims immediately. Verify cross-references all health claims against FDA, CDC, and peer-reviewed databases in real time.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="stats">
+    <h2>Performance Statistics</h2>
+    <p class="section-sub">Candor Verify on live content</p>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-num">3–4s</div>
+        <div class="stat-label">End-to-end latency</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">94.7%</div>
+        <div class="stat-label">Claim detection accuracy</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Verdicts stored on IPFS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="api">
+    <h2>API Reference</h2>
+    <p class="section-sub">Integrate Candor Verify into your platform</p>
+    <div class="api-block">
+      <span class="comment">// Start a live verification session</span><br>
+      <span class="key">POST</span> <span class="str">/api/v1/verify/session</span><br><br>
+      {<br>
+      &nbsp;&nbsp;<span class="key">"stream_url"</span>: <span class="str">"rtmp://live.example.com/stream/key"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"stream_type"</span>: <span class="str">"podcast | news | live_video"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"language"</span>: <span class="str">"en"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"webhook_url"</span>: <span class="str">"https://your-platform.com/verify/webhook"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"store_ipfs"</span>: <span class="val">true</span><br>
+      }<br><br>
+      <span class="comment">// Webhook payload — delivered per claim within 3–4s</span><br>
+      {<br>
+      &nbsp;&nbsp;<span class="key">"session_id"</span>: <span class="str">"uuid"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"timestamp_ms"</span>: <span class="val">1748476800000</span>,<br>
+      &nbsp;&nbsp;<span class="key">"speaker"</span>: <span class="str">"Speaker 1"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"claim"</span>: <span class="str">"The FDA approved this in 2023..."</span>,<br>
+      &nbsp;&nbsp;<span class="key">"candor_score"</span>: <span class="val">96</span>,<br>
+      &nbsp;&nbsp;<span class="key">"verdict"</span>: <span class="str">"legitimate"</span>,<br>
+      &nbsp;&nbsp;<span class="key">"confidence"</span>: <span class="val">94</span>,<br>
+      &nbsp;&nbsp;<span class="key">"sources"</span>: [<span class="str">"fda.gov/approvals/2023"</span>],<br>
+      &nbsp;&nbsp;<span class="key">"influence_flag"</span>: <span class="val">false</span>,<br>
+      &nbsp;&nbsp;<span class="key">"ipfs_cid"</span>: <span class="str">"QmVerify8Abc123..."</span>,<br>
+      &nbsp;&nbsp;<span class="key">"polygon_tx"</span>: <span class="str">"0xabc123..."</span><br>
+      }
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="targets">
+    <h2>Target Markets</h2>
+    <p class="section-sub">Who Candor Verify serves</p>
+    <table>
+      <thead>
+        <tr><th>MARKET</th><th>USE CASE</th><th>KEY SIGNAL</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Podcast Platforms</td><td>Embed real-time CANDOR scores in listener UI</td><td>Paid narrative detection</td></tr>
+        <tr><td>News Networks</td><td>Producer alerts during live broadcasts</td><td>Unverified claim flags</td></tr>
+        <tr><td>Election Bodies</td><td>Monitor political live streams during campaigns</td><td>Foreign influence patterns</td></tr>
+        <tr><td>Health Platforms</td><td>Flag medical misinformation before it spreads</td><td>FDA/CDC cross-reference</td></tr>
+        <tr><td>Social Platforms</td><td>Score live stream content in real time</td><td>Coordinated inauthentic behavior</td></tr>
+        <tr><td>Governments</td><td>National broadcast integrity monitoring</td><td>State-sponsored disinformation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">© 2026 Open Feed Network, Inc. · EIN 42-2688100</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/shield">Candor Shield</a>
+      <a href="mailto:hello@openfeed.network">Contact</a>
+    </div>
+  </div>
+</main>
+</body>
+</html>
