@@ -29,10 +29,11 @@ app.post("/api/v1/auth/register", async (req, res) => {
   }
 });
 app.post("/api/v1/auth/login", async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: "email and password required" });
+  const { email, password, username: uname } = req.body;
+  const login = email || uname;
+  if (!login || !password) return res.status(400).json({ error: "email and password required" });
   try {
-    const r = await db.query("SELECT * FROM users WHERE email=$1 OR username=$1", [email.toLowerCase()]);
+    const r = await db.query("SELECT * FROM users WHERE email=$1 OR username=$1", [login.toLowerCase()]);
     const user = r.rows[0];
     if (!user || !(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error: "Invalid credentials" });
     const token = jwt.sign({ id: user.id, username: user.username }, JWT, { expiresIn: "30d" });
@@ -64,7 +65,7 @@ app.post("/api/v1/posts", auth, async (req, res) => {
   } catch { res.status(500).json({ error: "Post failed" }); }
 });
 app.get("/api/v1/posts/:id", optAuth, async (req, res) => {
-  const r = await db.query("SELECT p.*,u.username,u.avatar,COUNT(DISTINCT l.id) AS likes,COUNT(DISTINCT c.id) AS comments FROM posts p JOIN users u ON p.user_id=u.id LEFT JOIN likes l ON l.post_id=p.id LEFT JOIN comments c ON c.post_id=p.id WHERE p.id=$1 AND p.suppress_post=false GROUP BY p.id,u.username,u.avatar", [req.params.id]);
+  const r = await db.query("SELECT p.*,u.username,u.avatar,COUNT(DISTINCT l.id) AS likes,COUNT(DISTINCT c.id) AS comments,0 AS shares FROM posts p JOIN users u ON p.user_id=u.id LEFT JOIN likes l ON l.post_id=p.id LEFT JOIN comments c ON c.post_id=p.id WHERE p.id=$1 AND p.suppress_post=false GROUP BY p.id,u.username,u.avatar", [req.params.id]);
   if (!r.rows.length) return res.status(404).json({ error: "Post not found" });
   res.json(r.rows[0]);
 });
@@ -85,13 +86,13 @@ app.post("/api/v1/posts/:id/like", auth, async (req, res) => {
 app.get("/api/v1/feed", optAuth, async (req, res) => {
   const { limit = 20, before } = req.query;
   const cursor = before ? "AND p.created_at < '" + before + "'" : "";
-  const r = await db.query("SELECT p.*,u.username,u.avatar,COUNT(DISTINCT l.id) AS likes,COUNT(DISTINCT c.id) AS comments FROM posts p JOIN users u ON p.user_id=u.id LEFT JOIN likes l ON l.post_id=p.id LEFT JOIN comments c ON c.post_id=p.id WHERE p.suppress_post=false " + cursor + " GROUP BY p.id,u.username,u.avatar ORDER BY p.created_at DESC LIMIT $1", [Math.min(parseInt(limit), 100)]);
+  const r = await db.query("SELECT p.*,u.username,u.avatar,COUNT(DISTINCT l.id) AS likes,COUNT(DISTINCT c.id) AS comments,0 AS shares FROM posts p JOIN users u ON p.user_id=u.id LEFT JOIN likes l ON l.post_id=p.id LEFT JOIN comments c ON c.post_id=p.id WHERE p.suppress_post=false " + cursor + " GROUP BY p.id,u.username,u.avatar ORDER BY p.created_at DESC LIMIT $1", [Math.min(parseInt(limit), 100)]);
   res.json({ posts: r.rows, next_cursor: r.rows.at(-1)?.created_at || null });
 });
 app.get("/api/v1/feed/following", auth, async (req, res) => {
   const { limit = 20, before } = req.query;
   const cursor = before ? "AND p.created_at < '" + before + "'" : "";
-  const r = await db.query("SELECT p.*,u.username,u.avatar,COUNT(DISTINCT l.id) AS likes,COUNT(DISTINCT c.id) AS comments FROM posts p JOIN users u ON p.user_id=u.id JOIN follows f ON f.following_id=p.user_id AND f.follower_id=$1 LEFT JOIN likes l ON l.post_id=p.id LEFT JOIN comments c ON c.post_id=p.id WHERE p.suppress_post=false " + cursor + " GROUP BY p.id,u.username,u.avatar ORDER BY p.created_at DESC LIMIT $2", [req.user.id, Math.min(parseInt(limit), 100)]);
+  const r = await db.query("SELECT p.*,u.username,u.avatar,COUNT(DISTINCT l.id) AS likes,COUNT(DISTINCT c.id) AS comments,0 AS shares FROM posts p JOIN users u ON p.user_id=u.id JOIN follows f ON f.following_id=p.user_id AND f.follower_id=$1 LEFT JOIN likes l ON l.post_id=p.id LEFT JOIN comments c ON c.post_id=p.id WHERE p.suppress_post=false " + cursor + " GROUP BY p.id,u.username,u.avatar ORDER BY p.created_at DESC LIMIT $2", [req.user.id, Math.min(parseInt(limit), 100)]);
   res.json({ posts: r.rows, next_cursor: r.rows.at(-1)?.created_at || null });
 });
 app.post("/api/v1/follows/:username", auth, async (req, res) => {
