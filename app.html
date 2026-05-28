@@ -227,7 +227,7 @@ function PostCard({ post, onLike, liked }) {
   const [expanded, setExpanded] = useState(false);
   const tierM = TIER_META[post.tier] || TIER_META.standard;
   const isLowCandor = post.candor_score < 45;
-  const hasMedia = post.media_type && post.media_type !== "text";
+  const hasMedia = post.media_type && post.media_type !== "text" && post.media_type !== "document";
 
   return (
     <div style={{
