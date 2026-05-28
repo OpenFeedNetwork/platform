@@ -11,3 +11,5 @@
 /platform.html  /platform.html  200
 /candor-standard.html  /candor-standard.html  200
 /*  /index.html  200
+/candor-standard  /candor-standard.html  200
+/candor-standard/*  /candor-standard.html  200
