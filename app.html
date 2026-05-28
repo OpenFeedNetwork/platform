@@ -3,23 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Candor — The Open Feed Network</title>
+  <title>Candor — Loading Platform...</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #050F1E; overflow: hidden; }
-    iframe {
-      width: 100vw;
-      height: 100vh;
-      border: none;
-      display: block;
-    }
+    body { background: #050F1E; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'IBM Plex Mono', monospace; color: #00C9B1; }
+    .loader { text-align: center; }
+    .loader h2 { font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 1rem; }
+    .loader p { color: #7A8BA8; font-size: 0.8rem; }
   </style>
 </head>
 <body>
-  <iframe 
-    src="https://open-feed-platform.fly.dev" 
-    title="Candor Platform"
-    allow="fullscreen"
-  ></iframe>
+  <div class="loader">
+    <h2>⚡ LOADING CANDOR...</h2>
+    <p>Connecting to the open feed</p>
+  </div>
+  <script>
+    setTimeout(() => {
+      window.location.href = "https://open-feed-platform.fly.dev";
+    }, 800);
+  </script>
 </body>
 </html>
