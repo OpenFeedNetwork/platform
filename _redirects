@@ -1,0 +1,13 @@
+/api/*  https://open-feed-platform.fly.dev/api/:splat  200!
+/reach  /reach/index.html  200
+/reach/*  /reach/index.html  200
+/sentinel  /sentinel/index.html  200
+/sentinel/*  /sentinel/index.html  200
+/shield  /shield/index.html  200
+/shield/*  /shield/index.html  200
+/canary  /canary/index.html  200
+/canary/*  /canary/index.html  200
+/app.html  /app.html  200
+/platform.html  /platform.html  200
+/candor-standard.html  /candor-standard.html  200
+/*  /index.html  200
