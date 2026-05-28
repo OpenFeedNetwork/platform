@@ -7,12 +7,6 @@
 /shield/*  /shield/index.html  200
 /canary  /canary/index.html  200
 /canary/*  /canary/index.html  200
-/app.html  /app.html  200
-/platform.html  /platform.html  200
-/candor-standard.html  /candor-standard.html  200
-/*  /index.html  200
-/candor-standard  /candor-standard.html  200
-/candor-standard/*  /candor-standard.html  200
 /verify  /verify/index.html  200
 /verify/*  /verify/index.html  200
 /beacon  /beacon/index.html  200
@@ -21,3 +15,9 @@
 /beaconfr/*  /beaconfr/index.html  200
 /gateway  /gateway/index.html  200
 /gateway/*  /gateway/index.html  200
+/candor-standard  /candor-standard.html  200
+/candor-standard/*  /candor-standard.html  200
+/app.html  /app.html  200
+/platform.html  /platform.html  200
+/candor-standard.html  /candor-standard.html  200
+/*  /index.html  200
