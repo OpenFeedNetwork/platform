@@ -283,13 +283,13 @@ function PostCard({ post, onLike, liked }) {
       <div style={{ display:"flex", gap:16, padding:"8px 12px 12px", borderTop:"0.5px solid #1E2535", marginTop:post.ipfs_cid ? 0 : 4 }}>
         <button onClick={()=>onLike(post.id)} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color: liked ? "#E24B4A" : "#5F5E5A", fontSize:13 }}>
           <span style={{ fontSize:16 }}>{liked ? "♥" : "♡"}</span>
-          <span>{(post.likes + (liked ? 1 : 0)).toLocaleString()}</span>
+          <span>{((parseInt(post.likes)||0) + (liked ? 1 : 0)).toLocaleString()}</span>
         </button>
         <button style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"#5F5E5A", fontSize:13 }}>
-          <span>💬</span><span>{post.comments.toLocaleString()}</span>
+          <span>💬</span><span>{(parseInt(post.comments)||0).toLocaleString()}</span>
         </button>
         <button style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"#5F5E5A", fontSize:13 }}>
-          <span>↗</span><span>{post.shares.toLocaleString()}</span>
+          <span>↗</span><span>{(parseInt(post.shares)||0).toLocaleString()}</span>
         </button>
         {post.media_type === "video" && (
           <button style={{ marginLeft:"auto", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:4, color:"#1D9E75", fontSize:12, fontWeight:500 }}>
@@ -634,7 +634,7 @@ function App() {
         headers: token ? {"Authorization":`Bearer ${token}`} : {}
       });
       const data = await res.json();
-      if (data.posts?.length > 0) setPosts(data.posts.map(p => ({...p, shares: parseInt(p.shares)||0, likes: parseInt(p.likes)||0, comments: parseInt(p.comments)||0, avatar: p.avatar||(p.username||"??").substring(0,2).toUpperCase(), acolor: p.acolor||"#1D9E75", tier: p.tier||"standard", candor_score: p.candor_score||75, category: p.category||"General", media_type: p.media_type||p.content_type||"text", platform_tried_suppress: !!p.suppress_post, suppressed: !!p.suppress_post, ipfs_cid: p.ipfs_hash||null, created_at: p.created_at ? new Date(p.created_at).toLocaleString() : "just now"})));
+      if (data.posts?.length > 0) setPosts(data.posts.map(p => ({shares:0, likes:0, comments:0, ...p, shares: parseInt(p.shares)||0, likes: parseInt(p.likes)||0, comments: parseInt(p.comments)||0, avatar: p.avatar||(p.username||"??").substring(0,2).toUpperCase(), acolor: p.acolor||"#1D9E75", tier: p.tier||"standard", candor_score: p.candor_score||75, category: p.category||"General", media_type: p.media_type||p.content_type||"text", platform_tried_suppress: !!p.suppress_post, suppressed: !!p.suppress_post, ipfs_cid: p.ipfs_hash||null, created_at: p.created_at ? new Date(p.created_at).toLocaleString() : "just now"})));
       else setPosts(MOCK_POSTS);
     } catch(e) { setPosts(MOCK_POSTS); }
     setLoading(false);
