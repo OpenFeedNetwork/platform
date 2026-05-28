@@ -15,3 +15,9 @@
 /candor-standard/*  /candor-standard.html  200
 /verify  /verify/index.html  200
 /verify/*  /verify/index.html  200
+/beacon  /beacon/index.html  200
+/beacon/*  /beacon/index.html  200
+/beaconfr  /beaconfr/index.html  200
+/beaconfr/*  /beaconfr/index.html  200
+/gateway  /gateway/index.html  200
+/gateway/*  /gateway/index.html  200
