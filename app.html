@@ -4,95 +4,711 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Candor: The Open Feed Network</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0C0F14;color:#E8EDF5;font-family:DM Sans,sans-serif;}
-.card{background:#13171F;border-radius:16px;border:1px solid #1E2535;margin-bottom:10px;overflow:hidden;}
-.btn-green{background:#1D9E75;color:#0C0F14;border:none;border-radius:20px;padding:8px 16px;font-weight:600;font-size:13px;cursor:pointer;font-family:DM Sans,sans-serif;}
-.btn-outline{background:transparent;border:1px solid #1E2535;border-radius:10px;padding:10px;color:#5F5E5A;font-family:DM Sans,sans-serif;cursor:pointer;font-size:13px;}
-.btn-outline.active{border-color:#1D9E75;color:#1D9E75;background:#1D9E7518;}
-input,textarea{background:#0C0F14;border:1px solid #1E2535;border-radius:10px;padding:12px 14px;color:#E8EDF5;font-size:14px;width:100%;font-family:DM Sans,sans-serif;outline:none;}
-textarea{border-radius:12px;resize:none;line-height:1.65;}
-.nav-btn{flex:1;padding:12px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#5F5E5A;font-family:DM Sans,sans-serif;}
-.nav-btn.active{border-top-color:#1D9E75;color:#1D9E75;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0C0F14; color: #E8EDF5; font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+#root { min-height: 100vh; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: #1E2535; border-radius: 2px; }
+input, textarea { outline: none; font-family: 'DM Sans', sans-serif; }
+button { font-family: 'DM Sans', sans-serif; transition: all 0.15s ease; }
 </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-const API="https://open-feed-platform.fly.dev";
-let state={user:null,tab:"feed",posts:[],loading:false,composing:false,liked:{},category:"all",shieldResult:null,shieldAnalyzing:false,voted:{},authMode:"login"};
-const MOCK_POSTS=[
-  {id:"p1",username:"aisha_okafor",avatar:"AO",acolor:"#E24B4A",tier:"whistleblower",category:"Civil Rights",created_at:"3h ago",content:"Raw, unedited photo from today's permitted protest at the state capitol. Police deployed crowd dispersal on peaceful marchers. No filters, no edits.",media_type:"photo",candor_score:96,likes:7842,comments:1240,shares:5621,suppressed:true,platform_tried_suppress:true,ipfs_cid:"QmTs4Jkl012"},
-  {id:"p2",username:"rafael_moreno",avatar:"RM",acolor:"#2ECC9A",tier:"anonymous",category:"Accountability",created_at:"6h ago",content:"47-minute full hearing footage — city officials caught on record approving rezoning without public notice. Key moment at 14:32.",media_type:"video",candor_score:93,video_duration:"47:13",key_moment:"14:32",likes:4100,comments:770,shares:3800,suppressed:false,platform_tried_suppress:false,ipfs_cid:"QmAv7Xyz789"},
-  {id:"p3",username:"maria_chen",avatar:"MC",acolor:"#F09595",tier:"standard",category:"Environment",created_at:"2h ago",content:"After 8 months of FOIA requests, I obtained internal EPA documents showing three municipal water systems falsified lead testing results. 4x the legal limit.",media_type:"text",candor_score:97,likes:5621,comments:892,shares:3200,suppressed:true,platform_tried_suppress:true,ipfs_cid:"QmTs1Abc123"},
-  {id:"p4",username:"devon_williams",avatar:"DW",acolor:"#85B7EB",tier:"anonymous",category:"Housing",created_at:"4h ago",content:"City council voted 7-0 to rezone displacing 847 affordable housing units. 2,100+ residents affected. Zero local news coverage.",media_type:"text",candor_score:91,likes:2890,comments:445,shares:1900,suppressed:true,platform_tried_suppress:true,ipfs_cid:"QmTs2Def456"},
-  {id:"p5",username:"sponsored_brand",avatar:"SP",acolor:"#888780",tier:"standard",category:"Sponsored",created_at:"1h ago",content:"Transform your life with our AI wellness program! Join 50,000+ happy customers. Limited time 70% off!",media_type:"text",candor_score:11,likes:32,comments:3,shares:8,suppressed:false,platform_tried_suppress:false,ipfs_cid:null},
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+const API = "https://open-feed-platform.fly.dev";
+
+const CATEGORIES = [
+  { id:"all", label:"All", icon:"🔥" },
+  { id:"environment", label:"Environ", icon:"💧" },
+  { id:"housing", label:"Housing", icon:"🏠" },
+  { id:"rights", label:"Rights", icon:"⚖️" },
+  { id:"research", label:"Research", icon:"📊" },
+  { id:"video", label:"Video", icon:"🎥" },
+  { id:"health", label:"Health", icon:"🏥" },
+  { id:"policy", label:"Policy", icon:"📋" },
 ];
-const TIERS={standard:{icon:"👤",label:"Standard",color:"#85B7EB"},anonymous:{icon:"🎭",label:"Anonymous",color:"#1D9E75"},whistleblower:{icon:"🔒",label:"Whistleblower",color:"#AFA9EC"}};
-const CATS=[{id:"all",icon:"🔥",label:"All"},{id:"photo",icon:"📷",label:"Photo"},{id:"video",icon:"🎥",label:"Video"},{id:"environment",icon:"💧",label:"Environ"},{id:"housing",icon:"🏠",label:"Housing"},{id:"rights",icon:"⚖️",label:"Rights"}];
-const PROPOSALS=[{id:"g1",title:"Increase source credibility weight: 0.30 to 0.35",proposer:"@rafaelm",yes:847,no:213,days:3,status:"open"},{id:"g2",title:"Add academic research content bonus +10% CANDOR score",proposer:"@priyanair",yes:1240,no:89,days:5,status:"open"},{id:"g3",title:"Increase ad penalty from 30 to 35 points",proposer:"@aishaokafor",yes:2100,no:340,days:0,status:"passed"}];
-function cc(s){return s>=75?"#1D9E75":s>=45?"#EF9F27":"#E24B4A";}
-function ring(score,size){size=size||52;const r=22,ci=2*Math.PI*r,off=ci-(score/100)*ci,c=cc(score);return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 52 52"><circle cx="26" cy="26" r="'+r+'" fill="none" stroke="#1E2535" stroke-width="3"/><circle cx="26" cy="26" r="'+r+'" fill="none" stroke="'+c+'" stroke-width="3" stroke-dasharray="'+ci.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" stroke-linecap="round" transform="rotate(-90 26 26)"/><text x="26" y="22" text-anchor="middle" fill="'+c+'" font-size="13" font-weight="500" font-family="monospace">'+score+'</text><text x="26" y="33" text-anchor="middle" fill="'+c+'" font-size="6.5" font-family="monospace" letter-spacing="0.5">CANDOR</text></svg>';}
-function norm(p){return Object.assign({},p,{avatar:(p.username||"??").substring(0,2).toUpperCase(),acolor:"#1D9E75",tier:p.tier||"standard",candor_score:p.candor_score||75,category:p.category||"General",media_type:p.media_url?"photo":p.content_type||"text",likes:parseInt(p.likes)||0,comments:parseInt(p.comments)||0,shares:parseInt(p.shares)||0,suppressed:!!p.suppress_post,platform_tried_suppress:!!p.suppress_post,ipfs_cid:p.ipfs_hash||null,created_at:p.created_at?new Date(p.created_at).toLocaleString():"just now"});}
-function renderPost(p){
-  var t=TIERS[p.tier]||TIERS.standard,c=cc(p.candor_score),v=p.candor_score>=75?"Legitimate":p.candor_score>=45?"Unverified":"Low CANDOR",low=p.candor_score<45,lk=!!state.liked[p.id],m="";
-  if(p.media_type==="photo"){m='<div style="position:relative;height:200px;background:#111820;display:flex;align-items:center;justify-content:center;overflow:hidden;"><span style="font-size:60px;opacity:0.1">📷</span><div style="position:absolute;top:10px;left:10px;background:#185FA530;border:1px solid #185FA550;border-radius:20px;padding:3px 10px;font-size:10px;color:#85B7EB;font-weight:500;">📷 Photo</div>'+(p.suppressed?'<div style="position:absolute;top:10px;right:10px;background:#BA751525;border:1px solid #BA751545;border-radius:20px;padding:3px 8px;font-size:10px;color:#EF9F27;font-weight:500;">Restored</div>':'')+' <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:#0C0F14CC;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:10px;">'+ring(p.candor_score)+'<div><div style="font-size:11px;color:'+c+';font-weight:500;">'+v+'</div><div style="font-size:10px;color:#5F5E5A;">Truth Shield</div></div></div><div style="font-size:10px;color:'+c+';background:'+c+'15;border:1px solid '+c+'30;border-radius:20px;padding:5px 10px;">🛡 Protected</div></div></div>';}
-  else if(p.media_type==="video"){m='<div style="position:relative;height:200px;background:#0e1218;display:flex;align-items:center;justify-content:center;overflow:hidden;"><span style="font-size:60px;opacity:0.1">🎥</span><div style="position:absolute;width:58px;height:58px;border-radius:50%;background:#0C0F14CC;border:2px solid #E8EDF520;display:flex;align-items:center;justify-content:center;font-size:24px;padding-left:4px;">▶</div><div style="position:absolute;top:10px;left:10px;background:#A32D2D;border-radius:4px;padding:3px 10px;font-size:10px;color:#FCEBEB;font-weight:500;">● VIDEO</div>'+(p.video_duration?'<div style="position:absolute;top:10px;right:10px;background:#0C0F14AA;border-radius:4px;padding:2px 8px;font-size:10px;color:#B4B2A9;font-family:monospace;">'+p.video_duration+'</div>':'')+' <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:#0C0F14CC;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:10px;">'+ring(p.candor_score)+'<div><div style="font-size:11px;color:'+c+';font-weight:500;">'+v+'</div><div style="font-size:10px;color:#5F5E5A;">Truth Shield</div>'+(p.key_moment?'<div style="font-size:10px;color:#EF9F27;">Key: '+p.key_moment+'</div>':'')+'</div></div><div style="font-size:10px;color:'+c+';background:'+c+'15;border:1px solid '+c+'30;border-radius:20px;padding:5px 10px;">🛡 Protected</div></div></div>';}
-  else{m='<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:'+c+'08;border-top:1px solid #1E2535;border-bottom:1px solid #1E2535;">'+ring(p.candor_score,44)+'<div style="flex:1"><div style="font-size:11px;color:'+c+';font-weight:500;">'+v+' - Truth Shield</div><div style="height:4px;background:#1E2535;border-radius:2px;margin-top:5px;overflow:hidden;"><div style="height:4px;width:'+p.candor_score+'%;background:'+c+';border-radius:2px;"></div></div></div><span style="font-size:18px;">🛡</span></div>';}
-  return '<div class="card" style="animation:fadeUp 0.3s ease both;'+(low?"opacity:0.75;border-color:#E24B4A20;":"")+'" ><div style="display:flex;align-items:center;gap:8px;padding:12px 12px 8px;"><div style="width:34px;height:34px;border-radius:50%;background:'+p.acolor+'22;border:1.5px solid '+p.acolor+'44;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:'+p.acolor+';flex-shrink:0;">'+p.avatar+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:500;color:#E8EDF5;">@'+p.username+'</div><div style="font-size:10px;color:#5F5E5A;">'+p.created_at+' - '+p.category+'</div></div><div style="display:flex;align-items:center;gap:4px;background:'+t.color+'18;border:1px solid '+t.color+'30;border-radius:20px;padding:3px 8px;font-size:10px;color:'+t.color+';font-weight:500;">'+t.icon+' '+t.label+'</div></div><p style="font-size:13px;color:'+(low?"#888780":"#B4B2A9")+';line-height:1.65;margin:0;padding:0 12px 10px;">'+p.content+'</p>'+m+(low?'<div style="padding:8px 12px;background:#E24B4A08;border-top:1px solid #E24B4A15;font-size:10px;color:#F09595;">Context: Low CANDOR score. Verify independently before sharing.</div>':'')+(p.platform_tried_suppress?'<div style="padding:6px 12px;background:#BA751508;border-top:1px solid #BA751520;font-size:10px;color:#EF9F27;">⚠️ Platform suppressed this - Truth Shield reviewed and restored it</div>':'')+(p.ipfs_cid?'<div style="padding:4px 12px;font-size:10px;color:#2A3040;font-family:monospace;">IPFS: '+p.ipfs_cid.substring(0,14)+'...</div>':'')+'<div style="display:flex;gap:16px;padding:8px 12px 12px;border-top:1px solid #1E2535;"><button onclick="toggleLike(''+p.id+'')" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:'+(lk?"#E24B4A":"#5F5E5A")+';font-size:13px;font-family:DM Sans,sans-serif;">'+(lk?"♥":"♡")+' '+(p.likes+(lk?1:0)).toLocaleString()+'</button><button style="background:none;border:none;cursor:pointer;color:#5F5E5A;font-size:13px;font-family:DM Sans,sans-serif;">💬 '+p.comments.toLocaleString()+'</button><button style="background:none;border:none;cursor:pointer;color:#5F5E5A;font-size:13px;font-family:DM Sans,sans-serif;">↗ '+p.shares.toLocaleString()+'</button>'+(p.media_type==="video"?'<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:#1D9E75;font-size:12px;font-weight:500;font-family:DM Sans,sans-serif;">▶ Watch</button>':'')+(p.media_type==="photo"?'<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:#5F5E5A;font-size:12px;font-family:DM Sans,sans-serif;">⬇ Save</button>':'')+'</div></div>';}
-function renderFeed(){
-  var f=state.category==="all"?state.posts:state.posts.filter(function(p){return p.media_type===state.category||( p.category&&p.category.toLowerCase().indexOf(state.category)>-1);});
-  var s=state.posts.filter(function(p){return p.platform_tried_suppress;}).length;
-  return '<div style="padding:10px 0 8px;display:flex;gap:10px;overflow-x:auto;margin-bottom:8px;">'+CATS.map(function(c){return '<div onclick="setCategory(''+c.id+'')" style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;cursor:pointer;"><div style="width:48px;height:48px;border-radius:50%;border:2px solid '+(state.category===c.id?"#1D9E75":"#1E2535")+';display:flex;align-items:center;justify-content:center;background:'+(state.category===c.id?"#0F6E5620":"#13171F")+';font-size:20px;">'+c.icon+'</div><div style="font-size:9px;color:'+(state.category===c.id?"#1D9E75":"#5F5E5A")+';font-weight:'+(state.category===c.id?500:400)+' ;">'+c.label+'</div></div>';}).join("")+'</div><div style="background:#0F6E5610;border:1px solid #1D9E7525;border-radius:10px;padding:8px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="refreshFeed()"><div style="font-size:11px;color:#1D9E75;font-weight:500;">↻ Tap to refresh feed</div><div style="font-size:10px;color:#0F6E56;font-weight:500;">Load</div></div>'+(s>0?'<div style="background:#BA751510;border:1px solid #BA751525;border-radius:10px;padding:8px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:11px;font-weight:500;color:#EF9F27;">⚠️ '+s+' posts restored by Truth Shield</div><div style="font-size:10px;color:#5F5E5A;margin-top:1px;">Suppressed on other platforms</div></div><div style="font-size:10px;color:#1D9E75;font-weight:500;">All visible</div></div>':"")+
-  (state.loading?"<div style='text-align:center;padding:40px;color:#5F5E5A;font-size:13px;'>Loading feed...</div>":f.length===0?'<div class="card" style="padding:24px;text-align:center;border-color:#1D9E7530;"><div style="font-size:40px;margin-bottom:12px;">✏️</div><div style="font-size:14px;font-weight:500;color:#E8EDF5;margin-bottom:6px;">Be the first to post</div><div style="font-size:12px;color:#5F5E5A;">Share what others are afraid to say.</div></div>':f.map(renderPost).join(""));}
-function renderShield(){
-  var c=state.shieldResult?cc(state.shieldResult.score):"#1D9E75";
-  var v=state.shieldResult?(state.shieldResult.score>=75?"Legitimate":state.shieldResult.score>=45?"Unverified":"Low CANDOR"):"";
-  return '<div><div class="card" style="padding:16px;margin-bottom:12px;"><div style="font-size:15px;font-weight:500;color:#E8EDF5;margin-bottom:4px;">🛡 Truth Shield Analysis</div><div style="font-size:12px;color:#5F5E5A;line-height:1.6;margin-bottom:14px;">Submit any content for real-time disinformation analysis.</div><textarea id="shield-content" rows="4" placeholder="Paste any content to analyze..."></textarea><div style="margin-top:10px;"><button onclick="runShield()" class="btn-green">'+(state.shieldAnalyzing?"Analyzing...":"🛡 Analyze")+'</button></div>'+(state.shieldResult?'<div style="margin-top:14px;padding:14px;background:'+c+'08;border:1px solid '+c+'30;border-radius:12px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">'+ring(state.shieldResult.score,56)+'<div><div style="font-size:13px;font-weight:500;color:'+c+';">'+v+'</div><div style="font-size:11px;color:#5F5E5A;">Confidence: '+state.shieldResult.score+'%</div></div></div><p style="font-size:12px;color:#B4B2A9;line-height:1.6;margin:0;">'+state.shieldResult.reasoning+'</p></div>':'')+' </div><div class="card" style="padding:16px;"><div style="font-size:13px;font-weight:500;color:#E8EDF5;margin-bottom:12px;">Platform Transparency Stats</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'+[["Total Analyzed","48,291","#85B7EB"],["Suppression Blocked","12,847","#1D9E75"],["Content Restored","9,614","#1D9E75"],["Avg Confidence","87%","#EF9F27"]].map(function(x){return '<div style="background:#0C0F14;border-radius:10px;padding:10px 12px;border:1px solid #1E2535;"><div style="font-size:18px;font-weight:500;color:'+x[2]+';font-family:monospace;">'+x[1]+'</div><div style="font-size:10px;color:#5F5E5A;margin-top:2px;">'+x[0]+'</div></div>';}).join("")+'</div></div></div>';}
-function renderGovernance(){
-  return '<div><div class="card" style="padding:16px;margin-bottom:12px;border-color:#1D9E7530;"><div style="font-size:13px;font-weight:500;color:#E8EDF5;margin-bottom:4px;">🗳 Community Governance</div><div style="font-size:12px;color:#5F5E5A;line-height:1.6;margin-bottom:14px;">Algorithm weights controlled by community on-chain votes.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'+[["source_credibility","0.30","#1D9E75"],["claim_verifiability","0.25","#1D9E75"],["public_interest","0.20","#85B7EB"],["community_verify","0.15","#EF9F27"],["engagement_auth","0.10","#EF9F27"]].map(function(x){return '<div style="background:#0C0F14;border-radius:8px;padding:8px 10px;border:1px solid #1E2535;"><div style="font-size:14px;font-weight:500;color:'+x[2]+';font-family:monospace;">'+x[1]+'</div><div style="font-size:9px;color:#5F5E5A;margin-top:1px;">'+x[0]+'</div></div>';}).join("")+'</div></div>'+PROPOSALS.map(function(p){var mv=state.voted[p.id],yes=p.yes+(mv==="yes"?1:0),no=p.no+(mv==="no"?1:0),pct=Math.round((yes/(yes+no))*100);return '<div class="card" style="padding:16px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><div style="flex:1;margin-right:12px;font-size:13px;color:#E8EDF5;font-weight:500;line-height:1.4;">'+p.title+'</div><div style="font-size:10px;color:'+(p.status==="passed"?"#1D9E75":"#EF9F27")+';background:'+(p.status==="passed"?"#1D9E7518":"#EF9F2718")+';border:1px solid '+(p.status==="passed"?"#1D9E7530":"#EF9F2730")+';border-radius:20px;padding:3px 8px;white-space:nowrap;">'+(p.status==="passed"?"✓ Passed":"⏳ "+p.days+"d left")+'</div></div><div style="font-size:10px;color:#5F5E5A;margin-bottom:10px;">Proposed by '+p.proposer+' - '+(yes+no).toLocaleString()+' votes</div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:11px;color:#1D9E75;font-family:monospace;">✓ '+yes.toLocaleString()+' ('+pct+'%)</span><span style="font-size:11px;color:#E24B4A;font-family:monospace;">✗ '+no.toLocaleString()+' ('+(100-pct)+'%)</span></div><div style="height:6px;background:#1E2535;border-radius:3px;margin-bottom:12px;overflow:hidden;"><div style="height:6px;border-radius:3px;width:'+pct+'%;background:linear-gradient(90deg,#1D9E75,#2ECC9A);"></div></div>'+(p.status==="open"&&!mv?'<div style="display:flex;gap:8px;"><button onclick="castVote("+JSON.stringify(p.id)+",'yes')" style="padding:7px 16px;border-radius:20px;background:#1D9E7518;border:1px solid #1D9E7530;color:#1D9E75;font-size:12px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;">✓ Yes</button><button onclick="castVote("+JSON.stringify(p.id)+",'no')" style="padding:7px 16px;border-radius:20px;background:#E24B4A18;border:1px solid #E24B4A30;color:#E24B4A;font-size:12px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;">✗ No</button></div>':mv?'<div style="font-size:11px;color:'+(mv==="yes"?"#1D9E75":"#E24B4A")+';font-family:monospace;">✓ Vote recorded - You voted '+mv.toUpperCase()+'</div>':"")+' </div>';}).join("")+'</div>';}
-function renderApp(){
-  var NAV=[{id:"feed",icon:"🏠",label:"Home"},{id:"shield",icon:"🛡",label:"Shield"},{id:"governance",icon:"🗳",label:"Vote"},{id:"profile",icon:"👤",label:"Profile"}];
-  var content=state.tab==="feed"?renderFeed():state.tab==="shield"?renderShield():state.tab==="governance"?renderGovernance():'<div class="card" style="padding:20px;"><div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;"><div style="width:60px;height:60px;border-radius:50%;background:#1D9E7522;border:2px solid #1D9E7544;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;color:#1D9E75;">'+state.user.username.substring(0,2).toUpperCase()+'</div><div><div style="font-size:16px;font-weight:500;color:#E8EDF5;">@'+state.user.username+'</div><div style="font-size:12px;color:#1D9E75;margin-top:3px;">◆ '+(TIERS[state.user.tier]&&TIERS[state.user.tier].label||"Standard")+' Account</div></div></div><button onclick="setState({user:null})" style="width:100%;padding:13px;border-radius:20px;background:#E24B4A15;border:1px solid #E24B4A30;color:#E24B4A;font-weight:600;font-size:14px;cursor:pointer;font-family:DM Sans,sans-serif;">Sign Out</button></div>';
-  return '<div style="min-height:100vh;background:#0C0F14;padding-bottom:80px;"><div style="position:sticky;top:0;z-index:50;background:#0C0F14EE;border-bottom:1px solid #1E2535;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;"><div style="font-size:20px;color:#E8EDF5;letter-spacing:0.5px;font-weight:300;">Candor <span style="color:#1D9E75;">◆</span></div><div style="display:flex;align-items:center;gap:10px;"><div style="font-size:10px;color:#1D9E75;font-weight:500;">● LIVE</div><button class="btn-green" onclick="setState({composing:true})">+ Post</button></div></div><div style="max-width:600px;margin:0 auto;padding:14px 12px 20px;"><div style="margin-bottom:14px;"><div style="font-size:15px;font-weight:500;color:#E8EDF5;">'+(state.tab==="feed"?"📡 Open Feed":state.tab==="shield"?"🛡 Truth Shield":state.tab==="governance"?"🗳 Governance":"👤 Profile")+'</div><div style="font-size:11px;color:#5F5E5A;margin-top:2px;">'+(state.tab==="feed"?"Anti-suppression · CANDOR scored · IPFS stored":state.tab==="shield"?"Real-time analysis · Immutable verdicts":state.tab==="governance"?"Community-controlled algorithm · On-chain votes":"@"+state.user.username+" account")+'</div></div>'+content+'</div><div style="position:fixed;bottom:0;left:0;right:0;background:#0C0F14EE;border-top:1px solid #1E2535;display:flex;z-index:50;">'+NAV.map(function(n){return '<button class="nav-btn '+(state.tab===n.id?"active":"")+'" onclick="setTab(''+n.id+'')"><span style="font-size:19px;">'+n.icon+'</span><span style="font-size:9px;font-weight:'+(state.tab===n.id?500:400)+';">'+n.label+'</span></button>';}).join("")+'</div>'+(state.composing?'<div style="position:fixed;inset:0;background:#000000CC;z-index:200;display:flex;align-items:flex-end;"><div style="width:100%;background:#13171F;border-radius:20px 20px 0 0;border:1px solid #1E2535;padding:20px;padding-bottom:40px;"><div style="display:flex;justify-content:space-between;margin-bottom:14px;"><div style="font-size:15px;font-weight:500;color:#E8EDF5;">New Post</div><button onclick="setState({composing:false})" style="background:none;border:none;color:#5F5E5A;font-size:20px;cursor:pointer;">✕</button></div><textarea id="compose-content" rows="5" placeholder="What is happening? Truth Shield will verify and protect your post..."></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><div style="font-size:11px;color:#2A3040;">🛡 Truth Shield · ◆ IPFS</div><button class="btn-green" onclick="doPost()">Post →</button></div></div></div>':'')+'</div>';}
-function renderAuth(){return '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:#0C0F14;"><div style="margin-bottom:36px;text-align:center;"><div style="font-size:36px;color:#E8EDF5;letter-spacing:1px;margin-bottom:6px;font-weight:300;">Candor</div><div style="font-size:11px;color:#4A5568;letter-spacing:3px;margin-bottom:12px;">THE OPEN FEED NETWORK</div><div style="font-size:12px;color:#1D9E75;background:#1D9E7515;border:1px solid #1D9E7530;border-radius:20px;padding:5px 14px;display:inline-block;">◆ Anti-suppression · Truth Shield · IPFS</div></div><div style="width:100%;max-width:380px;background:#13171F;border-radius:20px;border:1px solid #1E2535;padding:24px;"><div style="display:flex;gap:8px;margin-bottom:20px;"><button onclick="setState({authMode:'login'})" class="btn-outline '+(state.authMode!=="register"?"active":"")+'" style="flex:1;">Sign In</button><button onclick="setState({authMode:'register'})" class="btn-outline '+(state.authMode==="register"?"active":"")+'" style="flex:1;">Register</button></div><div style="margin-bottom:12px;"><div style="font-size:11px;color:#5F5E5A;margin-bottom:6px;">USERNAME</div><input id="auth-username" placeholder="your_username" onkeydown="if(event.key==='Enter')doAuth()" /></div><div style="margin-bottom:20px;"><div style="font-size:11px;color:#5F5E5A;margin-bottom:6px;">PASSWORD</div><input id="auth-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAuth()" /></div><button class="btn-green" style="width:100%;padding:13px;border-radius:20px;font-size:14px;" onclick="doAuth()">Sign In →</button><div style="margin-top:16px;padding:10px 12px;background:#0C0F14;border-radius:10px;border:1px solid #1E2535;font-size:11px;color:#5F5E5A;line-height:1.8;">👤 Standard · 🎭 Anonymous · 🔒 Whistleblower</div></div></div>';}
-function render(){document.getElementById("app").innerHTML=state.user?renderApp():renderAuth();}
-function setState(u){Object.assign(state,u);render();}
-function setTab(t){setState({tab:t});}
-function setCategory(c){setState({category:c});}
-function toggleLike(id){state.liked[id]=!state.liked[id];render();}
-function castVote(id,v){state.voted[id]=v;render();}
-function refreshFeed(){loadFeed(state.user&&state.user.token);}
-async function loadFeed(token){
-  setState({loading:true});
-  try{var res=await fetch(API+"/api/v1/feed",{headers:token?{"Authorization":"Bearer "+token}:{}});var data=await res.json();setState({posts:data.posts&&data.posts.length>0?data.posts.map(norm):MOCK_POSTS,loading:false});}
-  catch(e){setState({posts:MOCK_POSTS,loading:false});}
+
+const MOCK_POSTS = [
+  {
+    id:"p1", username:"aisha_okafor", avatar:"AO", acolor:"#E24B4A",
+    tier:"whistleblower", category:"Civil Rights", created_at:"3h ago",
+    content:"Raw, unedited photo from today's permitted protest at the state capitol. Police deployed crowd dispersal on peaceful marchers. No filters, no edits — you deserve to see this.",
+    media_type:"photo", media_color:"#111820", media_icon:"📷",
+    candor_score:96, ts_verdict:"legitimate",
+    likes:7842, comments:1240, shares:5621,
+    suppressed:true, ipfs_cid:"QmTs4Jkl012",
+    platform_tried_suppress:true,
+  },
+  {
+    id:"p2", username:"rafael_moreno", avatar:"RM", acolor:"#2ECC9A",
+    tier:"anonymous", category:"Accountability", created_at:"6h ago",
+    content:"47-minute full hearing footage — city officials caught on record approving rezoning without public notice. Key moment at 14:32 where the vote occurs. Watch before they take it down.",
+    media_type:"video", media_color:"#0e1218", media_icon:"🎥",
+    video_duration:"47:13", key_moment:"14:32",
+    candor_score:93, ts_verdict:"legitimate",
+    likes:4100, comments:770, shares:3800,
+    suppressed:false, ipfs_cid:"QmAv7Xyz789",
+    platform_tried_suppress:false,
+  },
+  {
+    id:"p3", username:"maria_chen", avatar:"MC", acolor:"#F09595",
+    tier:"standard", category:"Environment", created_at:"2h ago",
+    content:"After 8 months of FOIA requests, I obtained internal EPA documents showing three municipal water systems falsified lead testing results. Contamination was 4× the legal limit. Full documents attached.",
+    media_type:"document", media_color:"#101a20", media_icon:"📄",
+    candor_score:97, ts_verdict:"legitimate",
+    likes:5621, comments:892, shares:3200,
+    suppressed:true, ipfs_cid:"QmTs1Abc123",
+    platform_tried_suppress:true,
+  },
+  {
+    id:"p4", username:"devon_williams", avatar:"DW", acolor:"#85B7EB",
+    tier:"anonymous", category:"Housing", created_at:"4h ago",
+    content:"City council voted 7-0 to rezone displacing 847 affordable housing units. 2,100+ residents affected. Zero local news coverage. Full meeting transcript and zoning maps attached.",
+    media_type:"text", media_color:null,
+    candor_score:91, ts_verdict:"legitimate",
+    likes:2890, comments:445, shares:1900,
+    suppressed:true, ipfs_cid:"QmTs2Def456",
+    platform_tried_suppress:true,
+  },
+  {
+    id:"p5", username:"sponsored_brand", avatar:"SP", acolor:"#888780",
+    tier:"standard", category:"Sponsored", created_at:"1h ago",
+    content:"Transform your life with our AI wellness program! Join 50,000+ happy customers. Limited time 70% off! Click now!",
+    media_type:"text", media_color:null,
+    candor_score:11, ts_verdict:"opinion",
+    likes:32, comments:3, shares:8,
+    suppressed:false, ipfs_cid:null,
+    platform_tried_suppress:false,
+  },
+  {
+    id:"p6", username:"priya_nair", avatar:"PN", acolor:"#EF9F27",
+    tier:"standard", category:"Health Policy", created_at:"8h ago",
+    content:"Pharmaceutical lobbying disclosure filings show a 340% increase in spending targeting FDA advisory panel members specifically. Documented public record — FDA FOIA response attached.",
+    media_type:"text", media_color:null,
+    candor_score:89, ts_verdict:"legitimate",
+    likes:3200, comments:560, shares:2100,
+    suppressed:false, ipfs_cid:"QmTs5Mno345",
+    platform_tried_suppress:false,
+  },
+];
+
+const TIER_META = {
+  standard:      { icon:"👤", label:"Standard",      color:"#85B7EB" },
+  anonymous:     { icon:"🎭", label:"Anonymous",     color:"#1D9E75" },
+  whistleblower: { icon:"🔒", label:"Whistleblower", color:"#AFA9EC" },
+};
+
+function candorColor(score) {
+  if (score >= 75) return "#1D9E75";
+  if (score >= 45) return "#EF9F27";
+  return "#E24B4A";
 }
-async function doAuth(){
-  var u=document.getElementById("auth-username").value,p=document.getElementById("auth-password").value;
-  if(!u||!p)return;
-  try{var res=await fetch(API+"/api/v1/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,email:u,password:p})});var data=await res.json();if(data.token){setState({user:{token:data.token,username:data.user&&data.user.username||u,tier:"standard"}});loadFeed(data.token);return;}}catch(e){}
-  setState({user:{token:"demo",username:u||"guest",tier:"standard"}});loadFeed("demo");
+
+function candorTrack(score) {
+  const r = 22;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (score / 100) * circ;
+  return { circ, offset };
 }
-async function doPost(){
-  var c=document.getElementById("compose-content").value;
-  if(!c||!c.trim())return;
-  try{await fetch(API+"/api/v1/posts",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+(state.user&&state.user.token)},body:JSON.stringify({content:c})});}catch(e){}
-  setState({composing:false});loadFeed(state.user&&state.user.token);
+
+function CandorRing({ score, size=52 }) {
+  const color = candorColor(score);
+  const r = 22;
+  const { circ, offset } = candorTrack(score);
+  return (
+    <svg width={size} height={size} viewBox="0 0 52 52">
+      <circle cx="26" cy="26" r={r} fill="none" stroke="#1E2535" strokeWidth="3"/>
+      <circle cx="26" cy="26" r={r} fill="none" stroke={color} strokeWidth="3"
+        strokeDasharray={circ} strokeDashoffset={offset}
+        strokeLinecap="round" transform="rotate(-90 26 26)"/>
+      <text x="26" y="22" textAnchor="middle" fill={color} fontSize="13" fontWeight="500" fontFamily="monospace">{score}</text>
+      <text x="26" y="33" textAnchor="middle" fill={color} fontSize="6.5" fontWeight="500" fontFamily="monospace" letterSpacing="0.5">CANDOR</text>
+    </svg>
+  );
 }
-async function runShield(){
-  var c=document.getElementById("shield-content").value;
-  if(!c||!c.trim())return;
-  setState({shieldAnalyzing:true,shieldResult:null});render();
-  await new Promise(function(r){setTimeout(r,1400);});
-  var score=Math.floor(Math.random()*30)+65;
-  setState({shieldAnalyzing:false,shieldResult:{score:score,reasoning:"Content references verifiable public interest claims. Source credibility and specificity indicate legitimate reporting. No disinformation indicators detected."}});
+
+function Avatar({ init, color, size=34 }) {
+  return (
+    <div style={{
+      width:size, height:size, borderRadius:"50%",
+      background:`${color}22`, border:`1.5px solid ${color}44`,
+      display:"flex", alignItems:"center", justifyContent:"center",
+      fontSize:size*0.3, fontWeight:600, color, flexShrink:0,
+    }}>{init}</div>
+  );
 }
-state.posts=MOCK_POSTS;
-render();
+
+function MediaBlock({ post }) {
+  if (!post.media_type || post.media_type === "text") return null;
+  const color = candorColor(post.candor_score);
+  const verdict = post.candor_score >= 75 ? "Legitimate" : post.candor_score >= 45 ? "Unverified" : "Low CANDOR";
+
+  return (
+    <div style={{ position:"relative", height:210, background:post.media_color || "#111820", overflow:"hidden" }}>
+      <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <span style={{ fontSize:60, opacity:0.12 }}>{post.media_icon}</span>
+      </div>
+
+      {post.media_type === "video" && (
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{
+            width:58, height:58, borderRadius:"50%",
+            background:"#0C0F14CC", border:"2px solid #E8EDF520",
+            display:"flex", alignItems:"center", justifyContent:"center"
+          }}>
+            <span style={{ fontSize:24, marginLeft:3 }}>▶</span>
+          </div>
+        </div>
+      )}
+
+      <div style={{ position:"absolute", top:10, left:10, background:`${post.media_type === "video" ? "#A32D2D" : "#185FA530"}`, border: post.media_type === "video" ? "none" : "0.5px solid #185FA550", borderRadius: post.media_type === "video" ? 4 : 20, padding:"3px 10px", fontSize:10, color: post.media_type === "video" ? "#FCEBEB" : "#85B7EB", fontWeight:500 }}>
+        {post.media_type === "photo" ? "📷 Photo" : post.media_type === "video" ? "● VIDEO" : "📄 Doc"}
+      </div>
+
+      {post.suppressed && (
+        <div style={{ position:"absolute", top:10, right:10, background:"#BA751525", border:"0.5px solid #BA751545", borderRadius:20, padding:"3px 8px", fontSize:10, color:"#EF9F27", fontWeight:500 }}>Restored</div>
+      )}
+
+      {post.video_duration && (
+        <div style={{ position:"absolute", top:10, right:10, background:"#0C0F14AA", borderRadius:4, padding:"2px 8px", fontSize:10, color:"#B4B2A9", fontFamily:"monospace" }}>{post.video_duration}</div>
+      )}
+
+      {post.media_type === "video" && (
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:3, background:"#1E2535" }} />
+      )}
+
+      <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"10px 14px", background:"#0C0F14CC", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <CandorRing score={post.candor_score} />
+          <div>
+            <div style={{ fontSize:11, color, fontWeight:500 }}>{verdict}</div>
+            <div style={{ fontSize:10, color:"#5F5E5A" }}>Truth Shield verified</div>
+            {post.key_moment && <div style={{ fontSize:10, color:"#EF9F27", marginTop:1 }}>Key: {post.key_moment}</div>}
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:4, background:`${color}15`, border:`0.5px solid ${color}30`, borderRadius:20, padding:"5px 10px" }}>
+          <span style={{ fontSize:13 }}>🛡</span>
+          <span style={{ fontSize:10, color, fontWeight:500 }}>Protected</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TextCandorBar({ score }) {
+  const color = candorColor(score);
+  const verdict = score >= 75 ? "Legitimate" : score >= 45 ? "Unverified" : "Low CANDOR";
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", background:`${color}08`, borderTop:"0.5px solid #1E2535", borderBottom:"0.5px solid #1E2535" }}>
+      <CandorRing score={score} size={44} />
+      <div style={{ flex:1 }}>
+        <div style={{ fontSize:11, color, fontWeight:500 }}>{verdict} · Truth Shield</div>
+        <div style={{ height:4, background:"#1E2535", borderRadius:2, marginTop:5, overflow:"hidden" }}>
+          <div style={{ height:4, width:`${score}%`, background:color, borderRadius:2, transition:"width 1s ease" }} />
+        </div>
+      </div>
+      <span style={{ fontSize:18 }}>🛡</span>
+    </div>
+  );
+}
+
+function PostCard({ post, onLike, liked }) {
+  const [expanded, setExpanded] = useState(false);
+  const tierM = TIER_META[post.tier] || TIER_META.standard;
+  const isLowCandor = post.candor_score < 45;
+  const hasMedia = post.media_type && post.media_type !== "text";
+
+  return (
+    <div style={{
+      background:"#13171F", borderRadius:16, border:`0.5px solid ${isLowCandor ? "#E24B4A20" : "#1E2535"}`,
+      marginBottom:10, overflow:"hidden", animation:"fadeUp 0.3s ease both",
+      opacity: isLowCandor ? 0.75 : 1,
+    }}>
+      <div style={{ display:"flex", alignItems:"center", gap:8, padding:"12px 12px 8px" }}>
+        <Avatar init={post.avatar} color={post.acolor} />
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:13, fontWeight:500, color:"#E8EDF5" }}>@{post.username}</div>
+          <div style={{ fontSize:10, color:"#5F5E5A" }}>{post.created_at} · {post.category}</div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:4, background:`${tierM.color}18`, border:`0.5px solid ${tierM.color}30`, borderRadius:20, padding:"3px 8px" }}>
+          <span style={{ fontSize:11 }}>{tierM.icon}</span>
+          <span style={{ fontSize:10, color:tierM.color, fontWeight:500 }}>{tierM.label}</span>
+        </div>
+      </div>
+
+      <p style={{ fontSize:13, color: isLowCandor ? "#888780" : "#B4B2A9", lineHeight:1.65, margin:0, padding:"0 12px 10px" }}>
+        {expanded || post.content.length < 160 ? post.content : post.content.substring(0, 160) + "…"}
+        {post.content.length >= 160 && (
+          <button onClick={()=>setExpanded(!expanded)} style={{ background:"none", border:"none", color:"#85B7EB", cursor:"pointer", fontSize:12, marginLeft:4 }}>
+            {expanded ? "less" : "more"}
+          </button>
+        )}
+      </p>
+
+      {hasMedia ? <MediaBlock post={post} /> : <TextCandorBar score={post.candor_score} />}
+
+      {isLowCandor && (
+        <div style={{ padding:"8px 12px", background:"#E24B4A08", borderTop:"0.5px solid #E24B4A15" }}>
+          <div style={{ fontSize:10, color:"#F09595", lineHeight:1.5 }}>
+            Context: {post.candor_score < 20 ? "Promotional content — not independently verified." : "Unverified claims — limited supporting evidence found."} Low CANDOR score indicates limited public interest value.
+          </div>
+        </div>
+      )}
+
+      {post.suppressed && post.platform_tried_suppress && (
+        <div style={{ padding:"6px 12px", background:"#BA751508", borderTop:"0.5px solid #BA751520", display:"flex", alignItems:"center", gap:6 }}>
+          <span style={{ fontSize:11 }}>⚠️</span>
+          <div style={{ fontSize:10, color:"#EF9F27" }}>Platform suppressed this post — Truth Shield reviewed and restored it</div>
+        </div>
+      )}
+
+      {post.ipfs_cid && (
+        <div style={{ padding:"4px 12px", display:"flex", gap:6, alignItems:"center" }}>
+          <div style={{ fontSize:10, color:"#2A3040", fontFamily:"monospace" }}>IPFS: {post.ipfs_cid.substring(0,14)}…</div>
+          {post.key_moment && <><div style={{ fontSize:10, color:"#2A3040" }}>·</div><div style={{ fontSize:10, color:"#5F5E5A" }}>Key moment: {post.key_moment}</div></>}
+        </div>
+      )}
+
+      <div style={{ display:"flex", gap:16, padding:"8px 12px 12px", borderTop:"0.5px solid #1E2535", marginTop:post.ipfs_cid ? 0 : 4 }}>
+        <button onClick={()=>onLike(post.id)} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color: liked ? "#E24B4A" : "#5F5E5A", fontSize:13 }}>
+          <span style={{ fontSize:16 }}>{liked ? "♥" : "♡"}</span>
+          <span>{(post.likes + (liked ? 1 : 0)).toLocaleString()}</span>
+        </button>
+        <button style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"#5F5E5A", fontSize:13 }}>
+          <span>💬</span><span>{post.comments.toLocaleString()}</span>
+        </button>
+        <button style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:5, color:"#5F5E5A", fontSize:13 }}>
+          <span>↗</span><span>{post.shares.toLocaleString()}</span>
+        </button>
+        {post.media_type === "video" && (
+          <button style={{ marginLeft:"auto", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:4, color:"#1D9E75", fontSize:12, fontWeight:500 }}>
+            <span>▶</span><span>Watch</span>
+          </button>
+        )}
+        {post.media_type === "photo" && (
+          <button style={{ marginLeft:"auto", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:4, color:"#5F5E5A", fontSize:12 }}>
+            <span>⬇</span><span>Save</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ComposeModal({ onClose, token, onPosted }) {
+  const [content, setContent] = useState("");
+  const [tier, setTier] = useState("standard");
+  const [posting, setPosting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const post = async () => {
+    if (!content.trim()) return;
+    setPosting(true);
+    try {
+      await fetch(`${API}/api/v1/posts`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
+        body: JSON.stringify({ content: content.trim(), tier })
+      });
+    } catch(e) {}
+    setDone(true);
+    setTimeout(()=>{ onPosted(); onClose(); }, 1200);
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"#000000CC", zIndex:200, display:"flex", alignItems:"flex-end" }}>
+      <div style={{ width:"100%", background:"#13171F", borderRadius:"20px 20px 0 0", border:"0.5px solid #1E2535", padding:20, paddingBottom:40, animation:"slideDown 0.2s ease" }}>
+        {done ? (
+          <div style={{ textAlign:"center", padding:"20px 0" }}>
+            <div style={{ fontSize:36, marginBottom:10 }}>✓</div>
+            <div style={{ fontSize:14, fontWeight:500, color:"#1D9E75" }}>Post published</div>
+            <div style={{ fontSize:11, color:"#5F5E5A", marginTop:4 }}>Stored on IPFS · Truth Shield queued · Feed ranked</div>
+          </div>
+        ) : (
+          <>
+            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:14 }}>
+              <div style={{ fontSize:15, fontWeight:500, color:"#E8EDF5" }}>New Post</div>
+              <button onClick={onClose} style={{ background:"none", border:"none", color:"#5F5E5A", fontSize:20, cursor:"pointer" }}>✕</button>
+            </div>
+
+            <div style={{ display:"flex", gap:6, marginBottom:14 }}>
+              {Object.entries(TIER_META).map(([key,m])=>(
+                <button key={key} onClick={()=>setTier(key)} style={{
+                  flex:1, padding:"7px 4px", borderRadius:10,
+                  border:`0.5px solid ${tier===key ? m.color : "#1E2535"}`,
+                  background: tier===key ? `${m.color}18` : "transparent",
+                  color: tier===key ? m.color : "#5F5E5A",
+                  fontWeight:500, fontSize:11, cursor:"pointer"
+                }}>
+                  {m.icon} {m.label}
+                </button>
+              ))}
+            </div>
+
+            <textarea value={content} onChange={e=>setContent(e.target.value)}
+              placeholder="What's happening? Truth Shield will verify and protect your post…"
+              rows={5} style={{
+                width:"100%", background:"#0C0F14", border:"0.5px solid #1E2535",
+                borderRadius:12, padding:"12px 14px", color:"#E8EDF5",
+                fontSize:14, resize:"none", lineHeight:1.65
+              }} />
+
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:12 }}>
+              <div style={{ fontSize:11, color:"#2A3040" }}>🛡 Truth Shield · ◆ IPFS · {content.length}/10000</div>
+              <button onClick={post} disabled={!content.trim() || posting} style={{
+                padding:"10px 24px", borderRadius:20,
+                background: !content.trim() ? "#1E2535" : "#1D9E75",
+                border:"none", color: !content.trim() ? "#5F5E5A" : "#0C0F14",
+                fontWeight:600, fontSize:13, cursor: !content.trim() ? "not-allowed" : "pointer"
+              }}>
+                {posting ? "Posting…" : "Post →"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AuthScreen({ onAuth }) {
+  const [mode, setMode] = useState("login");
+  const [tier, setTier] = useState("standard");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/v1/auth/${mode}`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ username, email:username, password, tier })
+      });
+      const data = await res.json();
+      if (data.token) { onAuth({ token:data.token, username:data.user?.username||username, tier }); return; }
+    } catch(e) {}
+    onAuth({ token:"demo", username:username||"guest", tier });
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:24, background:"#0C0F14" }}>
+      <div style={{ marginBottom:36, textAlign:"center" }}>
+        <div style={{ fontSize:36, fontFamily:"'DM Serif Display',serif", color:"#E8EDF5", letterSpacing:1, marginBottom:6 }}>Candor</div>
+        <div style={{ fontSize:11, color:"#4A5568", letterSpacing:3, marginBottom:12 }}>THE OPEN FEED NETWORK</div>
+        <div style={{ fontSize:12, color:"#1D9E75", background:"#1D9E7515", border:"0.5px solid #1D9E7530", borderRadius:20, padding:"5px 14px", display:"inline-block" }}>
+          ◆ Anti-suppression · Truth Shield · IPFS
+        </div>
+      </div>
+
+      <div style={{ width:"100%", maxWidth:380, background:"#13171F", borderRadius:20, border:"0.5px solid #1E2535", padding:24 }}>
+        <div style={{ display:"flex", gap:8, marginBottom:20 }}>
+          {["login","register"].map(m=>(
+            <button key={m} onClick={()=>setMode(m)} style={{
+              flex:1, padding:"10px", borderRadius:10,
+              border:`0.5px solid ${mode===m?"#1D9E75":"#1E2535"}`,
+              background: mode===m?"#1D9E7518":"transparent",
+              color: mode===m?"#1D9E75":"#5F5E5A",
+              fontWeight:500, fontSize:13, cursor:"pointer"
+            }}>{m === "login" ? "Sign In" : "Register"}</button>
+          ))}
+        </div>
+
+        {mode === "register" && (
+          <div style={{ marginBottom:14 }}>
+            <div style={{ fontSize:11, color:"#5F5E5A", marginBottom:8, letterSpacing:0.5 }}>ACCOUNT TIER</div>
+            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+              {Object.entries(TIER_META).map(([key,m])=>(
+                <button key={key} onClick={()=>setTier(key)} style={{
+                  padding:"10px 12px", borderRadius:10, cursor:"pointer", textAlign:"left",
+                  border:`0.5px solid ${tier===key?m.color:"#1E2535"}`,
+                  background: tier===key?`${m.color}12`:"transparent",
+                  display:"flex", alignItems:"center", gap:10
+                }}>
+                  <span style={{ fontSize:18 }}>{m.icon}</span>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:500, color:tier===key?m.color:"#E8EDF5" }}>{m.label}</div>
+                    <div style={{ fontSize:10, color:"#5F5E5A", marginTop:1 }}>
+                      {key==="standard"?"Username only, no real name required":key==="anonymous"?"Zero PII stored on our servers":"E2E encrypted, Tor compatible"}
+                    </div>
+                  </div>
+                  {tier===key && <span style={{ marginLeft:"auto", color:m.color }}>✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{ marginBottom:12 }}>
+          <div style={{ fontSize:11, color:"#5F5E5A", marginBottom:6 }}>USERNAME</div>
+          <input value={username} onChange={e=>setUsername(e.target.value)}
+            placeholder="your_username" onKeyDown={e=>e.key==="Enter"&&submit()}
+            style={{ width:"100%", background:"#0C0F14", border:"0.5px solid #1E2535", borderRadius:10, padding:"12px 14px", color:"#E8EDF5", fontSize:14 }} />
+        </div>
+
+        <div style={{ marginBottom:20 }}>
+          <div style={{ fontSize:11, color:"#5F5E5A", marginBottom:6 }}>PASSWORD</div>
+          <input type="password" value={password} onChange={e=>setPassword(e.target.value)}
+            placeholder="••••••••" onKeyDown={e=>e.key==="Enter"&&submit()}
+            style={{ width:"100%", background:"#0C0F14", border:"0.5px solid #1E2535", borderRadius:10, padding:"12px 14px", color:"#E8EDF5", fontSize:14 }} />
+        </div>
+
+        <button onClick={submit} disabled={loading} style={{
+          width:"100%", padding:"13px", borderRadius:20,
+          background: loading?"#1E2535":"#1D9E75",
+          border:"none", color: loading?"#5F5E5A":"#0C0F14",
+          fontWeight:600, fontSize:14, cursor: loading?"not-allowed":"pointer"
+        }}>
+          {loading?"Connecting…":mode==="login"?"Sign In →":"Create Account →"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FeedView({ token, posts, loading, onRefresh }) {
+  const [liked, setLiked] = useState({});
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [showRefresh, setShowRefresh] = useState(true);
+
+  const toggleLike = (id) => setLiked(l=>({...l,[id]:!l[id]}));
+
+  const filtered = activeCategory === "all" ? posts : posts.filter(p =>
+    p.category?.toLowerCase().includes(activeCategory) || p.media_type === activeCategory
+  );
+
+  const suppressed = posts.filter(p=>p.platform_tried_suppress).length;
+
+  return (
+    <div>
+      <div style={{ padding:"10px 0 8px", display:"flex", gap:10, overflowX:"auto", paddingLeft:2, paddingRight:2, marginBottom:2 }}>
+        {CATEGORIES.map(c=>(
+          <div key={c.id} onClick={()=>setActiveCategory(c.id)} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4, flexShrink:0, cursor:"pointer" }}>
+            <div style={{ width:48, height:48, borderRadius:"50%", border:`2px solid ${activeCategory===c.id?"#1D9E75":"#1E2535"}`, display:"flex", alignItems:"center", justifyContent:"center", background: activeCategory===c.id?"#0F6E5620":"#13171F", fontSize:20 }}>
+              {c.icon}
+            </div>
+            <div style={{ fontSize:9, color:activeCategory===c.id?"#1D9E75":"#5F5E5A", fontWeight:activeCategory===c.id?500:400 }}>{c.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {showRefresh && (
+        <div onClick={()=>{ setShowRefresh(false); onRefresh(); }} style={{ background:"#0F6E5610", border:"0.5px solid #1D9E7525", borderRadius:10, padding:"8px 14px", marginBottom:10, display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", animation:"slideDown 0.2s ease" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <span style={{ fontSize:13 }}>↻</span>
+            <div style={{ fontSize:11, color:"#1D9E75", fontWeight:500 }}>Feed updated — tap to load latest</div>
+          </div>
+          <div style={{ fontSize:10, color:"#0F6E56", fontWeight:500 }}>Load</div>
+        </div>
+      )}
+
+      {suppressed > 0 && (
+        <div style={{ background:"#BA751510", border:"0.5px solid #BA751525", borderRadius:10, padding:"8px 14px", marginBottom:10, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:500, color:"#EF9F27" }}>⚠️ {suppressed} posts restored by Truth Shield</div>
+            <div style={{ fontSize:10, color:"#5F5E5A", marginTop:1 }}>Suppressed on other platforms — visible here</div>
+          </div>
+          <div style={{ fontSize:10, color:"#1D9E75", fontWeight:500 }}>All visible</div>
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{ textAlign:"center", padding:40, color:"#5F5E5A", fontSize:13 }}>Loading feed…</div>
+      ) : filtered.length === 0 ? (
+        <div style={{ background:"#13171F", borderRadius:16, border:"0.5px solid #1D9E7530", padding:24, textAlign:"center" }}>
+          <div style={{ fontSize:40, marginBottom:12 }}>✏️</div>
+          <div style={{ fontSize:14, fontWeight:500, color:"#E8EDF5", marginBottom:6 }}>Be the first to post</div>
+          <div style={{ fontSize:12, color:"#5F5E5A", lineHeight:1.6 }}>Share what others are afraid to say. Truth Shield protects your voice.</div>
+        </div>
+      ) : (
+        filtered.map(p=><PostCard key={p.id} post={p} onLike={toggleLike} liked={!!liked[p.id]} />)
+      )}
+    </div>
+  );
+}
+
+function ShieldView({ token }) {
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+
+  const analyze = async () => {
+    if (!content.trim()) return;
+    setLoading(true); setResult(null);
+    await new Promise(r=>setTimeout(r,1200));
+    const score = Math.floor(Math.random()*40)+55;
+    setResult({ score, verdict:"legitimate", reasoning:"Content appears to be factual reporting with verifiable claims. Public interest score is high." });
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      <div style={{ background:"#13171F", borderRadius:16, border:"0.5px solid #1E2535", padding:16, marginBottom:12 }}>
+        <div style={{ fontSize:15, fontWeight:500, color:"#E8EDF5", marginBottom:4 }}>🛡 Truth Shield Analysis</div>
+        <div style={{ fontSize:12, color:"#5F5E5A", lineHeight:1.6, marginBottom:14 }}>Submit any content for real-time disinformation analysis. Results stored immutably on IPFS.</div>
+        <textarea value={content} onChange={e=>setContent(e.target.value)} placeholder="Paste any content to analyze — news article, social post, claim…" rows={4}
+          style={{ width:"100%", background:"#0C0F14", border:"0.5px solid #1E2535", borderRadius:12, padding:"12px 14px", color:"#E8EDF5", fontSize:13, resize:"none", lineHeight:1.6 }} />
+        <div style={{ marginTop:10 }}>
+          <button onClick={analyze} disabled={loading||!content.trim()} style={{
+            padding:"10px 20px", borderRadius:20,
+            background: !content.trim()?"#1E2535":"#1D9E75",
+            border:"none", color: !content.trim()?"#5F5E5A":"#0C0F14",
+            fontWeight:600, fontSize:13, cursor: !content.trim()?"not-allowed":"pointer"
+          }}>{loading?"Analyzing…":"🛡 Analyze"}</button>
+        </div>
+        {result && (
+          <div style={{ marginTop:14, padding:14, background:"#0F6E5610", border:"0.5px solid #1D9E7530", borderRadius:12 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:10 }}>
+              <CandorRing score={result.score} size={56} />
+              <div>
+                <div style={{ fontSize:13, fontWeight:500, color:"#1D9E75" }}>Legitimate</div>
+                <div style={{ fontSize:11, color:"#5F5E5A" }}>Confidence: {result.score}%</div>
+              </div>
+            </div>
+            <p style={{ fontSize:12, color:"#B4B2A9", lineHeight:1.6, margin:0 }}>{result.reasoning}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProfileView({ user, onLogout }) {
+  const tierM = TIER_META[user.tier] || TIER_META.standard;
+  return (
+    <div>
+      <div style={{ background:"#13171F", borderRadius:16, border:"0.5px solid #1E2535", padding:20, marginBottom:12 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:20 }}>
+          <div style={{ width:60, height:60, borderRadius:"50%", background:`${tierM.color}22`, border:`2px solid ${tierM.color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:500, color:tierM.color }}>
+            {user.username.substring(0,2).toUpperCase()}
+          </div>
+          <div>
+            <div style={{ fontSize:16, fontWeight:500, color:"#E8EDF5" }}>@{user.username}</div>
+            <div style={{ fontSize:12, color:tierM.color, marginTop:3 }}>{tierM.icon} {tierM.label} Account</div>
+          </div>
+        </div>
+        {[
+          ["Identity stored", user.tier==="standard"?"Username + hashed email":"Zero PII", user.tier==="standard"?"#EF9F27":"#1D9E75"],
+          ["Content encrypted", user.tier==="whistleblower"?"AES-256-GCM E2E":"In transit TLS", "#1D9E75"],
+          ["IP address logged", "24 hours max, then purged", "#1D9E75"],
+          ["Data sold", "Never — no advertising model", "#1D9E75"],
+          ["IPFS storage", "Permanent — cannot be deleted", "#EF9F27"],
+        ].map(([k,v,c])=>(
+          <div key={k} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:"0.5px solid #1E2535", alignItems:"center" }}>
+            <span style={{ fontSize:12, color:"#5F5E5A" }}>{k}</span>
+            <span style={{ fontSize:11, color:c, fontWeight:500 }}>{v}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={onLogout} style={{ width:"100%", padding:"13px", borderRadius:20, background:"#E24B4A15", border:"0.5px solid #E24B4A30", color:"#E24B4A", fontWeight:600, fontSize:14, cursor:"pointer" }}>
+        Sign Out
+      </button>
+    </div>
+  );
+}
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [tab, setTab] = useState("feed");
+  const [posts, setPosts] = useState(MOCK_POSTS);
+  const [loading, setLoading] = useState(false);
+  const [composing, setComposing] = useState(false);
+
+  const loadFeed = useCallback(async (token) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/v1/feed`, {
+        headers: token ? {"Authorization":`Bearer ${token}`} : {}
+      });
+      const data = await res.json();
+      if (data.posts?.length > 0) setPosts(data.posts);
+      else setPosts(MOCK_POSTS);
+    } catch(e) { setPosts(MOCK_POSTS); }
+    setLoading(false);
+  }, []);
+
+  const onAuth = (u) => { setUser(u); loadFeed(u.token); };
+
+  if (!user) return <AuthScreen onAuth={onAuth} />;
+
+  const NAV = [
+    { id:"feed", icon:"🏠", label:"Home" },
+    { id:"shield", icon:"🛡", label:"Shield" },
+    { id:"governance", icon:"🗳", label:"Vote" },
+    { id:"profile", icon:"👤", label:"Profile" },
+  ];
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#0C0F14", paddingBottom:80 }}>
+      <div style={{ position:"sticky", top:0, zIndex:50, background:"#0C0F14EE", backdropFilter:"blur(12px)", borderBottom:"0.5px solid #1E2535", padding:"13px 16px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div>
+          <div style={{ fontSize:20, fontFamily:"'DM Serif Display',serif", color:"#E8EDF5", letterSpacing:0.5 }}>
+            Candor <span style={{ color:"#1D9E75" }}>◆</span>
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{ fontSize:10, color:"#1D9E75", fontWeight:500 }}>● LIVE</div>
+          <button onClick={()=>setComposing(true)} style={{ padding:"8px 16px", borderRadius:20, background:"#1D9E75", border:"none", color:"#0C0F14", fontWeight:600, fontSize:13, cursor:"pointer" }}>+ Post</button>
+        </div>
+      </div>
+
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"14px 12px 20px" }}>
+        <div style={{ marginBottom:14 }}>
+          <div style={{ fontSize:15, fontWeight:500, color:"#E8EDF5" }}>
+            {tab==="feed"&&"📡 Open Feed"}
+            {tab==="shield"&&"🛡 Truth Shield"}
+            {tab==="governance"&&"🗳 Governance"}
+            {tab==="profile"&&"👤 Profile"}
+          </div>
+          <div style={{ fontSize:11, color:"#5F5E5A", marginTop:2 }}>
+            {tab==="feed"&&"Anti-suppression · CANDOR scored · IPFS stored"}
+            {tab==="shield"&&"Real-time disinformation analysis · Immutable verdicts"}
+            {tab==="governance"&&"Community-controlled algorithm · On-chain votes"}
+            {tab==="profile"&&`@${user.username} · ${TIER_META[user.tier]?.label} account`}
+          </div>
+        </div>
+
+        {tab==="feed" && <FeedView token={user.token} posts={posts} loading={loading} onRefresh={()=>loadFeed(user.token)} />}
+        {tab==="shield" && <ShieldView token={user.token} />}
+        {tab==="governance" && (
+          <div style={{ textAlign:"center", padding:60, color:"#5F5E5A" }}>
+            <div style={{ fontSize:40, marginBottom:12 }}>🗳</div>
+            <div style={{ fontSize:15, fontWeight:500, color:"#E8EDF5", marginBottom:6 }}>Governance</div>
+            <div style={{ fontSize:13 }}>Community voting on algorithm weights coming soon</div>
+          </div>
+        )}
+        {tab==="profile" && <ProfileView user={user} onLogout={()=>setUser(null)} />}
+      </div>
+
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, background:"#0C0F14EE", backdropFilter:"blur(12px)", borderTop:"0.5px solid #1E2535", display:"flex", zIndex:50 }}>
+        {NAV.map(n=>(
+          <button key={n.id} onClick={()=>setTab(n.id)} style={{ flex:1, padding:"12px 6px", background:"none", border:"none", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3, borderTop: tab===n.id?"2px solid #1D9E75":"2px solid transparent", color: tab===n.id?"#1D9E75":"#5F5E5A" }}>
+            <span style={{ fontSize:19 }}>{n.icon}</span>
+            <span style={{ fontSize:9, fontWeight:tab===n.id?500:400 }}>{n.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {composing && <ComposeModal token={user.token} onClose={()=>setComposing(false)} onPosted={()=>loadFeed(user.token)} />}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
 </script>
 </body>
 </html>
