@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Candor Sentinel API — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --navy:   #0D1F35;
+  --navy2:  #132840;
+  --blue:   #1A6BCC;
+  --blue2:  #0F4A99;
+  --ice:    #E8F2FF;
+  --ice2:   #D0E5FF;
+  --text:   #0D1F35;
+  --muted:  #4A6080;
+  --border: #C8D8EE;
+  --bg:     #F6F9FF;
+  --white:  #FFFFFF;
+  --green:  #0D7A4E;
+  --green-bg: #E6F5EE;
+  --amber:  #8B5E00;
+  --amber-bg: #FFF3D6;
+  --red:    #B91C1C;
+  --red-bg: #FEE8E8;
+  --mono:   'IBM Plex Mono', monospace;
+  --sans:   'DM Sans', sans-serif;
+  --display:'Syne', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--navy);
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+}
+
+.sidebar-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 20px;
+}
+
+.sidebar-logo .mark {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-logo .sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.sidebar-section {
+  padding: 0 24px;
+  margin-bottom: 20px;
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.sidebar a {
+  display: block;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  padding: 5px 0;
+  transition: color 0.15s;
+}
+.sidebar a:hover, .sidebar a.active { color: #fff; }
+.sidebar a.active { font-weight: 500; }
+
+.version-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-family: var(--mono);
+  background: rgba(26,107,204,0.3);
+  color: var(--ice2);
+  padding: 2px 8px;
+  border-radius: 99px;
+  margin-top: 12px;
+}
+
+/* ── Main Content ── */
+.main {
+  flex: 1;
+  min-width: 0;
+  max-width: 860px;
+  padding: 48px 56px;
+}
+
+h1 {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+h2 {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+  margin: 48px 0 16px;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+}
+
+h2:first-of-type { border-top: none; margin-top: 32px; padding-top: 0; }
+
+h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--navy);
+  margin: 28px 0 10px;
+}
+
+p { color: var(--muted); margin-bottom: 14px; }
+p strong { color: var(--text); font-weight: 500; }
+
+/* ── Endpoint block ── */
+.endpoint-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--navy);
+  border-radius: 10px 10px 0 0;
+  padding: 14px 18px;
+  margin-top: 24px;
+}
+
+.method {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 5px;
+}
+.method.post { background: #1A5C35; color: #6EE7AA; }
+.method.get  { background: #0F3A70; color: #7BBFFF; }
+.method.del  { background: #5C1A1A; color: #FCA5A5; }
+
+.ep-path {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: #fff;
+  flex: 1;
+}
+
+.plan-tag {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5);
+}
+
+.endpoint-body {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: 20px;
+  margin-bottom: 8px;
+}
+
+.endpoint-desc { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+
+/* ── Code blocks ── */
+pre {
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 12px 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+pre code { color: #A8CCEE; }
+.kw  { color: #7BB8FF; }
+.str { color: #8FD9A8; }
+.key { color: #FFB86C; }
+.num { color: #BD93F9; }
+.cmt { color: #5A7A9A; }
+
+/* ── Param tables ── */
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.param-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--ice);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--blue2);
+  text-transform: uppercase;
+}
+
+.param-table th:first-child { border-radius: 6px 0 0 6px; }
+.param-table th:last-child  { border-radius: 0 6px 6px 0; }
+
+.param-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--muted);
+}
+
+.param-table td:first-child {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.required {
+  font-size: 10px;
+  background: #FEE8E8;
+  color: #B91C1C;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  margin-left: 6px;
+}
+
+.optional {
+  font-size: 10px;
+  background: var(--ice);
+  color: var(--blue2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  margin-left: 6px;
+}
+
+/* ── Response fields ── */
+.resp-field {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.resp-field:last-child { border-bottom: none; }
+.resp-name { font-family: var(--mono); color: var(--text); min-width: 130px; }
+.resp-type { font-family: var(--mono); font-size: 11px; color: var(--blue); min-width: 70px; margin-top: 2px; }
+.resp-desc { color: var(--muted); flex: 1; }
+
+/* ── Callouts ── */
+.callout {
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 14px;
+  margin: 16px 0;
+  display: flex;
+  gap: 12px;
+}
+.callout.info    { background: var(--ice);     color: var(--blue2);  border-left: 3px solid var(--blue); }
+.callout.warning { background: var(--amber-bg); color: var(--amber); border-left: 3px solid #D4A017; }
+.callout.success { background: var(--green-bg); color: var(--green); border-left: 3px solid #16A066; }
+
+/* ── Error table ── */
+.error-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; align-items: baseline; }
+.error-code { font-family: var(--mono); font-size: 12px; background: var(--red-bg); color: var(--red); padding: 2px 8px; border-radius: 4px; min-width: 80px; text-align: center; flex-shrink: 0; }
+.error-name { font-family: var(--mono); font-size: 12px; color: var(--text); min-width: 220px; }
+.error-desc { color: var(--muted); }
+
+/* ── Signal table ── */
+.signal-row { display: flex; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; align-items: baseline; }
+.signal-name { font-family: var(--mono); color: var(--text); min-width: 240px; }
+.signal-layer { font-size: 10px; background: var(--ice); color: var(--blue2); padding: 1px 7px; border-radius: 99px; min-width: 70px; text-align: center; }
+.signal-desc { color: var(--muted); flex: 1; }
+
+/* ── Hero ── */
+.hero-desc {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 560px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.base-url {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--navy);
+  color: var(--ice2);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.dot-live { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; flex-shrink: 0; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── Risk chips ── */
+.risk { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+.risk.low      { background: var(--green-bg);  color: var(--green); }
+.risk.medium   { background: var(--amber-bg);  color: var(--amber); }
+.risk.high     { background: #FFF0E6; color: #9A4500; }
+.risk.critical { background: var(--red-bg);    color: var(--red); }
+
+/* ── Section anchors ── */
+section { scroll-margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar" aria-label="Documentation navigation">
+  <div class="sidebar-logo">
+    <div class="mark">Candor Sentinel</div>
+    <div class="sub">API Documentation</div>
+    <div class="version-badge">v1.0</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Getting started</div>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#authentication">Authentication</a>
+    <a href="#base-url">Base URL</a>
+    <a href="#quickstart">Quickstart</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Core API</div>
+    <a href="#evaluate">POST /v1/evaluate</a>
+    <a href="#evaluate-batch">POST /v1/evaluate/batch</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Account</div>
+    <a href="#account">GET /v1/account</a>
+    <a href="#keys-create">POST /v1/account/keys</a>
+    <a href="#keys-revoke">DELETE /v1/account/keys</a>
+    <a href="#webhook">POST /v1/account/webhook</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Billing</div>
+    <a href="#plans">GET /billing/plans</a>
+    <a href="#checkout">POST /billing/checkout</a>
+    <a href="#portal">POST /billing/portal</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Reference</div>
+    <a href="#response-schema">Response schema</a>
+    <a href="#signals">Signal reference</a>
+    <a href="#risk-levels">Risk levels</a>
+    <a href="#errors">Error codes</a>
+    <a href="#webhooks-ref">Webhooks</a>
+    <a href="#rate-limits">Rate limits</a>
+    <a href="#plans-ref">Plans & limits</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Overview -->
+  <section id="overview">
+    <h1>Candor Sentinel API</h1>
+    <p class="hero-desc">
+      Real-time bot detection and coordinated inauthentic behavior (CIB) protection
+      for open social platforms, forums, and content pipelines. Send a request context,
+      receive a threat score and recommended action in milliseconds.
+    </p>
+
+    <div class="base-url">
+      <span class="dot-live"></span>
+      https://sentinel.candor.network/v1
+    </div>
+
+    <div class="callout info">
+      <strong>Beta access:</strong> Sentinel API is in closed beta. Contact <strong>api@candor.network</strong> to request access or start a trial.
+    </div>
+  </section>
+
+  <!-- Authentication -->
+  <section id="authentication">
+    <h2>Authentication</h2>
+    <p>All API requests require your <strong>secret API key</strong> passed as a Bearer token. Keys are prefixed <code>sk_sentinel_</code> and issued at account creation.</p>
+
+    <pre><code><span class="cmt"># Pass your key in the Authorization header</span>
+curl https://sentinel.candor.network/v1/evaluate \
+  -H <span class="str">"Authorization: Bearer sk_sentinel_your_key_here"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"ip":"203.0.113.42","userAgent":"Mozilla/5.0..."}'</span></code></pre>
+
+    <div class="callout warning">
+      <strong>Keep keys secret.</strong> Never expose <code>sk_sentinel_</code> keys in client-side code, public repos, or logs. Use environment variables.
+    </div>
+
+    <h3>Alternatively: X-API-Key header</h3>
+    <pre><code>curl https://sentinel.candor.network/v1/evaluate \
+  -H <span class="str">"X-API-Key: sk_sentinel_your_key_here"</span></code></pre>
+  </section>
+
+  <!-- Quickstart -->
+  <section id="quickstart">
+    <h2>Quickstart</h2>
+    <p>Evaluate a request in under 60 seconds. Pass the visitor's IP and user agent — Sentinel returns a score and recommended action.</p>
+
+    <pre><code><span class="cmt">// Node.js example</span>
+<span class="kw">const</span> response = <span class="kw">await</span> fetch(<span class="str">'https://sentinel.candor.network/v1/evaluate'</span>, {
+  method: <span class="str">'POST'</span>,
+  headers: {
+    <span class="str">'Authorization'</span>: <span class="str">`Bearer ${process.env.SENTINEL_API_KEY}`</span>,
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+  },
+  body: JSON.stringify({
+    ip:          req.ip,
+    userAgent:   req.headers[<span class="str">'user-agent'</span>],
+    headers:     req.headers,
+    accountId:   req.user?.id,
+    requestType: <span class="str">'post'</span>,
+    content:     req.body.text,
+  }),
+});
+
+<span class="kw">const</span> { score, risk, action, signals } = <span class="kw">await</span> response.json();
+
+<span class="kw">if</span> (action === <span class="str">'block'</span>)     <span class="kw">return</span> res.status(<span class="num">429</span>).json({ error: <span class="str">'Blocked'</span> });
+<span class="kw">if</span> (action === <span class="str">'challenge'</span>) <span class="kw">return</span> serveCaptcha(res);
+<span class="kw">if</span> (action === <span class="str">'throttle'</span>)  <span class="kw">await</span> sleep(<span class="num">1000</span>);</code></pre>
+
+    <div class="callout success">
+      Sentinel fails open — if the API is unreachable, treat the response as <code>action: "allow"</code> so legitimate traffic is never blocked by an outage.
+    </div>
+  </section>
+
+  <!-- Evaluate -->
+  <section id="evaluate">
+    <h2>Evaluate a request</h2>
+    <p>The core endpoint. Send request context for a single visitor interaction and receive a threat assessment.</p>
+
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="ep-path">/v1/evaluate</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Evaluates a single request context across 6 detection layers: network reputation, behavioral velocity, timing regularity, content analysis, account credibility, and CIB graph detection.</p>
+
+      <h3>Request body</h3>
+      <table class="param-table">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td>ip <span class="required">required</span></td><td>string</td><td>IPv4 or IPv6 address of the visitor.</td></tr>
+        <tr><td>userAgent <span class="optional">optional</span></td><td>string</td><td>HTTP User-Agent header. Strongly recommended — missing UA is itself a signal.</td></tr>
+        <tr><td>headers <span class="optional">optional</span></td><td>object</td><td>HTTP request headers. Used for browser fingerprinting. Sentinel sanitizes these — never sends sensitive headers downstream.</td></tr>
+        <tr><td>accountId <span class="optional">optional</span></td><td>string</td><td>Your platform's user ID. Enables account credibility and CIB graph scoring.</td></tr>
+        <tr><td>content <span class="optional">optional</span></td><td>string</td><td>Post or message text. Enables content analysis layer (entropy, URL density, crypto patterns). Pro+ only.</td></tr>
+        <tr><td>requestType <span class="optional">optional</span></td><td>string</td><td>One of <code>request</code>, <code>post</code>, <code>login</code>, <code>register</code>. Defaults to <code>request</code>.</td></tr>
+        <tr><td>timestamp <span class="optional">optional</span></td><td>number</td><td>Unix milliseconds. Defaults to current server time.</td></tr>
+      </table>
+
+      <h3>Response</h3>
+      <div class="resp-field"><span class="resp-name">score</span><span class="resp-type">number</span><span class="resp-desc">Composite threat score, 0–100. Higher = more likely bot or malicious actor.</span></div>
+      <div class="resp-field"><span class="resp-name">risk</span><span class="resp-type">string</span><span class="resp-desc"><code>LOW</code> · <code>MEDIUM</code> · <code>HIGH</code> · <code>CRITICAL</code></span></div>
+      <div class="resp-field"><span class="resp-name">action</span><span class="resp-type">string</span><span class="resp-desc">Recommended action: <code>allow</code> · <code>challenge</code> · <code>throttle</code> · <code>block</code></span></div>
+      <div class="resp-field"><span class="resp-name">signals</span><span class="resp-type">array</span><span class="resp-desc">Detected threat signals with layer, name, weight, and optional detail. See Signal Reference.</span></div>
+      <div class="resp-field"><span class="resp-name">topSignal</span><span class="resp-type">string</span><span class="resp-desc">Highest-weight signal name. Useful for logging and audit trails.</span></div>
+      <div class="resp-field"><span class="resp-name">fingerprint</span><span class="resp-type">string</span><span class="resp-desc">16-char hex request fingerprint (IP + UA + key headers). Stable across retries from same browser.</span></div>
+      <div class="resp-field"><span class="resp-name">timestamp</span><span class="resp-type">number</span><span class="resp-desc">Unix ms when the evaluation completed.</span></div>
+      <div class="resp-field"><span class="resp-name">usage</span><span class="resp-type">object</span><span class="resp-desc">Current billing period usage: <code>used</code>, <code>limit</code>, <code>remaining</code>, <code>overage</code>.</span></div>
+
+      <h3>Example response</h3>
+      <pre><code>{
+  <span class="key">"score"</span>: <span class="num">87</span>,
+  <span class="key">"risk"</span>:  <span class="str">"CRITICAL"</span>,
+  <span class="key">"action"</span>: <span class="str">"block"</span>,
+  <span class="key">"signals"</span>: [
+    { <span class="key">"layer"</span>: <span class="str">"content"</span>,  <span class="key">"signal"</span>: <span class="str">"crypto_wallet_address"</span>,      <span class="key">"weight"</span>: <span class="num">30</span> },
+    { <span class="key">"layer"</span>: <span class="str">"behavior"</span>, <span class="key">"signal"</span>: <span class="str">"extreme_post_velocity"</span>,       <span class="key">"weight"</span>: <span class="num">45</span>, <span class="key">"detail"</span>: <span class="str">"38 posts/min"</span> },
+    { <span class="key">"layer"</span>: <span class="str">"network"</span>,  <span class="key">"signal"</span>: <span class="str">"datacenter_ip"</span>,               <span class="key">"weight"</span>: <span class="num">20</span> }
+  ],
+  <span class="key">"topSignal"</span>:   <span class="str">"extreme_post_velocity"</span>,
+  <span class="key">"fingerprint"</span>: <span class="str">"a3f9c12d88b41e07"</span>,
+  <span class="key">"timestamp"</span>:   <span class="num">1748200000000</span>,
+  <span class="key">"usage"</span>: {
+    <span class="key">"used"</span>:      <span class="num">4821</span>,
+    <span class="key">"limit"</span>:     <span class="num">1000000</span>,
+    <span class="key">"remaining"</span>: <span class="num">995179</span>,
+    <span class="key">"overage"</span>:   <span class="num">0</span>
+  }
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- Batch -->
+  <section id="evaluate-batch">
+    <h2>Batch evaluate</h2>
+    <p>Evaluate up to 100 request contexts in a single API call. Each item in the batch counts as one evaluation against your monthly limit. <strong>Pro plan and above.</strong></p>
+
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="ep-path">/v1/evaluate/batch</span>
+      <span class="plan-tag">Pro+</span>
+    </div>
+    <div class="endpoint-body">
+      <h3>Request body</h3>
+      <table class="param-table">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td>requests <span class="required">required</span></td><td>array</td><td>Array of up to 100 request context objects. Each has the same shape as <code>/v1/evaluate</code>.</td></tr>
+      </table>
+
+      <h3>Example</h3>
+      <pre><code>{
+  <span class="key">"requests"</span>: [
+    { <span class="key">"ip"</span>: <span class="str">"203.0.113.1"</span>, <span class="key">"userAgent"</span>: <span class="str">"Mozilla/5.0..."</span>, <span class="key">"requestType"</span>: <span class="str">"post"</span> },
+    { <span class="key">"ip"</span>: <span class="str">"203.0.113.2"</span>, <span class="key">"userAgent"</span>: <span class="str">"python-requests/2.28"</span> },
+    { <span class="key">"ip"</span>: <span class="str">"203.0.113.3"</span>, <span class="key">"accountId"</span>: <span class="str">"user_abc123"</span>, <span class="key">"content"</span>: <span class="str">"Send ETH to 0x..."</span> }
+  ]
+}</code></pre>
+
+      <h3>Response</h3>
+      <div class="resp-field"><span class="resp-name">completed</span><span class="resp-type">number</span><span class="resp-desc">Number of requests successfully evaluated.</span></div>
+      <div class="resp-field"><span class="resp-name">total</span><span class="resp-type">number</span><span class="resp-desc">Total requests submitted.</span></div>
+      <div class="resp-field"><span class="resp-name">results</span><span class="resp-type">array</span><span class="resp-desc">Assessment for each request, in order. Each item includes <code>index</code> plus all standard evaluate fields.</span></div>
+    </div>
+  </section>
+
+  <!-- Account -->
+  <section id="account">
+    <h2>Account overview</h2>
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="ep-path">/v1/account</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Returns your tenant profile, current billing period usage, API key list, and live Sentinel instance stats.</p>
+      <pre><code>{
+  <span class="key">"tenant"</span>: { <span class="key">"tenantId"</span>: <span class="str">"ten_a1b2c3d4e5f6g7h8"</span>, <span class="key">"name"</span>: <span class="str">"Acme News"</span>, <span class="key">"plan"</span>: <span class="str">"Pro"</span>, <span class="key">"status"</span>: <span class="str">"active"</span> },
+  <span class="key">"usage"</span>: {
+    <span class="key">"used"</span>: <span class="num">48210</span>, <span class="key">"limit"</span>: <span class="num">1000000</span>, <span class="key">"remaining"</span>: <span class="num">951790</span>,
+    <span class="key">"percentUsed"</span>: <span class="num">5</span>, <span class="key">"overage"</span>: <span class="num">0</span>, <span class="key">"blocked"</span>: <span class="num">312</span>, <span class="key">"challenged"</span>: <span class="num">87</span>
+  },
+  <span class="key">"apiKeys"</span>: [
+    { <span class="key">"prefix"</span>: <span class="str">"sk_sentinel_a1b2c3d4e5..."</span>, <span class="key">"label"</span>: <span class="str">"Production"</span>, <span class="key">"active"</span>: <span class="kw">true</span> }
+  ]
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- Keys -->
+  <section id="keys-create">
+    <h2>API key management</h2>
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="ep-path">/v1/account/keys</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Generate a new API key. Key count is limited by your plan (Starter: 1, Pro: 5, Enterprise: 20).</p>
+      <table class="param-table">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td>label <span class="optional">optional</span></td><td>string</td><td>Human-readable label, e.g. <code>"Staging"</code> or <code>"Worker-2"</code>.</td></tr>
+      </table>
+      <div class="callout warning">The full key is only returned once at creation. Store it immediately in a secrets manager.</div>
+    </div>
+  </section>
+
+  <section id="keys-revoke">
+    <div class="endpoint-header">
+      <span class="method del">DELETE</span>
+      <span class="ep-path">/v1/account/keys/:keyPrefix</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Revoke an API key by its first 20 characters. Revoked keys are rejected immediately.</p>
+      <pre><code>curl -X DELETE \
+  https://sentinel.candor.network/v1/account/keys/sk_sentinel_a1b2c3d4e5 \
+  -H <span class="str">"Authorization: Bearer sk_sentinel_your_key"</span></code></pre>
+    </div>
+  </section>
+
+  <!-- Webhook -->
+  <section id="webhook">
+    <h2>Webhooks</h2>
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="ep-path">/v1/account/webhook</span>
+      <span class="plan-tag">Pro+</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Register a URL to receive real-time block and challenge events. Sentinel fires a signed POST to your endpoint within milliseconds of each block or challenge action.</p>
+      <table class="param-table">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td>url <span class="required">required</span></td><td>string</td><td>HTTPS URL to receive webhook events.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Plans public -->
+  <section id="plans">
+    <h2>List plans</h2>
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="ep-path">/billing/plans</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Returns all available subscription plans with pricing and feature flags. No authentication required.</p>
+    </div>
+  </section>
+
+  <section id="checkout">
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="ep-path">/billing/checkout</span>
+    </div>
+    <div class="endpoint-body">
+      <p class="endpoint-desc">Create a Stripe Checkout session. Returns a <code>checkoutUrl</code> — redirect your user there to complete payment. Tenant is provisioned and API key delivered automatically on successful payment.</p>
+      <table class="param-table">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td>planId <span class="required">required</span></td><td>string</td><td><code>starter</code>, <code>pro</code>, or <code>enterprise</code></td></tr>
+        <tr><td>email <span class="required">required</span></td><td>string</td><td>Customer email for the Stripe account.</td></tr>
+        <tr><td>name <span class="optional">optional</span></td><td>string</td><td>Organization or contact name.</td></tr>
+        <tr><td>successUrl <span class="optional">optional</span></td><td>string</td><td>Redirect URL after successful payment.</td></tr>
+        <tr><td>cancelUrl <span class="optional">optional</span></td><td>string</td><td>Redirect URL if user cancels checkout.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Response schema reference -->
+  <section id="response-schema">
+    <h2>Response schema</h2>
+
+    <h3>Risk levels</h3>
+    <p>Every evaluation returns one of four risk levels based on the composite score.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0;">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span class="risk low">LOW</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">score 0–29</span></div>
+        <p style="font-size:13px;margin:0;">Action: <strong>allow</strong>. Clean human traffic. No friction applied.</p>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span class="risk medium">MEDIUM</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">score 30–59</span></div>
+        <p style="font-size:13px;margin:0;">Action: <strong>challenge</strong>. Suspicious. Serve CAPTCHA or step-up auth.</p>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span class="risk high">HIGH</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">score 60–79</span></div>
+        <p style="font-size:13px;margin:0;">Action: <strong>throttle</strong>. Likely bot. Introduce artificial delay or rate limit.</p>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span class="risk critical">CRITICAL</span><span style="font-family:var(--mono);font-size:13px;color:var(--muted)">score 80–100</span></div>
+        <p style="font-size:13px;margin:0;">Action: <strong>block</strong>. High-confidence bot or malicious actor. Return 429.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Signals -->
+  <section id="signals">
+    <h2>Signal reference</h2>
+    <p>Signals are the individual detection results that contribute to the composite score. Each evaluation can return zero to many signals.</p>
+
+    <h3>Network layer</h3>
+    <div class="signal-row"><span class="signal-name">missing_user_agent</span><span class="signal-layer">network</span><span class="signal-desc">No User-Agent header present.</span></div>
+    <div class="signal-row"><span class="signal-name">bot_user_agent</span><span class="signal-layer">network</span><span class="signal-desc">UA matches known bot, crawler, or automation tool pattern.</span></div>
+    <div class="signal-row"><span class="signal-name">suspicious_user_agent</span><span class="signal-layer">network</span><span class="signal-desc">UA is unusually short or generic.</span></div>
+    <div class="signal-row"><span class="signal-name">datacenter_ip</span><span class="signal-layer">network</span><span class="signal-desc">IP belongs to a cloud or hosting provider ASN.</span></div>
+    <div class="signal-row"><span class="signal-name">tor_exit_node</span><span class="signal-layer">network</span><span class="signal-desc">IP is a known Tor exit node.</span></div>
+    <div class="signal-row"><span class="signal-name">missing_accept_language</span><span class="signal-layer">network</span><span class="signal-desc">Accept-Language header absent — uncommon in real browsers.</span></div>
+
+    <h3>Behavior layer</h3>
+    <div class="signal-row"><span class="signal-name">extreme_request_velocity</span><span class="signal-layer">behavior</span><span class="signal-desc">3× or more above the configured request rate limit.</span></div>
+    <div class="signal-row"><span class="signal-name">high_request_velocity</span><span class="signal-layer">behavior</span><span class="signal-desc">1.5–3× above the configured request rate limit.</span></div>
+    <div class="signal-row"><span class="signal-name">extreme_post_velocity</span><span class="signal-layer">behavior</span><span class="signal-desc">3× or more above the post creation rate limit.</span></div>
+    <div class="signal-row"><span class="signal-name">high_post_velocity</span><span class="signal-layer">behavior</span><span class="signal-desc">Above the post creation rate limit.</span></div>
+    <div class="signal-row"><span class="signal-name">machine_timing_pattern</span><span class="signal-layer">behavior</span><span class="signal-desc">Post intervals are robotically regular (coefficient of variation &lt; 0.05).</span></div>
+    <div class="signal-row"><span class="signal-name">regular_timing_pattern</span><span class="signal-layer">behavior</span><span class="signal-desc">Post intervals are suspiciously consistent (CV &lt; 0.15).</span></div>
+    <div class="signal-row"><span class="signal-name">fingerprint_cycling</span><span class="signal-layer">behavior</span><span class="signal-desc">More than 5 distinct browser fingerprints from one IP.</span></div>
+
+    <h3>Content layer <span style="font-size:12px;font-weight:400;color:var(--muted)">(Pro+)</span></h3>
+    <div class="signal-row"><span class="signal-name">crypto_wallet_address</span><span class="signal-layer">content</span><span class="signal-desc">ETH, BTC, or other wallet address detected in content.</span></div>
+    <div class="signal-row"><span class="signal-name">high_url_density</span><span class="signal-layer">content</span><span class="signal-desc">More than 3 URLs in a single post — spam indicator.</span></div>
+    <div class="signal-row"><span class="signal-name">low_content_entropy</span><span class="signal-layer">content</span><span class="signal-desc">Content is repetitive or machine-generated (Shannon entropy &lt; 2.5).</span></div>
+    <div class="signal-row"><span class="signal-name">excessive_caps</span><span class="signal-layer">content</span><span class="signal-desc">More than 60% uppercase characters.</span></div>
+    <div class="signal-row"><span class="signal-name">duplicate_content</span><span class="signal-layer">content</span><span class="signal-desc">Same or near-identical content seen 3+ times across requests.</span></div>
+    <div class="signal-row"><span class="signal-name">coordinated_duplicate_content</span><span class="signal-layer">content</span><span class="signal-desc">Same content posted by 3+ distinct accounts — CIB indicator.</span></div>
+
+    <h3>Account layer</h3>
+    <div class="signal-row"><span class="signal-name">brand_new_account</span><span class="signal-layer">account</span><span class="signal-desc">Account is less than 1 hour old.</span></div>
+    <div class="signal-row"><span class="signal-name">new_account</span><span class="signal-layer">account</span><span class="signal-desc">Account is less than 24 hours old.</span></div>
+    <div class="signal-row"><span class="signal-name">no_human_engagement_history</span><span class="signal-layer">account</span><span class="signal-desc">Account has no prior trusted interactions on record.</span></div>
+    <div class="signal-row"><span class="signal-name">prior_flags</span><span class="signal-layer">account</span><span class="signal-desc">Account was previously blocked by Sentinel.</span></div>
+
+    <h3>CIB layer <span style="font-size:12px;font-weight:400;color:var(--muted)">(Pro+)</span></h3>
+    <div class="signal-row"><span class="signal-name">multiple_accounts_same_ip</span><span class="signal-layer">cib</span><span class="signal-desc">More than 3 distinct accounts operating from one IP — bot farm indicator.</span></div>
+    <div class="signal-row"><span class="signal-name">shared_ip_accounts</span><span class="signal-layer">cib</span><span class="signal-desc">2–3 accounts sharing an IP address.</span></div>
+    <div class="signal-row"><span class="signal-name">account_ip_hopping</span><span class="signal-layer">cib</span><span class="signal-desc">One account observed from more than 5 distinct IPs — distributed bot network.</span></div>
+  </section>
+
+  <!-- Errors -->
+  <section id="errors">
+    <h2>Error codes</h2>
+    <p>All errors follow a consistent JSON shape: <code>{ error, code, message }</code>. HTTP status codes follow REST conventions.</p>
+
+    <div class="error-row"><span class="error-code">401</span><span class="error-name">MISSING_API_KEY</span><span class="error-desc">No API key provided in Authorization or X-API-Key header.</span></div>
+    <div class="error-row"><span class="error-code">401</span><span class="error-name">INVALID_API_KEY</span><span class="error-desc">Key is invalid, revoked, or account is suspended.</span></div>
+    <div class="error-row"><span class="error-code">400</span><span class="error-name">MISSING_IP</span><span class="error-desc">The required <code>ip</code> field was not provided.</span></div>
+    <div class="error-row"><span class="error-code">400</span><span class="error-name">INVALID_BATCH</span><span class="error-desc">Batch <code>requests</code> array is missing or empty.</span></div>
+    <div class="error-row"><span class="error-code">400</span><span class="error-name">BATCH_TOO_LARGE</span><span class="error-desc">Batch exceeds 100 items.</span></div>
+    <div class="error-row"><span class="error-code">402</span><span class="error-name">MONTHLY_LIMIT_EXCEEDED</span><span class="error-desc">Monthly evaluation limit reached. Upgrade plan or wait for billing cycle reset.</span></div>
+    <div class="error-row"><span class="error-code">403</span><span class="error-name">PLAN_FEATURE_UNAVAILABLE</span><span class="error-desc">Feature requires a higher plan tier.</span></div>
+    <div class="error-row"><span class="error-code">429</span><span class="error-name">RATE_LIMIT_EXCEEDED</span><span class="error-desc">Per-second rate limit exceeded. Retry after 1 second.</span></div>
+    <div class="error-row"><span class="error-code">500</span><span class="error-name">EVALUATION_FAILED</span><span class="error-desc">Internal error. Request was not counted against your usage. Retry safely.</span></div>
+  </section>
+
+  <!-- Webhooks reference -->
+  <section id="webhooks-ref">
+    <h2>Webhook events</h2>
+    <p>Webhooks fire within milliseconds of a <code>block</code> or <code>challenge</code> action. Payloads are signed with HMAC-SHA256 using your webhook secret.</p>
+
+    <h3>Verifying signatures</h3>
+    <pre><code><span class="kw">const</span> crypto = require(<span class="str">'crypto'</span>);
+
+<span class="kw">function</span> verifyWebhook(payload, signature, secret) {
+  <span class="kw">const</span> expected = <span class="str">'sha256='</span> + crypto
+    .createHmac(<span class="str">'sha256'</span>, secret)
+    .update(payload)
+    .digest(<span class="str">'hex'</span>);
+  <span class="kw">return</span> crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(signature)
+  );
+}
+
+<span class="cmt">// In your webhook handler:</span>
+app.post(<span class="str">'/hooks/sentinel'</span>, express.raw({ type: <span class="str">'application/json'</span> }), (req, res) => {
+  <span class="kw">const</span> sig = req.headers[<span class="str">'x-sentinel-sig'</span>];
+  <span class="kw">if</span> (!verifyWebhook(req.body, sig, process.env.SENTINEL_WEBHOOK_SECRET)) {
+    <span class="kw">return</span> res.status(<span class="num">401</span>).send(<span class="str">'Invalid signature'</span>);
+  }
+  <span class="kw">const</span> event = JSON.parse(req.body);
+  <span class="cmt">// event.event = 'sentinel.block' | 'sentinel.challenge'</span>
+  res.json({ received: <span class="kw">true</span> });
+});</code></pre>
+
+    <h3>Payload shape</h3>
+    <pre><code>{
+  <span class="key">"event"</span>:     <span class="str">"sentinel.block"</span>,
+  <span class="key">"tenantId"</span>:  <span class="str">"ten_a1b2c3d4e5f6g7h8"</span>,
+  <span class="key">"assessment"</span>: { <span class="cmt">/* full evaluate response */</span> },
+  <span class="key">"context"</span>:   { <span class="key">"ip"</span>: <span class="str">"203.0.113.42"</span>, <span class="key">"requestType"</span>: <span class="str">"post"</span> },
+  <span class="key">"timestamp"</span>: <span class="num">1748200000000</span>
+}</code></pre>
+  </section>
+
+  <!-- Rate limits -->
+  <section id="rate-limits">
+    <h2>Rate limits</h2>
+    <p>Rate limits are enforced per API key using a token bucket algorithm. Limits reset every second.</p>
+    <table class="param-table">
+      <tr><th>Plan</th><th>Evaluations/sec</th><th>Monthly limit</th><th>Overage</th></tr>
+      <tr><td>Starter</td><td>10 req/s</td><td>100,000</td><td>None — hard cutoff</td></tr>
+      <tr><td>Pro</td><td>100 req/s</td><td>1,000,000</td><td>$0.30 per 1,000</td></tr>
+      <tr><td>Enterprise</td><td>1,000 req/s</td><td>10,000,000</td><td>$0.10 per 1,000</td></tr>
+    </table>
+
+    <p>Rate limit state is returned in response headers on every request:</p>
+    <pre><code>X-Sentinel-Usage-Used:      4821
+X-Sentinel-Usage-Limit:     1000000
+X-Sentinel-Usage-Remaining: 995179
+X-Sentinel-Overage:         0</code></pre>
+  </section>
+
+  <!-- Plans -->
+  <section id="plans-ref">
+    <h2>Plans & features</h2>
+    <table class="param-table">
+      <tr><th>Feature</th><th>Starter $99</th><th>Pro $299</th><th>Enterprise $999</th></tr>
+      <tr><td>Bot detection</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Honeypot traps</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Content analysis</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>CIB graph detection</td><td>—</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Batch evaluate</td><td>—</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Webhooks</td><td>—</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Custom detection rules</td><td>—</td><td>—</td><td>✓</td></tr>
+      <tr><td>Dedicated instance</td><td>—</td><td>—</td><td>✓</td></tr>
+      <tr><td>API keys</td><td>1</td><td>5</td><td>20</td></tr>
+      <tr><td>SLA uptime</td><td>99.5%</td><td>99.9%</td><td>99.99%</td></tr>
+      <tr><td>Support</td><td>Email</td><td>Priority</td><td>Dedicated</td></tr>
+    </table>
+
+    <div class="callout info" style="margin-top:24px;">
+      <div>Questions? Email <strong>api@candor.network</strong> or visit <strong>sentinel.candor.network/pricing</strong> to start a trial.</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const links    = document.querySelectorAll('.sidebar a[href^="#"]');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
