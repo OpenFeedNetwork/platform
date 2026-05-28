@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANDOR Score Standard v1.0 — Open Feed Network</title>
+<meta name="description" content="An open specification for content truth verification. The CANDOR Score Standard defines a universal framework for measuring and communicating content trustworthiness on digital platforms.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1D9E75;
+  --yellow: #EF9F27;
+  --red: #E24B4A;
+  --bg: #0C0F14;
+  --bg2: #13171F;
+  --bg3: #1C2333;
+  --border: #1E2535;
+  --text: #E8EDF5;
+  --muted: #7A8BA8;
+  --dim: #4A5568;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: #0C0F14EE; border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px); }
+.nav-logo { font-size: 18px; color: var(--text); letter-spacing: 0.5px; font-weight: 300; }
+.nav-logo span { color: var(--green); }
+.nav-badge { font-size: 11px; color: var(--green); background: #1D9E7515; border: 1px solid #1D9E7530; border-radius: 20px; padding: 4px 12px; }
+
+/* HERO */
+.hero { max-width: 860px; margin: 0 auto; padding: 80px 24px 60px; text-align: center; }
+.hero-tag { display: inline-block; font-size: 11px; color: var(--green); background: #1D9E7512; border: 1px solid #1D9E7530; border-radius: 20px; padding: 5px 16px; margin-bottom: 28px; letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+.hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(36px, 6vw, 64px); color: var(--text); line-height: 1.15; margin-bottom: 20px; font-weight: 400; }
+.hero h1 span { color: var(--green); }
+.hero p { font-size: 17px; color: var(--muted); max-width: 600px; margin: 0 auto 36px; line-height: 1.75; }
+.hero-meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+.hero-meta-item { font-size: 12px; color: var(--dim); font-family: 'DM Mono', monospace; }
+.hero-meta-item span { color: var(--muted); }
+
+/* SCORE DEMO */
+.score-demo { max-width: 860px; margin: 0 auto 60px; padding: 0 24px; }
+.score-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media(max-width:600px){ .score-cards { grid-template-columns: 1fr; } }
+.score-card { background: var(--bg2); border-radius: 16px; border: 1px solid var(--border); padding: 24px; text-align: center; }
+.score-card.green { border-color: #1D9E7530; background: #1D9E7508; }
+.score-card.yellow { border-color: #EF9F2730; background: #EF9F2708; }
+.score-card.red { border-color: #E24B4A30; background: #E24B4A08; }
+.score-ring { margin: 0 auto 16px; display: block; }
+.score-label { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.score-range { font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace; }
+.score-desc { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.55; }
+
+/* CONTENT */
+.content { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+.section { margin-bottom: 56px; }
+.section-num { font-size: 11px; color: var(--green); font-family: 'DM Mono', monospace; letter-spacing: 1px; margin-bottom: 8px; }
+.section h2 { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); margin-bottom: 16px; font-weight: 400; }
+.section p { font-size: 15px; color: var(--muted); margin-bottom: 14px; line-height: 1.75; }
+.section p strong { color: var(--text); font-weight: 500; }
+
+/* PRINCIPLE BOX */
+.principle { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 20px 0; font-size: 16px; color: var(--text); font-family: 'DM Serif Display', serif; font-style: italic; }
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+th { background: var(--bg3); color: var(--muted); font-weight: 500; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; font-size: 11px; font-family: 'DM Mono', monospace; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+td:first-child { color: var(--text); font-weight: 500; }
+tr:last-child td { border-bottom: none; }
+.dot-green { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--green); margin-right: 6px; box-shadow: 0 0 8px #1D9E7566; }
+.dot-yellow { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); margin-right: 6px; box-shadow: 0 0 8px #EF9F2766; }
+.dot-red { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--red); margin-right: 6px; box-shadow: 0 0 8px #E24B4A66; }
+
+/* CODE */
+pre { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+code { font-family: 'DM Mono', monospace; font-size: 12px; color: #9CDCFE; line-height: 1.7; }
+.inline-code { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--green); background: #1D9E7512; border: 1px solid #1D9E7520; border-radius: 4px; padding: 1px 6px; }
+
+/* CHECKLIST */
+.checklist { list-style: none; margin: 16px 0; }
+.checklist li { padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--muted); }
+.checklist li:last-child { border-bottom: none; }
+.check-box { width: 18px; height: 18px; border: 1px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+
+/* COLOR SWATCHES */
+.color-swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+@media(max-width:500px){ .color-swatches { grid-template-columns: 1fr; } }
+.swatch { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.swatch-color { height: 60px; }
+.swatch-info { background: var(--bg2); padding: 12px; }
+.swatch-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.swatch-hex { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--dim); }
+
+/* ATTRIBUTION BOX */
+.attribution { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 24px 0; font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.65; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 40px 24px; text-align: center; max-width: 860px; margin: 0 auto; }
+footer p { font-size: 12px; color: var(--dim); margin-bottom: 6px; }
+footer .footer-logo { font-size: 20px; color: var(--text); font-weight: 300; margin-bottom: 12px; }
+footer .footer-logo span { color: var(--green); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Candor <span>◆</span></div>
+  <div class="nav-badge">CANDOR Standard v1.0</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">OPEN SPECIFICATION · CC BY 4.0</div>
+  <h1>The <span>CANDOR</span> Score Standard</h1>
+  <p>A universal, open framework for measuring and communicating the trustworthiness of content on digital platforms. Free to implement. Built for transparency.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">Version <span>1.0</span></div>
+    <div class="hero-meta-item">Published <span>May 28, 2026</span></div>
+    <div class="hero-meta-item">By <span>Open Feed Network, Inc.</span></div>
+    <div class="hero-meta-item">License <span>CC BY 4.0</span></div>
+  </div>
+</div>
+
+<!-- SCORE DEMO -->
+<div class="score-demo">
+  <div class="score-cards">
+    <div class="score-card green">
+      <svg class="score-ring" width="80" height="80" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="#1E2535" stroke-width="3"/>
+        <circle cx="26" cy="26" r="22" fill="none" stroke="#1D9E75" stroke-width="3" stroke-dasharray="138.2" stroke-dashoffset="4.1" stroke-linecap="round" transform="rotate(-90 26 26)"/>
+        <text x="26" y="22" text-anchor="middle" fill="#1D9E75" font-size="13" font-weight="500" font-family="monospace">97</text>
+        <text x="26" y="33" text-anchor="middle" fill="#1D9E75" font-size="6.5" font-weight="500" font-family="monospace" letter-spacing="0.5">CANDOR</text>
+      </svg>
+      <div class="score-label" style="color:#1D9E75;">🟢 Legitimate</div>
+      <div class="score-range">Score: 75 – 100</div>
+      <div class="score-desc">Verified, high public interest, well-sourced. Safe to share with confidence.</div>
+    </div>
+    <div class="score-card yellow">
+      <svg class="score-ring" width="80" height="80" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="#1E2535" stroke-width="3"/>
+        <circle cx="26" cy="26" r="22" fill="none" stroke="#EF9F27" stroke-width="3" stroke-dasharray="138.2" stroke-dashoffset="55.3" stroke-linecap="round" transform="rotate(-90 26 26)"/>
+        <text x="26" y="22" text-anchor="middle" fill="#EF9F27" font-size="13" font-weight="500" font-family="monospace">60</text>
+        <text x="26" y="33" text-anchor="middle" fill="#EF9F27" font-size="6.5" font-weight="500" font-family="monospace" letter-spacing="0.5">CANDOR</text>
+      </svg>
+      <div class="score-label" style="color:#EF9F27;">🟡 Unverified</div>
+      <div class="score-range">Score: 45 – 74</div>
+      <div class="score-desc">Proceed with caution. Claims need additional evidence before sharing.</div>
+    </div>
+    <div class="score-card red">
+      <svg class="score-ring" width="80" height="80" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="#1E2535" stroke-width="3"/>
+        <circle cx="26" cy="26" r="22" fill="none" stroke="#E24B4A" stroke-width="3" stroke-dasharray="138.2" stroke-dashoffset="110.6" stroke-linecap="round" transform="rotate(-90 26 26)"/>
+        <text x="26" y="22" text-anchor="middle" fill="#E24B4A" font-size="13" font-weight="500" font-family="monospace">20</text>
+        <text x="26" y="33" text-anchor="middle" fill="#E24B4A" font-size="6.5" font-weight="500" font-family="monospace" letter-spacing="0.5">CANDOR</text>
+      </svg>
+      <div class="score-label" style="color:#E24B4A;">🔴 Low Trust</div>
+      <div class="score-range">Score: 0 – 44</div>
+      <div class="score-desc">High disinformation risk. Labeled with context — never hidden.</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-num">01 — THE PROBLEM</div>
+    <h2>Why this standard exists</h2>
+    <p>Digital platforms today suppress content based on proprietary, opaque algorithms. Users have no way to know why a post was demoted, what criteria were used, whether the flagging was accurate, or what the platform's conflict of interest was.</p>
+    <p>This creates an environment where legitimate journalism, whistleblower disclosures, and community accountability content gets silenced alongside actual disinformation — with no transparency and no recourse.</p>
+    <p>The CANDOR Score Standard replaces suppression with scored transparency.</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-num">02 — CORE PRINCIPLE</div>
+    <h2>Label, never suppress</h2>
+    <div class="principle">"Content that scores low on the CANDOR scale receives a context label and a visible score. It is never hidden, shadow-banned, or algorithmically demoted without disclosure. Users see the score and decide for themselves."</div>
+    <p>This is the non-negotiable foundation of the standard. Any implementation that uses CANDOR scores to hide or algorithmically bury content — without user-visible disclosure — is not compliant.</p>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-num">03 — COLOR SPECIFICATION</div>
+    <h2>The three-color truth system</h2>
+    <p>The color system maps directly to universal human intuition. No explanation required in any language or culture.</p>
+    <div class="color-swatches">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1D9E75;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">🟢 Legitimate (75–100)</div>
+          <div class="swatch-hex">Hex: #1D9E75<br>RGB: 29, 158, 117<br>HSL: 161°, 69%, 37%</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#EF9F27;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">🟡 Unverified (45–74)</div>
+          <div class="swatch-hex">Hex: #EF9F27<br>RGB: 239, 159, 39<br>HSL: 37°, 86%, 54%</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#E24B4A;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">🔴 Low Trust (0–44)</div>
+          <div class="swatch-hex">Hex: #E24B4A<br>RGB: 226, 75, 74<br>HSL: 0°, 72%, 59%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-num">04 — SCORE COMPONENTS</div>
+    <h2>How the score is calculated</h2>
+    <p>A CANDOR Score is computed from five weighted components. Platforms may adjust weights within the defined ranges.</p>
+    <table>
+      <thead><tr><th>Component</th><th>Description</th><th>Default</th><th>Range</th></tr></thead>
+      <tbody>
+        <tr><td>Source Credibility</td><td>Track record of the author or outlet</td><td>0.30</td><td>0.20 – 0.50</td></tr>
+        <tr><td>Claim Verifiability</td><td>Can claims be checked against primary sources?</td><td>0.25</td><td>0.15 – 0.40</td></tr>
+        <tr><td>Public Interest</td><td>Does this serve the public good?</td><td>0.20</td><td>0.10 – 0.30</td></tr>
+        <tr><td>Community Verification</td><td>Has the community confirmed or disputed this?</td><td>0.15</td><td>0.05 – 0.25</td></tr>
+        <tr><td>Engagement Authenticity</td><td>Are engagements organic or manipulated?</td><td>0.10</td><td>0.05 – 0.20</td></tr>
+      </tbody>
+    </table>
+    <p>Penalties and bonuses are applied after component scoring. A full penalty/bonus table is available in the <a href="https://github.com/OpenFeedNetwork/platform/blob/main/CANDOR_STANDARD.md">full specification</a>.</p>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section">
+    <div class="section-num">05 — DISPLAY REFERENCE</div>
+    <h2>The CANDOR Ring — SVG implementation</h2>
+    <p>The reference implementation uses a circular progress ring. The ring fills proportionally to the score and renders in the score's color.</p>
+    <pre><code>&lt;svg width="52" height="52" viewBox="0 0 52 52"&gt;
+  &lt;!-- Background track --&gt;
+  &lt;circle cx="26" cy="26" r="22" fill="none" stroke="#1E2535" stroke-width="3"/&gt;
+  &lt;!-- Score ring — green, score=97 --&gt;
+  &lt;circle cx="26" cy="26" r="22" fill="none" stroke="#1D9E75" stroke-width="3"
+    stroke-dasharray="138.2" stroke-dashoffset="4.1"
+    stroke-linecap="round" transform="rotate(-90 26 26)"/&gt;
+  &lt;!-- Score number --&gt;
+  &lt;text x="26" y="22" text-anchor="middle" fill="#1D9E75"
+    font-size="13" font-weight="500" font-family="monospace"&gt;97&lt;/text&gt;
+  &lt;!-- Label --&gt;
+  &lt;text x="26" y="33" text-anchor="middle" fill="#1D9E75"
+    font-size="6.5" font-family="monospace" letter-spacing="0.5"&gt;CANDOR&lt;/text&gt;
+&lt;/svg&gt;</code></pre>
+    <p>Calculating <span class="inline-code">stroke-dashoffset</span> for any score:</p>
+    <pre><code>const radius = 22;
+const circumference = 2 * Math.PI * radius; // 138.23
+const offset = circumference - (score / 100) * circumference;
+
+// Examples:
+// score=97  → offset = 4.15   (nearly full ring, green)
+// score=60  → offset = 55.29  (60% full ring, yellow)
+// score=20  → offset = 110.58 (20% full ring, red)</code></pre>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section">
+    <div class="section-num">06 — CONTEXT LABELS</div>
+    <h2>Labels replace suppression</h2>
+    <p>When a post scores below 75, a context label accompanies the score. Labels are informational only — they never restrict visibility.</p>
+    <table>
+      <thead><tr><th>Verdict</th><th>Score Trigger</th><th>Example Label</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dot-green"></span>Legitimate</td><td>75–100</td><td>Truth Shield verified — high public interest</td></tr>
+        <tr><td><span class="dot-yellow"></span>Unverified</td><td>45–74</td><td>Claims not yet independently verified — review sources</td></tr>
+        <tr><td><span class="dot-red"></span>Low CANDOR</td><td>0–44</td><td>Promotional content — limited public interest value</td></tr>
+        <tr><td><span class="dot-red"></span>Disinformation</td><td>Detected</td><td>Contains claims contradicted by primary sources</td></tr>
+        <tr><td><span class="dot-yellow"></span>Satire</td><td>Detected</td><td>Satire — not intended as factual reporting</td></tr>
+        <tr><td><span class="dot-yellow"></span>Opinion</td><td>Detected</td><td>Opinion — represents the author's perspective</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section">
+    <div class="section-num">07 — API REFERENCE</div>
+    <h2>Standard endpoints</h2>
+    <p>Platforms implementing the CANDOR Score Standard should expose these endpoints:</p>
+    <pre><code>GET /api/v1/candor/score/{post_id}
+
+{
+  "post_id": "string",
+  "score": 0-100,
+  "verdict": "legitimate|unverified|low_candor|disinformation|satire|opinion",
+  "confidence": 0-100,
+  "color": "#1D9E75|#EF9F27|#E24B4A",
+  "label": "string",
+  "suppressed": boolean,
+  "restored": boolean,
+  "ipfs_cid": "string|null",
+  "analyzed_at": "ISO8601"
+}</code></pre>
+    <pre><code>GET /api/v1/candor/weights
+
+{
+  "source_credibility_weight": 0.30,
+  "claim_verifiability_weight": 0.25,
+  "public_interest_weight": 0.20,
+  "community_verification_weight": 0.15,
+  "engagement_authenticity_weight": 0.10,
+  "governance_version": "string",
+  "last_updated": "ISO8601"
+}</code></pre>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="section">
+    <div class="section-num">08 — IMPLEMENTATION CHECKLIST</div>
+    <h2>Are you compliant?</h2>
+    <p>Use this checklist to verify your implementation meets the standard:</p>
+    <ul class="checklist">
+      <li><div class="check-box"></div>Scores display as integers 0–100</li>
+      <li><div class="check-box"></div>Green (#1D9E75) used for scores 75–100</li>
+      <li><div class="check-box"></div>Yellow (#EF9F27) used for scores 45–74</li>
+      <li><div class="check-box"></div>Red (#E24B4A) used for scores 0–44</li>
+      <li><div class="check-box"></div>The word "CANDOR" appears adjacent to every score</li>
+      <li><div class="check-box"></div>Verdict label displayed with every score</li>
+      <li><div class="check-box"></div>Context labels are informational only — no content hidden</li>
+      <li><div class="check-box"></div>Suppression events logged and publicly accessible</li>
+      <li><div class="check-box"></div>Restoration badge displayed on restored content</li>
+      <li><div class="check-box"></div>Score audit trail accessible via public link</li>
+      <li><div class="check-box"></div>IPFS verdict storage implemented or planned</li>
+      <li><div class="check-box"></div>Weights publicly documented</li>
+      <li><div class="check-box"></div>Governance participation enabled or planned</li>
+    </ul>
+  </div>
+
+  <!-- ATTRIBUTION -->
+  <div class="section">
+    <div class="section-num">09 — ATTRIBUTION & LICENSE</div>
+    <h2>Free to implement</h2>
+    <p>This specification is released under the <strong>Creative Commons Attribution 4.0 International License (CC BY 4.0)</strong>. You are free to use, adapt, and build on this standard — commercially or otherwise — as long as you credit Open Feed Network, Inc.</p>
+    <div class="attribution">
+      "Content trust scores powered by the CANDOR Score Standard, an open specification by Open Feed Network, Inc. Learn more at candortheopenfeednetwork.com"
+    </div>
+    <p>To propose changes, open an issue or pull request on <a href="https://github.com/OpenFeedNetwork/platform">github.com/OpenFeedNetwork</a>.</p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">Candor <span>◆</span></div>
+  <p>Open Feed Network, Inc. · Wyoming C-Corp</p>
+  <p><a href="mailto:hello@openfeed.network">hello@openfeed.network</a> · <a href="https://candortheopenfeednetwork.com">candortheopenfeednetwork.com</a></p>
+  <p style="margin-top:16px;">CANDOR Score Standard v1.0 · CC BY 4.0 · Published May 28, 2026</p>
+  <p style="margin-top:8px;font-style:italic;">The platform that cannot silence you.</p>
+</footer>
+
+</body>
+</html>
