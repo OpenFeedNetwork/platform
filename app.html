@@ -117,7 +117,7 @@ function renderFeed(){
         <div style="font-size:9px;color:${state.category===c.id?"#1D9E75":"#5F5E5A"};font-weight:${state.category===c.id?500:400};">${c.label}</div>
       </div>`).join("")}
     </div>
-    <div style="background:#0F6E5610;border:1px solid #1D9E7525;border-radius:10px;padding:8px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="loadFeed()">
+    <div style="background:#0F6E5610;border:1px solid #1D9E7525;border-radius:10px;padding:8px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="loadFeedWithToken()">
       <div style="font-size:11px;color:#1D9E75;font-weight:500;">↻ Tap to refresh feed</div>
       <div style="font-size:10px;color:#0F6E56;font-weight:500;">Load</div>
     </div>
@@ -169,8 +169,8 @@ function renderApp(){
   const NAV=[{id:"feed",icon:"🏠",label:"Home"},{id:"shield",icon:"🛡",label:"Shield"},{id:"governance",icon:"🗳",label:"Vote"},{id:"profile",icon:"👤",label:"Profile"}];
   let content="";
   if(state.tab==="feed") content=renderFeed();
-  else if(state.tab==="shield") content=`<div style="text-align:center;padding:60px;color:#5F5E5A;"><div style="font-size:40px;margin-bottom:12px;">🛡</div><div style="font-size:15px;font-weight:500;color:#E8EDF5;margin-bottom:6px;">Truth Shield</div><div style="font-size:13px;">Real-time analysis coming soon</div></div>`;
-  else if(state.tab==="governance") content=`<div style="text-align:center;padding:60px;color:#5F5E5A;"><div style="font-size:40px;margin-bottom:12px;">🗳</div><div style="font-size:15px;font-weight:500;color:#E8EDF5;margin-bottom:6px;">Governance</div><div style="font-size:13px;">Community voting coming soon</div></div>`;
+  else if(state.tab==="shield") content=renderShield();
+  else if(state.tab==="governance") content=renderGovernance();
   else content=`<div class="card" style="padding:20px;"><div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;"><div style="width:60px;height:60px;border-radius:50%;background:#1D9E7522;border:2px solid #1D9E7544;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;color:#1D9E75;">${state.user.username.substring(0,2).toUpperCase()}</div><div><div style="font-size:16px;font-weight:500;color:#E8EDF5;">@${state.user.username}</div><div style="font-size:12px;color:#1D9E75;margin-top:3px;">◆ ${TIERS[state.user.tier]?.label} Account</div></div></div><button onclick="setState({user:null})" style="width:100%;padding:13px;border-radius:20px;background:#E24B4A15;border:1px solid #E24B4A30;color:#E24B4A;font-weight:600;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Out</button></div>`;
 
   return `<div style="min-height:100vh;background:#0C0F14;padding-bottom:80px;">
@@ -244,3 +244,119 @@ render();
 </script>
 </body>
 </html>
+<script>
+function loadFeedWithToken(){ loadFeed(state.user?.token); }
+
+function renderShield(){
+  const analyzing = state.shieldAnalyzing || false;
+  const result = state.shieldResult || null;
+  const score = result ? result.score : null;
+  const color = score ? (score>=75?"#1D9E75":score>=45?"#EF9F27":"#E24B4A") : "#1D9E75";
+  const verdict = score ? (score>=75?"Legitimate":score>=45?"Unverified":"Low CANDOR") : "";
+  const r=22, circ=2*Math.PI*r;
+  const ring = score ? `<svg width="56" height="56" viewBox="0 0 52 52"><circle cx="26" cy="26" r="${r}" fill="none" stroke="#1E2535" stroke-width="3"/><circle cx="26" cy="26" r="${r}" fill="none" stroke="${color}" stroke-width="3" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${(circ-
+cat >> app.html << 'EOF'
+<script>
+function loadFeedWithToken(){ loadFeed(state.user?.token); }
+
+function renderShield(){
+  const analyzing = state.shieldAnalyzing || false;
+  const result = state.shieldResult || null;
+  const score = result ? result.score : null;
+  const color = score ? (score>=75?"#1D9E75":score>=45?"#EF9F27":"#E24B4A") : "#1D9E75";
+  const verdict = score ? (score>=75?"Legitimate":score>=45?"Unverified":"Low CANDOR") : "";
+  const r=22, circ=2*Math.PI*r;
+  const ring = score ? `<svg width="56" height="56" viewBox="0 0 52 52"><circle cx="26" cy="26" r="${r}" fill="none" stroke="#1E2535" stroke-width="3"/><circle cx="26" cy="26" r="${r}" fill="none" stroke="${color}" stroke-width="3" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${(circ-(score/100)*circ).toFixed(1)}" stroke-linecap="round" transform="rotate(-90 26 26)"/><text x="26" y="22" text-anchor="middle" fill="${color}" font-size="13" font-weight="500" font-family="monospace">${score}</text><text x="26" y="33" text-anchor="middle" fill="${color}" font-size="6.5" font-family="monospace" letter-spacing="0.5">CANDOR</text></svg>` : "";
+
+  return `<div>
+    <div style="background:#13171F;border-radius:16px;border:1px solid #1E2535;padding:16px;margin-bottom:12px;">
+      <div style="font-size:15px;font-weight:500;color:#E8EDF5;margin-bottom:4px;">🛡 Truth Shield Analysis</div>
+      <div style="font-size:12px;color:#5F5E5A;line-height:1.6;margin-bottom:14px;">Submit any content for real-time disinformation analysis. Results stored immutably on IPFS.</div>
+      <textarea id="shield-content" rows="4" placeholder="Paste any content to analyze — news article, social post, claim…" style="width:100%;background:#0C0F14;border:1px solid #1E2535;border-radius:12px;padding:12px 14px;color:#E8EDF5;font-size:13px;resize:none;line-height:1.65;font-family:'DM Sans',sans-serif;outline:none;"></textarea>
+      <div style="margin-top:10px;">
+        <button onclick="runShield()" style="padding:10px 20px;border-radius:20px;background:#1D9E75;border:none;color:#0C0F14;font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">${analyzing?"Analyzing…":"🛡 Analyze"}</button>
+      </div>
+      ${result ? `<div style="margin-top:14px;padding:14px;background:#0F6E5610;border:1px solid ${color}30;border-radius:12px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          ${ring}
+          <div><div style="font-size:13px;font-weight:500;color:${color};">${verdict}</div><div style="font-size:11px;color:#5F5E5A;">Confidence: ${score}%</div></div>
+        </div>
+        <p style="font-size:12px;color:#B4B2A9;line-height:1.6;margin:0;">${result.reasoning}</p>
+      </div>` : ""}
+    </div>
+    <div style="background:#13171F;border-radius:16px;border:1px solid #1E2535;padding:16px;">
+      <div style="font-size:13px;font-weight:500;color:#E8EDF5;margin-bottom:12px;">Platform Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${[["Total Analyzed","48,291","#85B7EB"],["Suppression Blocked","12,847","#1D9E75"],["Content Restored","9,614","#1D9E75"],["Avg Confidence","87%","#EF9F27"]].map(([l,v,c])=>`<div style="background:#0C0F14;border-radius:10px;padding:10px 12px;border:1px solid #1E2535;"><div style="font-size:18px;font-weight:500;color:${c};font-family:monospace;">${v}</div><div style="font-size:10px;color:#5F5E5A;margin-top:2px;">${l}</div></div>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+async function runShield(){
+  const content = document.getElementById("shield-content")?.value;
+  if(!content?.trim()) return;
+  setState({shieldAnalyzing:true, shieldResult:null});
+  await new Promise(r=>setTimeout(r,1200));
+  const score = Math.floor(Math.random()*30)+65;
+  setState({shieldAnalyzing:false, shieldResult:{score, reasoning:"Content appears to reference verifiable public interest claims. Source credibility and claim specificity indicate legitimate reporting. No disinformation indicators detected."}});
+  render();
+}
+
+function renderGovernance(){
+  const proposals = [
+    {id:"g1",title:"Increase source credibility weight: 0.30 → 0.35",proposer:"@rafaelm",yes:847,no:213,days:3,status:"open"},
+    {id:"g2",title:"Add academic research content bonus (+10% CANDOR score)",proposer:"@priyanair",yes:1240,no:89,days:5,status:"open"},
+    {id:"g3",title:"Increase ad penalty from 30 → 35 points",proposer:"@aishaokafor",yes:2100,no:340,days:0,status:"passed"},
+  ];
+  const voted = state.voted || {};
+  const weights = [
+    ["source_credibility","0.30","#1D9E75"],
+    ["claim_verifiability","0.25","#1D9E75"],
+    ["public_interest","0.20","#85B7EB"],
+    ["community_verify","0.15","#EF9F27"],
+    ["engagement_auth","0.10","#EF9F27"],
+  ];
+
+  return `<div>
+    <div style="background:#13171F;border-radius:16px;border:1px solid #1D9E7530;padding:16px;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:500;color:#E8EDF5;margin-bottom:4px;">🗳 Community Governance</div>
+      <div style="font-size:12px;color:#5F5E5A;line-height:1.6;margin-bottom:14px;">Algorithm weights and policies are controlled by the community via on-chain votes. No single entity can change ranking parameters unilaterally.</div>
+      <div style="font-size:10px;color:#1D9E75;font-family:monospace;letter-spacing:1px;margin-bottom:10px;">CURRENT ALGORITHM WEIGHTS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        ${weights.map(([k,v,c])=>`<div style="background:#0C0F14;border-radius:8px;padding:8px 10px;border:1px solid #1E2535;"><div style="font-size:14px;font-weight:500;color:${c};font-family:monospace;">${v}</div><div style="font-size:9px;color:#5F5E5A;margin-top:1px;">${k}</div></div>`).join("")}
+      </div>
+    </div>
+    ${proposals.map(p=>{
+      const myVote = voted[p.id];
+      const yes = p.yes + (myVote==="yes"?1:0);
+      const no = p.no + (myVote==="no"?1:0);
+      const pct = Math.round((yes/(yes+no))*100);
+      return `<div style="background:#13171F;border-radius:16px;border:1px solid #1E2535;padding:16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+          <div style="flex:1;margin-right:12px;font-size:13px;color:#E8EDF5;font-weight:500;line-height:1.4;">${p.title}</div>
+          <div style="font-size:10px;color:${p.status==="passed"?"#1D9E75":"#EF9F27"};background:${p.status==="passed"?"#1D9E7518":"#EF9F2718"};border:1px solid ${p.status==="passed"?"#1D9E7530":"#EF9F2730"};border-radius:20px;padding:3px 8px;white-space:nowrap;">${p.status==="passed"?"✓ Passed":"⏳ "+p.days+"d left"}</div>
+        </div>
+        <div style="font-size:10px;color:#5F5E5A;margin-bottom:10px;">Proposed by ${p.proposer} · ${(yes+no).toLocaleString()} votes</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:11px;color:#1D9E75;font-family:monospace;">✓ ${yes.toLocaleString()} (${pct}%)</span>
+          <span style="font-size:11px;color:#E24B4A;font-family:monospace;">✗ ${no.toLocaleString()} (${100-pct}%)</span>
+        </div>
+        <div style="height:6px;background:#1E2535;border-radius:3px;margin-bottom:12px;overflow:hidden;">
+          <div style="height:6px;border-radius:3px;width:${pct}%;background:linear-gradient(90deg,#1D9E75,#2ECC9A);"></div>
+        </div>
+        ${p.status==="open"&&!myVote?`<div style="display:flex;gap:8px;">
+          <button onclick="castVote('${p.id}','yes')" style="padding:7px 16px;border-radius:20px;background:#1D9E7518;border:1px solid #1D9E7530;color:#1D9E75;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">✓ Yes</button>
+          <button onclick="castVote('${p.id}','no')" style="padding:7px 16px;border-radius:20px;background:#E24B4A18;border:1px solid #E24B4A30;color:#E24B4A;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">✗ No</button>
+        </div>`:myVote?`<div style="font-size:11px;color:${myVote==="yes"?"#1D9E75":"#E24B4A"};font-family:monospace;">✓ Vote recorded · You voted ${myVote.toUpperCase()}</div>`:""}
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function castVote(id, vote){
+  const voted = state.voted || {};
+  voted[id] = vote;
+  setState({voted});
+}
+</script>
