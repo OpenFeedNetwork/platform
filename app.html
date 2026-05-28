@@ -236,7 +236,7 @@ function PostCard({ post, onLike, liked }) {
       opacity: isLowCandor ? 0.75 : 1,
     }}>
       <div style={{ display:"flex", alignItems:"center", gap:8, padding:"12px 12px 8px" }}>
-        <Avatar init={post.avatar} color={post.acolor} />
+        <Avatar init={post.avatar || (post.username||"??").substring(0,2).toUpperCase()} color={post.acolor || "#1D9E75"} />
         <div style={{ flex:1 }}>
           <div style={{ fontSize:13, fontWeight:500, color:"#E8EDF5" }}>@{post.username}</div>
           <div style={{ fontSize:10, color:"#5F5E5A" }}>{post.created_at} · {post.category}</div>
@@ -248,8 +248,8 @@ function PostCard({ post, onLike, liked }) {
       </div>
 
       <p style={{ fontSize:13, color: isLowCandor ? "#888780" : "#B4B2A9", lineHeight:1.65, margin:0, padding:"0 12px 10px" }}>
-        {expanded || post.content.length < 160 ? post.content : post.content.substring(0, 160) + "…"}
-        {post.content.length >= 160 && (
+        {expanded || (post.content||"").length < 160 ? (post.content||"") : (post.content||"").substring(0, 160) + "…"}
+        {(post.content||"").length >= 160 && (
           <button onClick={()=>setExpanded(!expanded)} style={{ background:"none", border:"none", color:"#85B7EB", cursor:"pointer", fontSize:12, marginLeft:4 }}>
             {expanded ? "less" : "more"}
           </button>
