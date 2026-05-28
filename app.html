@@ -634,7 +634,7 @@ function App() {
         headers: token ? {"Authorization":`Bearer ${token}`} : {}
       });
       const data = await res.json();
-      if (data.posts?.length > 0) setPosts(data.posts.map(p => ({shares:0, likes:0, comments:0, ...p, shares: parseInt(p.shares)||0, likes: parseInt(p.likes)||0, comments: parseInt(p.comments)||0, avatar: p.avatar||(p.username||"??").substring(0,2).toUpperCase(), acolor: p.acolor||"#1D9E75", tier: p.tier||"standard", candor_score: p.candor_score||75, category: p.category||"General", media_type: p.media_type||p.content_type||"text", platform_tried_suppress: !!p.suppress_post, suppressed: !!p.suppress_post, ipfs_cid: p.ipfs_hash||null, created_at: p.created_at ? new Date(p.created_at).toLocaleString() : "just now"})));
+      if (data.posts?.length > 0) setPosts(data.posts.map(p => ({...p, shares: parseInt(p.shares)||0, likes: parseInt(p.likes)||0, comments: parseInt(p.comments)||0, avatar: p.avatar||(p.username||"??").substring(0,2).toUpperCase(), acolor: p.acolor||"#1D9E75", tier: p.tier||"standard", candor_score: p.candor_score||75, category: p.category||"General", media_type: p.media_type||p.content_type||"text", platform_tried_suppress: !!p.suppress_post, suppressed: !!p.suppress_post, ipfs_cid: p.ipfs_hash||null, created_at: p.created_at ? new Date(p.created_at).toLocaleString() : "just now", shares: parseInt(p.shares)||0, likes: parseInt(p.likes)||0, comments: parseInt(p.comments)||0})));
       else setPosts(MOCK_POSTS);
     } catch(e) { setPosts(MOCK_POSTS); }
     setLoading(false);
