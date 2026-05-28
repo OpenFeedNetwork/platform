@@ -621,7 +621,7 @@ function ProfileView({ user, onLogout }) {
 }
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(()=>{ try{ const s=sessionStorage.getItem("candor_user"); return s?JSON.parse(s):null; }catch(e){return null;} });
   const [tab, setTab] = useState("feed");
   const [posts, setPosts] = useState(MOCK_POSTS);
   const [loading, setLoading] = useState(false);
@@ -640,7 +640,7 @@ function App() {
     setLoading(false);
   }, []);
 
-  const onAuth = (u) => { setUser(u); loadFeed(u.token); };
+  const onAuth = (u) => { try{ sessionStorage.setItem("candor_user", JSON.stringify(u)); }catch(e){} setUser(u); loadFeed(u.token); };
 
   if (!user) return <AuthScreen onAuth={onAuth} />;
 
@@ -690,7 +690,7 @@ function App() {
             <div style={{ fontSize:13 }}>Community voting on algorithm weights coming soon</div>
           </div>
         )}
-        {tab==="profile" && <ProfileView user={user} onLogout={()=>setUser(null)} />}
+        {tab==="profile" && <ProfileView user={user} onLogout={()=>{ sessionStorage.removeItem("candor_user"); setUser(null); }} />}
       </div>
 
       <div style={{ position:"fixed", bottom:0, left:0, right:0, background:"#0C0F14EE", backdropFilter:"blur(12px)", borderTop:"0.5px solid #1E2535", display:"flex", zIndex:50 }}>
