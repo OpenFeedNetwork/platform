@@ -214,7 +214,7 @@ async function loadFeed(){
   try{
     const res=await fetch(`${API}/api/v1/feed`,{headers:state.user?.token?{"Authorization":`Bearer ${state.user.token}`}:{}});
     const data=await res.json();
-    setState({posts:data.posts?.length>0?data.posts:MOCK_POSTS,loading:false});
+    const normalized=data.posts?.length>0?data.posts.map(p=>({...p,avatar:(p.username||"??").substring(0,2).toUpperCase(),acolor:"#1D9E75",tier:p.tier||"standard",candor_score:p.truth_verdict==="legitimate"?92:p.candor_score||75,category:p.category||"General",media_type:p.media_url?"photo":p.content_type||"text",likes:parseInt(p.likes)||0,comments:parseInt(p.comments)||0,shares:parseInt(p.shares)||0,suppressed:p.suppress_post||false,platform_tried_suppress:p.suppress_post||false,ipfs_cid:p.ipfs_hash||null,created_at:p.created_at?new Date(p.created_at).toLocaleString():"just now"})):MOCK_POSTS; setState({posts:normalized,loading:false});
   }catch(e){ setState({posts:MOCK_POSTS,loading:false}); }
 }
 
