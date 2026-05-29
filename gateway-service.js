@@ -51,6 +51,7 @@ app.use("/api/v1/feed",        proxy(SERVICES.feed,     { "^/api/v1/feed":      
 app.use("/api/v1/posts",       proxy(SERVICES.feed,     { "^/api/v1/posts":       "/api/v1/posts" }));
 app.use("/api/v1/users",       proxy(SERVICES.feed,     { "^/api/v1/users":       "/api/v1/users" }));
 app.use("/api/v1/governance",  proxy(SERVICES.feed,     { "^/api/v1/governance":  "/api/v1/governance" }));
+app.use("/api/v1/admin",       proxy(SERVICES.feed,     { "^/api/v1/admin":       "/api/v1/admin" }));
 
 // ── HEALTH + STATUS ───────────────────────────────────────────────────────────
 app.get("/health", (req, res) => res.json({ status: "ok", service: "ofa-gateway", version: "1.0.0" }));
@@ -75,6 +76,38 @@ app.get("/api/v1/status", async (req, res) => {
     services, timestamp: new Date().toISOString()
   });
 });
-
+// SUBDOMAIN ROUTING
+app.use((req, res, next) => {
+  const host = req.hostname;
+  if (host.startsWith("sentinel.")) return res.sendFile(new URL("public/sentinel/index.html", import.meta.url).pathname);
+  if (host.startsWith("reach.")) return res.sendFile(new URL("public/reach/index.html", import.meta.url).pathname);
+  if (host.startsWith("shield.")) return res.sendFile(new URL("public/shield/index.html", import.meta.url).pathname);
+  if (host.startsWith("canary.")) return res.sendFile(new URL("public/canary/index.html", import.meta.url).pathname);
+  next();
+});
 app.listen(PORT, () => console.log(`[Gateway] Running on port ${PORT}`));
 export default app;
+
+// ── SUBDOMAIN STATIC SITE ROUTING ─────────────────────────────────────────────
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { createRequire } from "module";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
+
+app.use((req, res, next) => {
+  const host = req.hostname;
+  if (host.startsWith("sentinel.")) {
+    return res.sendFile(join(__dirname, "public/sentinel/index.html"));
+  }
+  if (host.startsWith("reach.")) {
+    return res.sendFile(join(__dirname, "public/reach/index.html"));
+  }
+  if (host.startsWith("shield.")) {
+    return res.sendFile(join(__dirname, "public/shield/index.html"));
+  }
+  if (host.startsWith("canary.")) {
+    return res.sendFile(join(__dirname, "public/canary/index.html"));
+  }
+  next();
+});
