@@ -396,6 +396,34 @@ function ComposePanel({ token, userTier, onClose, onPosted }) {
   const [step, setStep]       = useState("compose"); // compose | analyzing | result | posting | done
   const [tsResult, setTsResult] = useState(null);
   const [error, setError]     = useState(null);
+  const [mediaUrl, setMediaUrl]   = useState(null);
+  const [mediaType, setMediaType] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadPct, setUploadPct] = useState(0);
+
+  const handleMediaSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true); setUploadPct(10);
+    try {
+      const fd = new FormData();
+      fd.append("media", file);
+      const interval = setInterval(() => setUploadPct(p => Math.min(p+15, 85)), 200);
+      const r = await fetch("https://open-feed-platform.fly.dev/api/v1/posts/upload", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: fd,
+      });
+      clearInterval(interval);
+      setUploadPct(100);
+      if (r.ok) {
+        const d = await r.json();
+        setMediaUrl(d.url);
+        setMediaType(d.mediaType);
+      }
+    } catch(err) { setError("Upload failed. Try again."); }
+    setTimeout(() => { setUploading(false); setUploadPct(0); }, 400);
+  };
 
   const runPreAnalysis = async () => {
     if (!content.trim()) return;
@@ -449,6 +477,7 @@ function ComposePanel({ token, userTier, onClose, onPosted }) {
     setStep("posting");
     const postData = {
       type, content: content.trim(),
+      media_url: mediaUrl || undefined,
       tags: tags.split(",").map(t=>t.trim()).filter(Boolean),
       tier, anonymous: tier !== "standard",
       whistleblower_mode: tier === "whistleblower",
@@ -551,6 +580,37 @@ function ComposePanel({ token, userTier, onClose, onPosted }) {
                 placeholder="What's your post? Truth Shield rewards specificity — names, dates, documents, sources." />
               <div style={{ fontSize:9, color:T.textMuted, textAlign:"right",
                 marginTop:4, fontFamily:"monospace" }}>{content.length}/10000</div>
+
+              {/* Media upload */}
+              <div style={{ marginTop:10 }}>
+                <input type="file" id="media-upload-input" accept="image/*,video/*"
+                  style={{ display:"none" }} onChange={handleMediaSelect} />
+                <button onClick={() => document.getElementById("media-upload-input").click()}
+                  style={{ padding:"6px 14px", borderRadius:8, cursor:"pointer",
+                    border:`1px solid ${T.border2}`, background:T.bg3,
+                    color:T.green, fontSize:11, fontFamily:"monospace",
+                    display:"flex", alignItems:"center", gap:6 }}>
+                  📎 {mediaUrl ? "Change Media" : "Attach Photo / Video"}
+                </button>
+                {uploading && (
+                  <div style={{ marginTop:8, height:3, background:T.border, borderRadius:2 }}>
+                    <div style={{ height:"100%", width:`${uploadPct}%`,
+                      background:T.green, borderRadius:2, transition:"width 0.3s" }}/>
+                  </div>
+                )}
+                {mediaUrl && !uploading && (
+                  <div style={{ marginTop:8, position:"relative", borderRadius:10, overflow:"hidden" }}>
+                    {mediaType === "image"
+                      ? <img src={mediaUrl} style={{ width:"100%", maxHeight:200, objectFit:"cover", borderRadius:10 }}/>
+                      : <video src={mediaUrl} controls style={{ width:"100%", maxHeight:200, borderRadius:10 }}/>
+                    }
+                    <button onClick={() => { setMediaUrl(null); setMediaType(null); }}
+                      style={{ position:"absolute", top:6, right:6, width:24, height:24,
+                        borderRadius:"50%", background:"rgba(0,0,0,0.7)", border:"none",
+                        color:"#fff", cursor:"pointer", fontSize:14, lineHeight:1 }}>✕</button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Tags */}
@@ -1328,7 +1388,7 @@ function App() {
       {composing && (
         <ComposePanel token={user.token} userTier={user.tier}
           onClose={()=>setComposing(false)}
-          onPosted={loadFeed} />
+          onPosted={loadFeed} apiBase="https://open-feed-platform.fly.dev/api" />
       )}
 
       {/* AUDIT MODAL */}
