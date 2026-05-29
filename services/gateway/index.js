@@ -119,6 +119,7 @@ app.use("/api/v1/stream",    proxy(SERVICES.verify));
 app.use("/api/v1/verdicts",  proxy(SERVICES.verify));
 app.use("/api/v1/sentinel",  proxy(SERVICES.sentinel));
 app.use("/api/v1/beacon",    proxy(SERVICES.beacon));
+app.use("/api/v1/admin",     proxy(SERVICES.feed));
 app.use("/api/v1/shield",    proxy(SERVICES.shield));
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: "candor-gateway", version: "2.0.0", timestamp: new Date().toISOString() }));
