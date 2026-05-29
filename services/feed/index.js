@@ -155,14 +155,8 @@ const adminAuth = (req, res, next) => {
 app.post("/api/v1/admin/auth/password", async (req, res) => {
   const { password } = req.body;
   if (!password || password !== process.env.ADMIN_PASSWORD) return res.status(401).json({ error: "Invalid password" });
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  const sessionId = crypto.randomUUID();
-  mfaSessions.set(sessionId, { code, expires: Date.now() + 10 * 60 * 1000 });
-  for (const [id, s] of mfaSessions.entries()) { if (s.expires < Date.now()) mfaSessions.delete(id); }
-  try {
-    await sendSMS(process.env.ADMIN_PHONE, `Candor Admin: Your login code is ${code}. Expires in 10 minutes.`);
-    res.json({ success: true, session_id: sessionId });
-  } catch (e) { res.status(500).json({ error: "Failed to send SMS" }); }
+  const token = jwt.sign({ role: "admin" }, (process.env.JWT_SECRET || "change-me") + "_admin", { expiresIn: "1h" });
+  res.json({ success: true, token });
 });
 
 app.post("/api/v1/admin/auth/mfa", (req, res) => {
