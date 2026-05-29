@@ -123,5 +123,81 @@ app.get("/health", async (req, res) => {
   try { await db.query("SELECT 1"); dbOk = true; } catch {}
   res.json({ status: dbOk ? "ok" : "degraded", service: "candor-feed", version: "1.0.0" });
 });
+
+
+// ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
+const mfaSessions = new Map();
+
+async function sendSMS(to, message) {
+  const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
+  const TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+  const TWILIO_FROM = process.env.TWILIO_PHONE_NUMBER;
+  const auth = Buffer.from(`${TWILIO_SID}:${TWILIO_TOKEN}`).toString("base64");
+  const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`, {
+    method: "POST",
+    headers: { "Authorization": `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ To: to, From: TWILIO_FROM, Body: message }).toString()
+  });
+  return res.ok;
+}
+
+const adminAuth = (req, res, next) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+  try {
+    const payload = jwt.verify(token, (process.env.JWT_SECRET || "change-me") + "_admin");
+    if (payload.role !== "admin") throw new Error("Not admin");
+    req.admin = payload;
+    next();
+  } catch { res.status(401).json({ error: "Invalid admin token" }); }
+};
+
+app.post("/api/v1/admin/auth/password", async (req, res) => {
+  const { password } = req.body;
+  if (!password || password !== process.env.ADMIN_PASSWORD) return res.status(401).json({ error: "Invalid password" });
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const sessionId = crypto.randomUUID();
+  mfaSessions.set(sessionId, { code, expires: Date.now() + 10 * 60 * 1000 });
+  for (const [id, s] of mfaSessions.entries()) { if (s.expires < Date.now()) mfaSessions.delete(id); }
+  try {
+    await sendSMS(process.env.ADMIN_PHONE, `Candor Admin: Your login code is ${code}. Expires in 10 minutes.`);
+    res.json({ success: true, session_id: sessionId });
+  } catch (e) { res.status(500).json({ error: "Failed to send SMS" }); }
+});
+
+app.post("/api/v1/admin/auth/mfa", (req, res) => {
+  const { session_id, code } = req.body;
+  const session = mfaSessions.get(session_id);
+  if (!session) return res.status(401).json({ error: "Session not found or expired" });
+  if (session.expires < Date.now()) { mfaSessions.delete(session_id); return res.status(401).json({ error: "Code expired" }); }
+  if (session.code !== code) return res.status(401).json({ error: "Invalid code" });
+  mfaSessions.delete(session_id);
+  const token = jwt.sign({ role: "admin" }, (process.env.JWT_SECRET || "change-me") + "_admin", { expiresIn: "1h" });
+  res.json({ token });
+});
+
+app.post("/api/v1/admin/auth/resend", async (req, res) => {
+  const { session_id } = req.body;
+  const session = mfaSessions.get(session_id);
+  if (!session) return res.status(404).json({ error: "Session not found" });
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  session.code = code; session.expires = Date.now() + 10 * 60 * 1000;
+  await sendSMS(process.env.ADMIN_PHONE, `Candor Admin: Your new login code is ${code}. Expires in 10 minutes.`);
+  res.json({ success: true });
+});
+
+app.get("/api/v1/admin/stats", adminAuth, async (req, res) => {
+  try {
+    const [userStats, postStats, recentUsers, recentPosts] = await Promise.all([
+      db.query("SELECT COUNT(*) as total, COUNT(CASE WHEN created_at > NOW() - INTERVAL '24 hours' THEN 1 END) as today, COUNT(CASE WHEN created_at > NOW() - INTERVAL '7 days' THEN 1 END) as this_week FROM users"),
+      db.query("SELECT COUNT(*) as total, COUNT(CASE WHEN created_at > NOW() - INTERVAL '24 hours' THEN 1 END) as today FROM posts WHERE suppress_post = false"),
+      db.query("SELECT id, username, email, created_at FROM users ORDER BY created_at DESC LIMIT 10"),
+      db.query("SELECT p.id, p.content, p.created_at, u.username FROM posts p JOIN users u ON p.user_id = u.id WHERE p.suppress_post = false ORDER BY p.created_at DESC LIMIT 10")
+    ]);
+    res.json({ users: userStats.rows[0], posts: postStats.rows[0], recent_users: recentUsers.rows, recent_posts: recentPosts.rows, machines: [] });
+  } catch (e) { res.status(500).json({ error: "Stats query failed", detail: e.message }); }
+});
+// ─── END ADMIN ROUTES ─────────────────────────────────────────────────────────
+
 app.listen(PORT, () => console.log("[Feed] Running on port " + PORT));
 export default app;
