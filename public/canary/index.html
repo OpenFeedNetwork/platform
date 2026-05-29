@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Warrant Canary — Candor: The Open Feed Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital,wght@0,400;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:       #080C12;
+  --surface:  #0D1420;
+  --surface2: #111C2D;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #D8E6F5;
+  --muted:    #6B88A8;
+  --dim:      #3A5270;
+  --green:    #29D08A;
+  --green-bg: rgba(41,208,138,0.06);
+  --green-border: rgba(41,208,138,0.2);
+  --red:      #FF6B6B;
+  --red-bg:   rgba(255,107,107,0.06);
+  --amber:    #F5C842;
+  --amber-bg: rgba(245,200,66,0.06);
+  --blue:     #4A90D9;
+  --mono:     'JetBrains Mono', monospace;
+  --serif:    'Instrument Serif', Georgia, serif;
+  --sans:     'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Nav ── */
+nav {
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,12,18,0.95);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.nav-shield {
+  width: 28px;
+  height: 28px;
+}
+
+.nav-name {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.nav-name span { color: var(--muted); }
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-links a {
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  font-family: var(--mono);
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 80px 48px 60px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black, transparent);
+}
+
+.canary-icon {
+  font-size: 48px;
+  margin-bottom: 24px;
+  display: block;
+  position: relative;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.status-badge.alive {
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  color: var(--green);
+}
+
+.status-badge.dead {
+  background: var(--red-bg);
+  border: 1px solid rgba(255,107,107,0.2);
+  color: var(--red);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-weight: 400;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.hero-sub {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  font-weight: 300;
+  line-height: 1.7;
+  position: relative;
+}
+
+/* ── Main layout ── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 56px 48px;
+}
+
+/* ── Statement block ── */
+.statement-block {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.statement-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.statement-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statement-date {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--green);
+}
+
+.statement-body {
+  padding: 32px;
+}
+
+/* ── Assertions ── */
+.assertion-list {
+  list-style: none;
+  margin: 24px 0;
+}
+
+.assertion {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.assertion:last-child { border-bottom: none; }
+
+.assertion-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  color: var(--green);
+  font-weight: 500;
+}
+
+.assertion-text {
+  color: var(--text);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.assertion-text em {
+  font-style: normal;
+  color: var(--muted);
+  font-size: 13px;
+  display: block;
+  margin-top: 3px;
+}
+
+/* ── Signature block ── */
+.sig-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--muted);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.sig-block .sig-header { color: var(--dim); margin-bottom: 8px; }
+.sig-block .sig-content { color: var(--text); }
+.sig-block .sig-footer { color: var(--dim); margin-top: 8px; }
+
+/* ── Info sections ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.info-card-icon { font-size: 22px; margin-bottom: 12px; display: block; }
+.info-card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+.info-card-desc { font-size: 13px; color: var(--muted); line-height: 1.7; font-weight: 300; }
+
+/* ── Coverage table ── */
+.coverage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 40px;
+}
+
+.coverage-table th {
+  text-align: left;
+  padding: 10px 16px;
+  background: var(--surface2);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+.coverage-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  vertical-align: top;
+}
+
+.coverage-table tr:last-child td { border-bottom: none; }
+.coverage-table td:first-child { color: var(--text); font-weight: 500; }
+
+.check { color: var(--green); font-family: var(--mono); }
+
+/* ── Timeline ── */
+.timeline { margin-bottom: 40px; }
+
+.timeline-item {
+  display: flex;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+
+.timeline-date {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--green);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.timeline-text { font-size: 13px; color: var(--muted); }
+.timeline-text strong { color: var(--text); }
+
+/* ── PGP key block ── */
+.pgp-block {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.pgp-header {
+  padding: 12px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pgp-key {
+  padding: 20px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ── Alert ── */
+.alert {
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  font-size: 14px;
+  border-left: 3px solid;
+  line-height: 1.6;
+}
+
+.alert.warning {
+  background: var(--amber-bg);
+  border-color: var(--amber);
+  color: var(--muted);
+}
+
+.alert strong { color: var(--text); }
+
+/* ── Section header ── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.section-desc {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links a {
+  font-size: 12px;
+  color: var(--dim);
+  text-decoration: none;
+  font-family: var(--mono);
+}
+.footer-links a:hover { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <a class="nav-brand" href="https://candor.network">
+    <svg class="nav-shield" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2L3 6.5V14C3 19.8 7.9 25.2 14 27C20.1 25.2 25 19.8 25 14V6.5L14 2Z" fill="rgba(41,208,138,0.1)" stroke="rgba(41,208,138,0.4)" stroke-width="1.5"/>
+      <path d="M10 14L13 17L18 11" stroke="#29D08A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="nav-name">candor.network <span>/ canary</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#statement">Statement</a>
+    <a href="#coverage">Coverage</a>
+    <a href="#verify">Verify</a>
+    <a href="#history">History</a>
+    <a href="https://reach.candor.network/docs">Reach docs</a>
+    <a href="https://sentinel.candor.network/docs">Sentinel docs</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <span class="canary-icon">🐤</span>
+  <div class="status-badge alive" id="status-badge">
+    <span class="status-dot"></span>
+    CANARY ALIVE — UPDATED JUNE 1, 2026
+  </div>
+  <h1>Warrant Canary</h1>
+  <p class="hero-sub">
+    A signed, monthly statement affirming that Candor: The Open Feed Network
+    has not received secret government orders, national security letters,
+    or gag orders preventing disclosure of legal process.
+  </p>
+</div>
+
+<!-- ── Main content ── -->
+<div class="container">
+
+  <!-- ── How to read this ── -->
+  <div class="alert warning">
+    <strong>How to read this page:</strong> As long as this page is updated monthly with a current date and valid PGP signature, the canary is alive — no secret orders have been received. If this page stops updating, or the assertions below change, treat it as a signal that something has changed. The canary dies so we don't have to lie.
+  </div>
+
+  <!-- ── Current statement ── -->
+  <div id="statement">
+    <div class="section-label">Current Statement</div>
+    <div class="statement-block">
+      <div class="statement-header">
+        <span class="statement-title">Warrant Canary Statement v1 — Signed</span>
+        <span class="statement-date">June 1, 2026</span>
+      </div>
+      <div class="statement-body">
+
+        <p style="font-size:14px;color:var(--muted);margin-bottom:24px;font-weight:300;">
+          This statement is issued by <strong style="color:var(--text)">Open Feed Network, Inc.</strong>
+          (EIN: 42-2688100), a Wyoming C-Corporation operating
+          Candor: The Open Feed Network, including Candor Reach, Candor Sentinel,
+          and the CandorShield safety suite. It is updated on the first of each month
+          and signed with our PGP key (fingerprint below).
+        </p>
+
+        <ul class="assertion-list">
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> received any National Security Letters (NSLs) under 18 U.S.C. § 2709.
+              <em>Covers all Candor products and infrastructure as of the date of this statement.</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> received any orders from the Foreign Intelligence Surveillance Court (FISC) under FISA.
+              <em>No orders requiring disclosure of user data or platform access.</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> received any secret law enforcement requests for bulk user data or metadata.
+              <em>No voluntary disclosures outside of standard legal process with user notification where permitted.</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> been served with any gag orders, court orders, or other legal instruments
+              that prevent us from disclosing the existence of legal process directed at Candor.
+              <em>We are currently free to publish this statement without legal restriction.</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> granted any government agency, law enforcement body, or intelligence
+              service direct access to Candor infrastructure, servers, databases, or encryption keys.
+              <em>Covers all regions: iad, lax, ams (Fly.io infrastructure).</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> installed any backdoors, intentional vulnerabilities, or secret
+              monitoring capabilities in any Candor product at the request of any government entity.
+              <em>Covers Candor Reach, Candor Sentinel, Candor Beacon, Candor ThreatShield, Candor Gateway, and Candor Shield.</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have <strong>not</strong> been subject to any search or seizure of Candor servers,
+              source code, or user data by any government entity.
+              <em>No warrants or subpoenas have been executed against our infrastructure.</em>
+            </span>
+          </li>
+          <li class="assertion">
+            <span class="assertion-check">✓</span>
+            <span class="assertion-text">
+              We have received <strong>zero</strong> government requests of any kind in the period
+              covered by this statement.
+              <em>This will change to a non-zero number if/when we receive legal process we are permitted to disclose.</em>
+            </span>
+          </li>
+        </ul>
+
+        <p style="font-size:13px;color:var(--muted);margin-top:8px;padding-top:20px;border-top:1px solid var(--border);">
+          Signed under penalty of perjury by <strong style="color:var(--text)">Rolando Cruz Alvarez</strong>,
+          Founder & CEO, Open Feed Network, Inc.<br>
+          Statement date: <strong style="color:var(--green)">June 1, 2026</strong> —
+          Next update due: <strong style="color:var(--text)">July 1, 2026</strong>
+        </p>
+
+        <!-- PGP Signature -->
+        <div class="sig-block" style="margin-top:20px;">
+<span class="sig-header">-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512</span>
+
+<span class="sig-content">CANDOR WARRANT CANARY STATEMENT
+Open Feed Network, Inc. | EIN: 42-2688100
+Statement Date: June 1, 2026
+Statement Version: 1
+
+As of June 1, 2026, Open Feed Network, Inc. affirms all eight
+assertions listed at candor.network/canary. The canary is ALIVE.
+No national security letters, FISA orders, secret law enforcement
+requests, gag orders, infrastructure access grants, backdoors,
+searches, or seizures have occurred.
+
+Bitcoin block height at time of signing: [INSERT CURRENT BLOCK HEIGHT]
+Bitcoin block hash: [INSERT CURRENT BLOCK HASH]
+
+/s/ Rolando Cruz Alvarez
+Founder & CEO, Open Feed Network, Inc.</span>
+
+<span class="sig-footer">-----BEGIN PGP SIGNATURE-----
+
+[SIGNATURE WILL BE INSERTED BY SIGNING SCRIPT]
+[Run: ./sign-canary.sh to generate]
+
+-----END PGP SIGNATURE-----</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Coverage ── -->
+  <div id="coverage" style="margin-top:56px;">
+    <div class="section-label">Coverage</div>
+    <div class="section-title">What this canary covers</div>
+    <p class="section-desc">This canary covers all products and infrastructure operated by Open Feed Network, Inc. CandorShield modules receive special attention given they are sold to government and law enforcement agencies — the exact entities that issue NSLs.</p>
+
+    <table class="coverage-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>NSL</th>
+          <th>FISA</th>
+          <th>Bulk data</th>
+          <th>Infrastructure access</th>
+          <th>Backdoors</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Candor Reach (open feed)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Candor Sentinel (API)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Candor Beacon (first responder)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Candor ThreatShield (federal)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Candor Gateway (child safety)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Candor Shield (disinformation)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Fly.io infrastructure (iad/lax/ams)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td>Smart contract (0x24Dd7C...)</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── How to verify ── -->
+  <div id="verify" style="margin-top:56px;">
+    <div class="section-label">Verification</div>
+    <div class="section-title">How to verify this statement</div>
+    <p class="section-desc">Every monthly statement is signed with our PGP key. You can independently verify that the statement is authentic and has not been modified. The Bitcoin block hash included in each statement proves it was created after a specific point in time — preventing backdating.</p>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <span class="info-card-icon">🔑</span>
+        <div class="info-card-title">Step 1 — Import our PGP key</div>
+        <div class="info-card-desc">Download and import our public key from the section below, or fetch it from a public keyserver using our fingerprint. Verify the fingerprint matches independently.</div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">📋</span>
+        <div class="info-card-title">Step 2 — Copy the signed statement</div>
+        <div class="info-card-desc">Copy the full signed block above including the PGP headers and signature. Save it as a <code style="font-family:var(--mono);font-size:12px;color:var(--green);">.asc</code> file.</div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">✅</span>
+        <div class="info-card-title">Step 3 — Verify with GPG</div>
+        <div class="info-card-desc">
+          Run: <code style="font-family:var(--mono);font-size:12px;color:var(--green);">gpg --verify canary.asc</code><br>
+          A valid signature from our key fingerprint confirms authenticity.
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">₿</span>
+        <div class="info-card-title">Step 4 — Check Bitcoin timestamp</div>
+        <div class="info-card-desc">Look up the Bitcoin block hash in the statement at <a href="https://mempool.space" target="_blank" style="color:var(--green);">mempool.space</a> to confirm the statement was created after that block was mined.</div>
+      </div>
+    </div>
+
+    <!-- PGP Public Key -->
+    <div class="section-label" style="margin-top:8px;">Our PGP Public Key</div>
+    <div class="pgp-block">
+      <div class="pgp-header">
+        <span>Open Feed Network, Inc. — Canary Signing Key</span>
+        <span style="color:var(--green)">Fingerprint: [GENERATED BY SETUP SCRIPT]</span>
+      </div>
+      <div class="pgp-key">-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+[PUBLIC KEY WILL BE INSERTED AFTER RUNNING: ./setup-canary-key.sh]
+
+This key is used exclusively for signing the monthly warrant canary
+statement. It is stored offline in cold storage and used only for
+the monthly signing operation.
+
+Key type:    Ed25519 (or RSA-4096)
+Key ID:      [GENERATED]
+Fingerprint: [GENERATED]
+Created:     June 1, 2026
+Expires:     June 1, 2028
+
+Verify independently at:
+  - keys.openpgp.org
+  - keyserver.ubuntu.com
+  - github.com/candor-network/canary
+
+-----END PGP PUBLIC KEY BLOCK-----</div>
+    </div>
+  </div>
+
+  <!-- ── History ── -->
+  <div id="history" style="margin-top:56px;">
+    <div class="section-label">Statement History</div>
+    <div class="section-title">Monthly archive</div>
+    <p class="section-desc">All previous signed statements are preserved in our public GitHub repository. A gap in this timeline means something changed.</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <span class="timeline-date">Jun 1, 2026</span>
+        <span class="timeline-text"><strong>v1 — Initial statement.</strong> Canary established. All assertions affirmed. Zero government requests received. <a href="https://github.com/candor-network/canary/blob/main/statements/2026-06-01.asc" style="color:var(--green);font-family:var(--mono);font-size:12px;">View signed statement →</a></span>
+      </div>
+      <div class="timeline-item" style="opacity:0.4;">
+        <span class="timeline-date">Jul 1, 2026</span>
+        <span class="timeline-text"><em style="color:var(--dim);">Pending — due July 1, 2026</em></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── What changes mean ── -->
+  <div style="margin-top:56px;">
+    <div class="section-label">Signal Guide</div>
+    <div class="section-title">What changes to this page mean</div>
+    <p class="section-desc">Different changes to this page signal different things. Learn to read them.</p>
+
+    <div class="info-grid">
+      <div class="info-card" style="border-color:rgba(41,208,138,0.2);">
+        <span class="info-card-icon">✅</span>
+        <div class="info-card-title" style="color:var(--green);">Page updates monthly — all assertions present</div>
+        <div class="info-card-desc">The canary is alive. No secret orders have been received. Normal operation. Continue using Candor with confidence.</div>
+      </div>
+      <div class="info-card" style="border-color:rgba(245,200,66,0.2);">
+        <span class="info-card-icon">⚠️</span>
+        <div class="info-card-title" style="color:var(--amber);">One or more assertions disappear</div>
+        <div class="info-card-desc">An assertion was removed, likely because it is no longer true. We cannot say why due to legal constraints. Treat the missing assertion as the signal.</div>
+      </div>
+      <div class="info-card" style="border-color:rgba(255,107,107,0.2);">
+        <span class="info-card-icon">🛑</span>
+        <div class="info-card-title" style="color:var(--red);">Page stops updating past the due date</div>
+        <div class="info-card-desc">The canary is dead. We have received a secret order that prevents us from maintaining it. This is the strongest signal — treat it seriously.</div>
+      </div>
+      <div class="info-card" style="border-color:rgba(255,107,107,0.2);">
+        <span class="info-card-icon">💀</span>
+        <div class="info-card-title" style="color:var(--red);">Page is taken down entirely</div>
+        <div class="info-card-desc">The most serious signal. We have been compelled to remove the canary, which itself indicates severe legal pressure. Assume the worst.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Legal note ── -->
+  <div class="alert warning" style="margin-top:40px;">
+    <strong>Legal note:</strong> This warrant canary is maintained in good faith and updated monthly. It does not constitute legal advice and should not be relied upon as the sole basis for security decisions. The legal status of warrant canaries in the United States remains unsettled. We maintain this canary because we believe transparency is a core obligation to our users, not because we are legally required to do so.
+  </div>
+
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <span class="footer-note">candor.network/canary — updated monthly — last update June 1, 2026</span>
+  <div class="footer-links">
+    <a href="https://github.com/candor-network/canary">GitHub archive</a>
+    <a href="mailto:legal@candor.network">legal@candor.network</a>
+    <a href="https://candor.network">candor.network</a>
+  </div>
+</footer>
+
+<script>
+// Auto-check if canary is overdue and update status badge
+const lastUpdate = new Date('2026-06-01');
+const nextDue    = new Date('2026-07-01');
+const now        = new Date();
+
+if (now > nextDue) {
+  const badge = document.getElementById('status-badge');
+  badge.className = 'status-badge dead';
+  badge.innerHTML = '<span class="status-dot"></span> CANARY OVERDUE — LAST UPDATE ' +
+    lastUpdate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+}
+</script>
+
+</body>
+</html>

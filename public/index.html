@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candor — The Open Feed Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#080809;
+  --surface:#0f0f12;
+  --surface2:#16161b;
+  --surface3:#1e1e25;
+  --border:rgba(255,255,255,0.06);
+  --border-hi:rgba(255,255,255,0.12);
+  --text:#eeedf2;
+  --text-2:#9998a5;
+  --text-3:#4f4e5a;
+  --accent:#6c5ce7;
+  --accent-hi:#8b7ff5;
+  --accent-glow:rgba(108,92,231,0.15);
+  --green:#00d68f;
+  --green-dim:rgba(0,214,143,0.1);
+  --amber:#f0a500;
+  --amber-dim:rgba(240,165,0,0.1);
+  --red:#ff5e5e;
+  --red-dim:rgba(255,94,94,0.1);
+  --nav-h:60px;
+  --tab-h:56px;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.022;pointer-events:none;z-index:9999}
+
+.amb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(130px);z-index:0}
+.amb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(108,92,231,0.1) 0%,transparent 70%);top:-200px;left:-100px;animation:d1 22s ease-in-out infinite alternate}
+.amb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(0,214,143,0.06) 0%,transparent 70%);bottom:-100px;right:-80px;animation:d2 27s ease-in-out infinite alternate}
+@keyframes d1{from{transform:translate(0,0)}to{transform:translate(50px,35px)}}
+@keyframes d2{from{transform:translate(0,0)}to{transform:translate(-35px,-50px)}}
+
+/* ═══════════ NAV ═══════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:rgba(8,8,9,0.85);backdrop-filter:blur(24px);
+  border-bottom:0.5px solid var(--border);
+  animation:fadeDown 0.8s ease both
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;cursor:pointer}
+.logo-mark{
+  width:30px;height:30px;border-radius:7px;
+  background:linear-gradient(135deg,var(--accent) 0%,#4a3bc4 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;
+  box-shadow:0 0 18px rgba(108,92,231,0.35)
+}
+.logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;letter-spacing:-0.3px}
+.logo-sub{font-size:9px;color:var(--text-3);letter-spacing:0.4px}
+
+.nav-center{display:none}
+@media(min-width:768px){
+  .nav-center{display:flex;align-items:center;gap:6px}
+  .nav-tab{font-size:13px;color:var(--text-3);background:none;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;transition:color 0.15s,background 0.15s;font-family:'DM Sans',sans-serif}
+  .nav-tab:hover{color:var(--text);background:var(--surface2)}
+  .nav-tab.active{color:var(--text);background:var(--surface2)}
+}
+
+.nav-right{display:flex;align-items:center;gap:10px}
+.sentinel-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;color:var(--green);background:var(--green-dim);border:0.5px solid rgba(0,214,143,0.2);border-radius:100px;padding:5px 10px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)}}
+.btn-join{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;background:var(--accent);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;transition:all 0.2s}
+.btn-join:hover{background:var(--accent-hi);transform:translateY(-1px);box-shadow:0 4px 20px rgba(108,92,231,0.3)}
+.btn-ghost{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-3);background:none;border:0.5px solid var(--border-hi);border-radius:8px;padding:8px 14px;cursor:pointer;transition:all 0.2s;display:none}
+@media(min-width:600px){.btn-ghost{display:block}}
+.btn-ghost:hover{color:var(--text);border-color:var(--text-3)}
+
+/* ═══════════ HERO ═══════════ */
+#hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:100px 24px 60px
+}
+
+.a1{animation:rise 0.9s 0.1s cubic-bezier(0.22,1,0.36,1) both}
+.a2{animation:rise 0.9s 0.25s cubic-bezier(0.22,1,0.36,1) both}
+.a3{animation:rise 0.9s 0.4s cubic-bezier(0.22,1,0.36,1) both}
+.a4{animation:rise 0.9s 0.55s cubic-bezier(0.22,1,0.36,1) both}
+.a5{animation:rise 0.9s 0.7s cubic-bezier(0.22,1,0.36,1) both}
+.a6{animation:rise 0.9s 0.85s cubic-bezier(0.22,1,0.36,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:28px}
+.eyebrow-dot{width:4px;height:4px;border-radius:50%;background:var(--text-3)}
+
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(44px,8vw,96px);font-weight:800;line-height:0.96;letter-spacing:-3px;color:var(--text);max-width:860px;margin-bottom:32px}
+.word-reveal{display:inline-block;color:transparent;-webkit-text-stroke:1px rgba(139,127,245,0.5);position:relative;white-space:nowrap}
+.word-reveal::after{content:attr(data-t);position:absolute;inset:0;color:var(--accent-hi);clip-path:inset(0 100% 0 0);animation:reveal 1.4s 1s cubic-bezier(0.76,0,0.24,1) forwards;-webkit-text-stroke:0}
+@keyframes reveal{to{clip-path:inset(0 0% 0 0)}}
+
+.hero-sub{font-size:clamp(16px,2.2vw,21px);font-weight:300;font-style:italic;color:var(--text-2);max-width:560px;line-height:1.65;margin-bottom:14px}
+.hero-quiet{font-size:13px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.3px;margin-bottom:44px}
+
+.cta-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:56px}
+.cta-primary{display:flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:#fff;background:var(--accent);border:none;border-radius:10px;padding:14px 28px;cursor:pointer;transition:all 0.2s;box-shadow:0 0 40px rgba(108,92,231,0.25)}
+.cta-primary:hover{background:var(--accent-hi);transform:translateY(-2px);box-shadow:0 8px 40px rgba(108,92,231,0.4)}
+.cta-primary svg{width:14px;height:14px;transition:transform 0.2s}
+.cta-primary:hover svg{transform:translateX(3px)}
+.cta-link{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-3);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:color 0.15s}
+.cta-link:hover{color:var(--text-2)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;width:100%;max-width:860px;margin-bottom:56px}
+.pillar{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:20px;text-align:left;transition:border-color 0.2s,transform 0.18s;cursor:default;position:relative;overflow:hidden}
+.pillar:hover{border-color:var(--border-hi);transform:translateY(-2px)}
+/* subtle feature tooltip on hover */
+.pillar-tip{position:absolute;bottom:0;left:0;right:0;background:var(--surface2);border-top:0.5px solid var(--border);padding:8px 14px;font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;transform:translateY(100%);transition:transform 0.2s ease;letter-spacing:0.3px}
+.pillar:hover .pillar-tip{transform:translateY(0)}
+.pillar-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:12px}
+.pi-purple{background:var(--accent-glow)}
+.pi-green{background:var(--green-dim)}
+.pi-amber{background:var(--amber-dim)}
+.pillar-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);letter-spacing:-0.3px;margin-bottom:5px}
+.pillar-body{font-size:12px;color:var(--text-2);line-height:1.6}
+
+/* scrolling strip */
+.strip-label{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;display:flex;align-items:center;gap:8px;width:100%;max-width:860px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+
+.strip-wrap{width:100vw;overflow:hidden;position:relative;left:50%;transform:translateX(-50%);mask-image:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%)}
+.strip{display:flex;gap:10px;width:max-content;animation:scroll 40s linear infinite;padding:4px 0 8px}
+.strip:hover{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.sc{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px;width:280px;flex-shrink:0;transition:border-color 0.2s;cursor:pointer}
+.sc:hover{border-color:var(--border-hi)}
+.sc-meta{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.sc-avi{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
+.sc-name{font-size:11px;font-weight:500;color:var(--text)}
+.sc-handle{font-size:9px;color:var(--text-3)}
+.sc-body{font-size:12px;color:#c8c7d2;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.sc-tag{font-size:8px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:100px;letter-spacing:0.4px}
+.tag-g{background:var(--green-dim);color:var(--green);border:0.5px solid rgba(0,214,143,0.2)}
+.tag-p{background:var(--accent-glow);color:var(--accent-hi);border:0.5px solid rgba(108,92,231,0.25)}
+.sc-score{font-size:9px;font-family:'DM Mono',monospace;color:var(--text-3)}
+.sc-score span{color:var(--green)}
+
+/* ═══════════ SHELL (feed page) ═══════════ */
+#feed-page{display:none;position:relative;z-index:1}
+#feed-page.active{display:block}
+
+.shell{display:grid;grid-template-columns:1fr;min-height:calc(100vh - var(--nav-h));padding-top:var(--nav-h);padding-bottom:var(--tab-h)}
+@media(min-width:1024px){.shell{grid-template-columns:240px 1fr 300px;padding-bottom:0}}
+
+/* left sidebar */
+.sidebar-left{display:none}
+@media(min-width:1024px){
+  .sidebar-left{display:flex;flex-direction:column;gap:4px;padding:20px 12px;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;border-right:0.5px solid var(--border)}
+}
+.sl-user{display:flex;align-items:center;gap:9px;padding:8px 12px 16px}
+.sl-avi{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.sl-name{font-size:13px;font-weight:500}
+.sl-handle{font-size:10px;color:var(--text-3)}
+.sl-link{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;font-size:13px;color:var(--text-2);cursor:pointer;transition:all 0.15s;background:none;border:none;text-align:left;font-family:'DM Sans',sans-serif;width:100%}
+.sl-link:hover{color:var(--text);background:var(--surface2)}
+.sl-link.active{color:var(--text);background:var(--surface2)}
+.sl-link svg{width:17px;height:17px;flex-shrink:0}
+/* subtle feature badge on sidebar links */
+.sl-badge{margin-left:auto;font-size:8px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:100px;background:var(--green-dim);color:var(--green);border:0.5px solid rgba(0,214,143,0.2)}
+.sl-badge.new{background:var(--accent-glow);color:var(--accent-hi);border-color:rgba(108,92,231,0.25)}
+.sl-sec{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);font-family:'DM Mono',monospace;padding:10px 12px 4px}
+.sl-div{height:0.5px;background:var(--border);margin:6px 12px}
+.sl-compose{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:auto;margin-bottom:8px;width:100%}
+.sl-compose:hover{background:var(--accent-hi);transform:translateY(-1px);box-shadow:0 4px 20px rgba(108,92,231,0.3)}
+
+/* main feed */
+.feed-main{min-height:calc(100vh - var(--nav-h));border-right:0.5px solid var(--border)}
+.feed-head{position:sticky;top:var(--nav-h);z-index:100;background:rgba(8,8,9,0.88);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:0 16px;display:flex;align-items:stretch;height:46px}
+.feed-tab{font-size:13px;font-weight:500;color:var(--text-3);background:none;border:none;padding:0 14px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px}
+.feed-tab:hover{color:var(--text)}
+.feed-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+/* subtle count badge on tabs */
+.tab-count{font-size:9px;font-family:'DM Mono',monospace;background:var(--red-dim);color:var(--red);border:0.5px solid rgba(255,94,94,0.2);padding:1px 5px;border-radius:100px}
+
+.feed-body{padding:12px}
+@media(min-width:1024px){.feed-body{padding:18px}}
+
+/* bento */
+.bento{display:flex;flex-direction:column;gap:8px}
+@media(min-width:600px){.bento{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.bento .c-feat{grid-column:1/-1}}
+@media(min-width:1024px){.bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:166px;gap:10px}.bento .c-feat{grid-column:1/4;grid-row:1/3}.bento .c-s1{grid-column:4/6;grid-row:1/2}.bento .c-s2{grid-column:6/7;grid-row:1/2}.bento .c-threat{grid-column:4/7;grid-row:2/3}.bento .c-wide{grid-column:1/5;grid-row:3/4}.bento .c-explore{grid-column:5/7;grid-row:3/4}}
+
+/* cards */
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative;transition:border-color 0.2s,transform 0.18s,box-shadow 0.2s;cursor:pointer}
+.card:hover{border-color:var(--border-hi);transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,0,0,0.45)}
+.card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(108,92,231,0.04) 0%,transparent 65%);pointer-events:none}
+.c-feat{min-height:220px}
+.c-feat .accent-bar{position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--accent) 0%,rgba(108,92,231,0) 100%);border-radius:14px 14px 0 0}
+@media(min-width:600px){.c-feat{min-height:300px}}
+@media(min-width:1024px){.c-feat{min-height:unset}}
+.c-s1,.c-s2,.c-threat{min-height:140px}
+
+.post-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.avi{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.a-name{font-size:12px;font-weight:500}
+.a-handle{font-size:10px;color:var(--text-3)}
+
+.post-body{font-size:14px;line-height:1.55;color:#d4d3de;flex:1;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.c-feat .post-body{font-size:15px;-webkit-line-clamp:6}
+
+.post-acts{display:flex;align-items:center;gap:14px;padding-top:10px;border-top:0.5px solid var(--border);margin-top:10px}
+.act{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3);background:none;border:none;cursor:pointer;transition:color 0.15s;font-family:'DM Sans',sans-serif;font-weight:500}
+.act:hover{color:var(--text)}
+.act.liked{color:var(--red)}
+.act svg{width:13px;height:13px;transition:transform 0.15s cubic-bezier(0.34,1.56,0.64,1)}
+
+.tag{font-size:9px;font-family:'DM Mono',monospace;padding:3px 8px;border-radius:100px;letter-spacing:0.4px;white-space:nowrap;flex-shrink:0}
+.tag-purple{background:var(--accent-glow);color:var(--accent-hi);border:0.5px solid rgba(108,92,231,0.25)}
+.tag-green{background:var(--green-dim);color:var(--green);border:0.5px solid rgba(0,214,143,0.2)}
+.tag-amber{background:var(--amber-dim);color:var(--amber);border:0.5px solid rgba(240,165,0,0.2)}
+.tag-red{background:var(--red-dim);color:var(--red);border:0.5px solid rgba(255,94,94,0.2)}
+
+.mlbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);font-family:'DM Mono',monospace;margin-bottom:6px}
+.mnum{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-2px;line-height:1;color:var(--text)}
+.delta{font-size:11px;font-family:'DM Mono',monospace;margin-top:3px}
+.up{color:var(--green)}
+.down{color:var(--red)}
+.spark{display:flex;align-items:flex-end;gap:2px;height:26px;margin-top:8px}
+.sb{flex:1;border-radius:2px;background:rgba(108,92,231,0.2);transition:background 0.2s}
+.sb:hover{background:rgba(108,92,231,0.7)}
+.sb.hi{background:rgba(108,92,231,0.55)}
+.sb.r{background:rgba(255,94,94,0.28)}
+.sb.r.hi{background:rgba(255,94,94,0.6)}
+
+.tr-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:11px}
+.tr-row:last-child{border-bottom:none}
+.tr-lbl{color:#b0b0be}
+.score{font-family:'DM Mono',monospace;font-size:10px;padding:2px 7px;border-radius:4px}
+.s-lo{background:rgba(0,214,143,0.1);color:var(--green)}
+.s-md{background:var(--amber-dim);color:var(--amber)}
+.s-hi{background:var(--red-dim);color:var(--red)}
+
+.pill{font-size:10px;padding:4px 10px;border-radius:100px;border:0.5px solid var(--border);color:var(--text-3);background:var(--surface2);cursor:pointer;transition:all 0.15s;display:inline-block;margin:3px 3px 0 0}
+.pill:hover{border-color:var(--accent);color:var(--accent-hi)}
+
+.w-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;height:100%}
+.w-icon{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--accent-glow)}
+
+/* right sidebar */
+.sidebar-right{display:none}
+@media(min-width:1024px){.sidebar-right{display:flex;flex-direction:column;gap:10px;padding:18px 14px;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto}}
+
+.widget{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:15px}
+.w-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:11px;letter-spacing:-0.3px}
+
+.ts-bar-wrap{flex:1;height:3px;background:var(--surface3);border-radius:100px;overflow:hidden}
+.ts-bar{height:100%;border-radius:100px}
+.ts-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ts-lbl{font-size:10px;color:var(--text-2);width:100px;flex-shrink:0}
+.ts-val{font-size:9px;font-family:'DM Mono',monospace;width:26px;text-align:right;flex-shrink:0}
+
+.trend-item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;transition:opacity 0.15s}
+.trend-item:last-child{border-bottom:none}
+.trend-item:hover{opacity:0.7}
+.trend-n{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-3);width:14px;flex-shrink:0}
+.trend-tag{font-size:11px;font-weight:500;color:var(--text)}
+.trend-ct{font-size:10px;color:var(--text-3);margin-top:1px}
+
+.who-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.who-item:last-child{border-bottom:none}
+.who-avi{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.who-name{font-size:11px;font-weight:500;color:var(--text)}
+.who-handle{font-size:9px;color:var(--text-3)}
+.follow{margin-left:auto;font-size:10px;font-weight:500;background:none;border:0.5px solid var(--border-hi);color:var(--text-2);border-radius:100px;padding:4px 10px;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.follow:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.infra-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:10px}
+.infra-name{color:#b0b0be}
+.infra-ok{color:var(--green);font-family:'DM Mono',monospace;font-size:9px}
+
+/* bottom tabs */
+.btabs{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--tab-h);display:flex;align-items:stretch;background:rgba(8,8,9,0.93);backdrop-filter:blur(24px);border-top:0.5px solid var(--border)}
+@media(min-width:1024px){.btabs{display:none}}
+.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--text-3);transition:color 0.15s;font-family:'DM Sans',sans-serif}
+.btab.active{color:var(--accent-hi)}
+.btab svg{width:20px;height:20px}
+.btab-lbl{font-size:9px;font-weight:500;letter-spacing:0.3px}
+
+.fab{position:fixed;bottom:calc(var(--tab-h)+14px);right:16px;z-index:199;width:48px;height:48px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(108,92,231,0.4);transition:all 0.2s}
+.fab:hover{background:var(--accent-hi);transform:scale(1.08)}
+.fab svg{width:19px;height:19px;color:#fff}
+@media(min-width:1024px){.fab{display:none}}
+
+/* compose */
+.compose-ov{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:flex-end}
+.compose-ov.open{display:flex}
+.compose-sheet{background:var(--surface);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border-hi);padding:18px;width:100%;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1)}
+.compose-ov.open .compose-sheet{transform:translateY(0)}
+.c-handle{width:36px;height:4px;border-radius:2px;background:var(--border-hi);margin:0 auto 14px}
+.c-meta{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.c-ta{width:100%;min-height:90px;background:none;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;resize:none;outline:none;line-height:1.6}
+.c-ta::placeholder{color:var(--text-3)}
+.c-foot{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:0.5px solid var(--border);margin-top:8px}
+.c-acts{display:flex;gap:12px}
+.c-act{background:none;border:none;color:var(--text-3);cursor:pointer;transition:color 0.15s}
+.c-act:hover{color:var(--text)}
+.c-act svg{width:17px;height:17px}
+.c-post{background:var(--accent);color:#fff;border:none;border-radius:100px;padding:8px 18px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s}
+.c-post:hover{background:var(--accent-hi)}
+
+/* ═══════════ FEATURE DISCOVERY STRIP ═══════════ */
+/* subtle "did you know" strip between hero and feed — appears on scroll */
+.discovery-strip{
+  position:relative;z-index:1;
+  width:100%;overflow:hidden;
+  border-top:0.5px solid var(--border);
+  border-bottom:0.5px solid var(--border);
+  background:var(--surface);
+  padding:14px 0;
+  mask-image:linear-gradient(90deg,transparent 0%,black 6%,black 94%,transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,black 6%,black 94%,transparent 100%);
+}
+.disc-inner{display:flex;gap:0;width:max-content;animation:scrolld 35s linear infinite}
+.disc-inner:hover{animation-play-state:paused}
+@keyframes scrolld{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.disc-item{display:flex;align-items:center;gap:7px;padding:0 32px;border-right:0.5px solid var(--border);white-space:nowrap;font-size:12px;color:var(--text-3);cursor:default}
+.disc-item:last-child{border-right:none}
+.disc-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+
+/* ═══════════ SECTIONS ═══════════ */
+.section{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:80px 24px}
+.sec-lbl{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:14px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;color:var(--text);max-width:580px;margin-bottom:16px}
+.sec-sub{font-size:15px;color:var(--text-2);max-width:460px;line-height:1.7;margin-bottom:48px}
+
+/* feature cards grid */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.feat-card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:24px;transition:border-color 0.2s,transform 0.18s;cursor:default;position:relative;overflow:hidden}
+.feat-card:hover{border-color:var(--border-hi);transform:translateY(-2px)}
+.feat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--accent) 0%,rgba(108,92,231,0) 60%);opacity:0;transition:opacity 0.2s}
+.feat-card:hover::after{opacity:1}
+.fc-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:16px}
+.fc-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.3px;color:var(--text);margin-bottom:7px}
+.fc-body{font-size:13px;color:var(--text-2);line-height:1.65}
+/* the subtle hint — shows on hover */
+.fc-hint{font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;margin-top:10px;opacity:0;transition:opacity 0.2s;letter-spacing:0.3px}
+.feat-card:hover .fc-hint{opacity:1}
+
+/* ts callout */
+.ts-callout{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 24px 80px}
+.ts-card{background:var(--surface);border:0.5px solid var(--border);border-radius:20px;padding:44px 36px;position:relative;overflow:hidden;text-align:center}
+.ts-card::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-hi),transparent)}
+.ts-eye{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-hi);margin-bottom:14px}
+.ts-title{font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,38px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:12px;line-height:1.1}
+.ts-sub{font-size:14px;color:var(--text-2);max-width:440px;margin:0 auto 28px;line-height:1.7}
+.ts-badges{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.ts-badge{font-size:10px;font-family:'DM Mono',monospace;padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:5px}
+.tsb-p{background:var(--accent-glow);color:var(--accent-hi);border:0.5px solid rgba(108,92,231,0.25)}
+.tsb-g{background:var(--green-dim);color:var(--green);border:0.5px solid rgba(0,214,143,0.2)}
+.tsb-gray{background:var(--surface2);color:var(--text-3);border:0.5px solid var(--border-hi)}
+.ts-cta{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:12px 24px;cursor:pointer;transition:all 0.2s}
+.ts-cta:hover{background:var(--accent-hi);transform:translateY(-1px)}
+
+/* join */
+.join-section{position:relative;z-index:1;text-align:center;padding:0 24px 80px}
+.join-card{max-width:580px;margin:0 auto;background:var(--surface);border:0.5px solid var(--border);border-radius:20px;padding:48px 36px;position:relative;overflow:hidden}
+.join-card::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(139,127,245,0.5),transparent)}
+.join-title{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,36px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:11px;line-height:1.1}
+.join-sub{font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:28px;max-width:380px;margin-left:auto;margin-right:auto}
+.join-row{display:flex;gap:8px;max-width:360px;margin:0 auto 14px}
+.join-in{flex:1;background:var(--surface2);border:0.5px solid var(--border-hi);border-radius:9px;padding:11px 13px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s}
+.join-in:focus{border-color:var(--accent)}
+.join-in::placeholder{color:var(--text-3)}
+.join-btn{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:11px 18px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.join-btn:hover{background:var(--accent-hi);transform:translateY(-1px)}
+.join-fine{font-size:11px;color:var(--text-3);line-height:1.8}
+
+footer{position:relative;z-index:1;text-align:center;padding:22px;border-top:0.5px solid var(--border);font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;line-height:2}
+footer a{color:var(--accent-hi);text-decoration:none}
+
+/* scroll reveal */
+.fu{opacity:0;transform:translateY(20px);transition:opacity 0.7s ease,transform 0.7s ease}
+.fu.vis{opacity:1;transform:none}
+.fu.d1{transition-delay:0.1s}
+.fu.d2{transition-delay:0.2s}
+.fu.d3{transition-delay:0.3s}
+
+@media(max-width:600px){
+  .hero-title{letter-spacing:-2px}
+  .pillars{grid-template-columns:1fr}
+  .join-row{flex-direction:column}
+  .ts-card,.join-card{padding:32px 20px}
+  nav{padding:0 14px}
+  .btn-ghost{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="amb amb-1"></div>
+<div class="amb amb-2"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('hero')">
+    <div class="logo-mark">C</div>
+    <div>
+      <div class="logo-text">Candor</div>
+      <div class="logo-sub">The Open Feed Network</div>
+    </div>
+  </div>
+  <div class="nav-center">
+    <button class="nav-tab active" onclick="showPage('hero')">Home</button>
+    <button class="nav-tab" onclick="showPage('feed')">Feed</button>
+    <button class="nav-tab" onclick="showPage('hero')">Truth Shield</button>
+  </div>
+  <div class="nav-right">
+    <div class="sentinel-pill"><div class="dot"></div><span style="display:none" class="slbl">Sentinel</span></div>
+    <button class="btn-ghost" onclick="showPage('feed')">Open Feed</button>
+    <button class="btn-join" onclick="showPage('feed')">Enter the Feed</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO PAGE ═══ -->
+<div id="hero-page">
+
+  <section id="hero">
+    <div class="eyebrow a1"><div class="eyebrow-dot"></div>Open source · Community owned · Zero manipulation<div class="eyebrow-dot"></div></div>
+
+    <h1 class="hero-title a2">
+      A feed that's<br>
+      <span class="word-reveal" data-t="on your side.">on your side.</span>
+    </h1>
+
+    <p class="hero-sub a3">No algorithm working against you.<br>No invisible forces shaping what you see.<br>Just an open feed that tells you the truth.</p>
+    <p class="hero-quiet a4">The rest takes care of itself — quietly, in the background.</p>
+
+    <div class="cta-row a5">
+      <button class="cta-primary" onclick="showPage('feed')">
+        Enter the Feed
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <button class="cta-link">See how Truth Shield works<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></button>
+    </div>
+
+    <!-- pillars with subtle hover feature discovery -->
+    <div class="pillars a6" style="max-width:860px;width:100%">
+      <div class="pillar">
+        <div class="pillar-icon pi-purple">🔓</div>
+        <div class="pillar-title">Open algorithm</div>
+        <div class="pillar-body">You can see exactly why you see what you see. No black boxes. No hidden ranking.</div>
+        <div class="pillar-tip">↳ powered by CandorCore · open source</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon pi-green">🔍</div>
+        <div class="pillar-title">Truth Shield</div>
+        <div class="pillar-body">Free disinformation detection that puts the score in your hands. You decide.</div>
+        <div class="pillar-tip">↳ Telegram bot · web app · browser ext</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon pi-amber">🤝</div>
+        <div class="pillar-title">Your space</div>
+        <div class="pillar-body">Community owned. Calm, clean, and actually yours. No rage bait. No manufactured outrage.</div>
+        <div class="pillar-tip">↳ Gateway · Shield · Sentinel running silent</div>
+      </div>
+    </div>
+
+    <!-- live scrolling feed strip -->
+    <div class="strip-label a6"><div class="live-dot"></div>Live from the feed</div>
+    <div class="strip-wrap a6">
+      <div class="strip" id="strip">
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(108,92,231,0.18);color:#9d8fff;">RC</div><div><div class="sc-name">Ronny Cruz</div><div class="sc-handle">@ronnycruz · 2h</div></div></div><div class="sc-body">Truth Shield is live — free, open-source disinformation detection for the communities that need it most.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.04</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(0,214,143,0.12);color:#00d68f;">MV</div><div><div class="sc-name">Maria Velázquez</div><div class="sc-handle">@mvelazquez · 4h</div></div></div><div class="sc-body">Finally a feed that shows me WHY something is flagged instead of just removing it. This is what media literacy looks like.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.07</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(240,165,0,0.12);color:#f0a500;">DK</div><div><div class="sc-name">Dev Kapoor</div><div class="sc-handle">@devk · 1h</div></div></div><div class="sc-body">The open algorithm is a game changer. I can actually see why a post is being surfaced. No other platform does this.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.11</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(139,127,245,0.15);color:#8b7ff5;">SA</div><div><div class="sc-name">Sofia Andrade</div><div class="sc-handle">@sofanda · 3h</div></div></div><div class="sc-body">The feed just feels different. Calmer. Like someone actually thought about what it feels like to use it for an hour.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.03</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(255,94,94,0.1);color:#ff8080;">JM</div><div><div class="sc-name">James M.</div><div class="sc-handle">@jmedia · 6h</div></div></div><div class="sc-body">Candor's Beacon module flagged a coordinated campaign before it went viral. This is what we've been missing.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.08</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(0,214,143,0.15);color:#00d68f;">EJ</div><div><div class="sc-name">Elena Juárez</div><div class="sc-handle">@elenaj · 5h</div></div></div><div class="sc-body">As a fact-checker, I've never had a platform work with my work before. Truth Shield surfaces the same signals I do.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.05</span></span></div></div>
+        <!-- duplicate for seamless loop -->
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(108,92,231,0.18);color:#9d8fff;">RC</div><div><div class="sc-name">Ronny Cruz</div><div class="sc-handle">@ronnycruz · 2h</div></div></div><div class="sc-body">Truth Shield is live — free, open-source disinformation detection for the communities that need it most.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.04</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(0,214,143,0.12);color:#00d68f;">MV</div><div><div class="sc-name">Maria Velázquez</div><div class="sc-handle">@mvelazquez · 4h</div></div></div><div class="sc-body">Finally a feed that shows me WHY something is flagged instead of just removing it. This is what media literacy looks like.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.07</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(240,165,0,0.12);color:#f0a500;">DK</div><div><div class="sc-name">Dev Kapoor</div><div class="sc-handle">@devk · 1h</div></div></div><div class="sc-body">The open algorithm is a game changer. I can actually see why a post is being surfaced. No other platform does this.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.11</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(139,127,245,0.15);color:#8b7ff5;">SA</div><div><div class="sc-name">Sofia Andrade</div><div class="sc-handle">@sofanda · 3h</div></div></div><div class="sc-body">The feed just feels different. Calmer. Like someone actually thought about what it feels like to use it for an hour.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.03</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(255,94,94,0.1);color:#ff8080;">JM</div><div><div class="sc-name">James M.</div><div class="sc-handle">@jmedia · 6h</div></div></div><div class="sc-body">Candor's Beacon module flagged a coordinated campaign before it went viral. This is what we've been missing.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.08</span></span></div></div>
+        <div class="sc"><div class="sc-meta"><div class="sc-avi" style="background:rgba(0,214,143,0.15);color:#00d68f;">EJ</div><div><div class="sc-name">Elena Juárez</div><div class="sc-handle">@elenaj · 5h</div></div></div><div class="sc-body">As a fact-checker, I've never had a platform work with my work before. Truth Shield surfaces the same signals I do.</div><div class="sc-foot"><span class="sc-tag tag-g">Verified ✓</span><span class="sc-score">score <span>0.05</span></span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBTLE FEATURE DISCOVERY STRIP -->
+  <div class="discovery-strip fu">
+    <div class="disc-inner">
+      <div class="disc-item"><div class="disc-dot" style="background:var(--green)"></div>Beacon — real-time reach analytics</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--accent-hi)"></div>Sentinel — bot detection, running silent</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--amber)"></div>Gateway — community safety layer</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--green)"></div>Shield — content integrity engine</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--accent-hi)"></div>Truth Shield — open source · free forever</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--amber)"></div>Open algorithm — fully auditable</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--green)"></div>5 Fly.io nodes · IAD · LAX · AMS</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--accent-hi)"></div>DigitalOcean Spaces CDN</div>
+      <!-- duplicate -->
+      <div class="disc-item"><div class="disc-dot" style="background:var(--green)"></div>Beacon — real-time reach analytics</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--accent-hi)"></div>Sentinel — bot detection, running silent</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--amber)"></div>Gateway — community safety layer</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--green)"></div>Shield — content integrity engine</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--accent-hi)"></div>Truth Shield — open source · free forever</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--amber)"></div>Open algorithm — fully auditable</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--green)"></div>5 Fly.io nodes · IAD · LAX · AMS</div>
+      <div class="disc-item"><div class="disc-dot" style="background:var(--accent-hi)"></div>DigitalOcean Spaces CDN</div>
+    </div>
+  </div>
+
+  <!-- FEATURES SECTION -->
+  <section class="section fu">
+    <div class="sec-lbl">What's inside</div>
+    <h2 class="sec-title">Everything you'd expect.<br>A few things you won't.</h2>
+    <p class="sec-sub">Hover any card to see what's powering it under the hood.</p>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="fc-icon" style="background:var(--green-dim)">📡</div>
+        <div class="fc-title">Real-time feed</div>
+        <div class="fc-body">Posts arrive instantly via WebSocket. No refresh needed. The feed is alive.</div>
+        <div class="fc-hint">↳ WebSocket · Fly.io · 5 global nodes</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon" style="background:var(--accent-glow)">🔍</div>
+        <div class="fc-title">Truth Shield scores</div>
+        <div class="fc-body">Every post carries a transparency score. You see what the AI sees. No surprises.</div>
+        <div class="fc-hint">↳ Claude Haiku API · open source scoring</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon" style="background:var(--amber-dim)">📊</div>
+        <div class="fc-title">Beacon analytics</div>
+        <div class="fc-body">See how your posts actually reach people. Real numbers. No inflated vanity metrics.</div>
+        <div class="fc-hint">↳ candor-beacon.fly.dev · live now</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon" style="background:var(--green-dim)">🔓</div>
+        <div class="fc-title">Open algorithm</div>
+        <div class="fc-body">The ranking logic is public. Fork it, audit it, or just trust it — you have the receipts.</div>
+        <div class="fc-hint">↳ github.com/OpenFeedNetwork · MIT license</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon" style="background:var(--accent-glow)">🛡️</div>
+        <div class="fc-title">Silent safety layer</div>
+        <div class="fc-body">The platform is quieter than anywhere else you've been. You'll notice the difference.</div>
+        <div class="fc-hint">↳ Sentinel · Gateway · Shield · always on</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon" style="background:var(--amber-dim)">⛓️</div>
+        <div class="fc-title">Decentralized storage</div>
+        <div class="fc-body">Truth Shield data lives on IPFS and Arweave. No one can take it down. Not even us.</div>
+        <div class="fc-hint">↳ IPFS · Arweave · Polygon smart contract</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUTH SHIELD CALLOUT -->
+  <div class="ts-callout fu">
+    <div class="ts-card">
+      <div class="ts-eye">✦ Truth Shield — Free & Open Source</div>
+      <div class="ts-title">Detection power<br>in your hands.</div>
+      <p class="ts-sub">Not a content filter. Not a removal tool. A lens that shows you the signal behind every post — so you decide what's worth your attention.</p>
+      <div class="ts-badges">
+        <span class="ts-badge tsb-p">🔓 Open source</span>
+        <span class="ts-badge tsb-g">📱 Telegram bot</span>
+        <span class="ts-badge tsb-gray">🌐 Web app coming</span>
+        <span class="ts-badge tsb-gray">🔌 Browser ext coming</span>
+      </div>
+      <button class="ts-cta">Try Truth Shield free →</button>
+    </div>
+  </div>
+
+  <!-- JOIN -->
+  <section class="join-section fu">
+    <div class="join-card">
+      <div class="join-title">Ready for a feed<br>that's honest?</div>
+      <p class="join-sub">Early access — no algorithm games, no manufactured outrage, no noise. Just the feed.</p>
+      <div class="join-row">
+        <input class="join-in" type="email" placeholder="your@email.com">
+        <button class="join-btn">Request access →</button>
+      </div>
+      <p class="join-fine">No spam. No data selling. Ever.<br><span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-3)">That would be ironic.</span></p>
+    </div>
+  </section>
+
+  <footer>
+    © 2026 Open Feed Network, Inc. · Wyoming C-Corp · EIN 42-2688100 · Built in the open<br>
+    <a href="https://candortheopenfeednetwork.com">candortheopenfeednetwork.com</a>
+  </footer>
+
+</div>
+
+<!-- ═══ FEED PAGE ═══ -->
+<div id="feed-page">
+  <div class="shell">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-left">
+      <div class="sl-user">
+        <div class="sl-avi" style="background:rgba(108,92,231,0.18);color:var(--accent-hi);width:36px;height:36px;">RC</div>
+        <div><div class="sl-name">Ronny Cruz</div><div class="sl-handle">@ronnycruz</div></div>
+      </div>
+      <button class="sl-link active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explore</button>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifications<span class="sl-badge new">3</span></button>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</button>
+      <div class="sl-div"></div>
+      <div class="sl-sec">Safety — running silent</div>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>ThreatShield<span class="sl-badge">live</span></button>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>Beacon<span class="sl-badge">live</span></button>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Truth Shield<span class="sl-badge new">free</span></button>
+      <div class="sl-div"></div>
+      <button class="sl-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+      <button class="sl-compose" onclick="openCompose()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Post
+      </button>
+    </aside>
+
+    <!-- MAIN FEED -->
+    <main class="feed-main">
+      <div class="feed-head">
+        <button class="feed-tab active" onclick="setFeedTab(this)">For You</button>
+        <button class="feed-tab" onclick="setFeedTab(this)">Following</button>
+        <button class="feed-tab" onclick="setFeedTab(this)">Truth Shield<span class="tab-count">12</span></button>
+      </div>
+      <div class="feed-body">
+        <div class="bento">
+          <!-- FEATURED -->
+          <div class="card c-feat fu">
+            <div class="accent-bar"></div>
+            <div>
+              <div class="post-meta">
+                <div class="avi" style="background:rgba(108,92,231,0.18);color:var(--accent-hi);">RC</div>
+                <div><div class="a-name">Ronny Cruz</div><div class="a-handle">@ronnycruz · 2h</div></div>
+                <div style="margin-left:auto;display:flex;gap:5px;"><span class="tag tag-purple">Open Source</span><span class="tag tag-green">Verified ✓</span></div>
+              </div>
+              <div class="post-body">Truth Shield is live — a free, open-source disinformation detector built for the communities that need it most. Not the ones that can afford it. Telegram bot ships first. Web app and browser extension follow. Decentralized via IPFS/Arweave so no one can take it down.</div>
+            </div>
+            <div class="post-acts">
+              <button class="act like-btn" onclick="toggleLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="lc">312</span></button>
+              <button class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>84</button>
+              <button class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>41</button>
+            </div>
+          </div>
+          <!-- STAT 1 -->
+          <div class="card c-s1 fu" style="transition-delay:0.05s">
+            <div style="display:flex;align-items:center;justify-content:space-between"><div class="mlbl">Beacon Reach</div><span class="tag tag-green">Live</span></div>
+            <div><div class="mnum">42.8K</div><div class="delta up">↑ 12% this week</div></div>
+            <div class="spark"><div class="sb" style="height:38%"></div><div class="sb" style="height:52%"></div><div class="sb" style="height:34%"></div><div class="sb" style="height:68%"></div><div class="sb" style="height:48%"></div><div class="sb hi" style="height:82%"></div><div class="sb hi" style="height:100%"></div></div>
+          </div>
+          <!-- STAT 2 -->
+          <div class="card c-s2 fu" style="transition-delay:0.1s">
+            <div style="display:flex;align-items:center;justify-content:space-between"><div class="mlbl">Threats Blocked</div><span class="tag tag-red">Shield</span></div>
+            <div><div class="mnum">1,847</div><div class="delta up">↑ 34% since launch</div></div>
+            <div class="spark"><div class="sb r" style="height:55%"></div><div class="sb r" style="height:70%"></div><div class="sb r" style="height:45%"></div><div class="sb r" style="height:80%"></div><div class="sb r" style="height:60%"></div><div class="sb r hi" style="height:90%"></div><div class="sb r hi" style="height:100%"></div></div>
+          </div>
+          <!-- THREAT -->
+          <div class="card c-threat fu" style="transition-delay:0.15s">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="mlbl">ThreatShield — this post</div><span class="tag tag-amber">Real-time</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+              <div class="tr-row"><span class="tr-lbl">Coordinated inauthenticity</span><span class="score s-hi">0.82</span></div>
+              <div class="tr-row"><span class="tr-lbl">Engagement manipulation</span><span class="score s-md">0.44</span></div>
+              <div class="tr-row"><span class="tr-lbl">Verified source signal</span><span class="score s-lo">0.09</span></div>
+            </div>
+          </div>
+          <!-- WIDE -->
+          <div class="card c-wide fu" style="transition-delay:0.2s">
+            <div class="w-inner">
+              <div>
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px"><div class="avi" style="width:22px;height:22px;font-size:8px;background:var(--green-dim);color:var(--green);">OF</div><span style="font-size:10px;color:var(--text-3)">Open Feed Network · 12m</span><span class="tag tag-green">Announcement</span></div>
+                <div style="font-size:13px;color:#c8c7d2;line-height:1.55">CandorCore safety modules now live across all five Fly.io nodes — IAD, LAX, and AMS. Flood attack defense active. The feed stays clean no matter where you are.</div>
+              </div>
+              <div class="w-icon">🛡️</div>
+            </div>
+          </div>
+          <!-- EXPLORE -->
+          <div class="card c-explore fu" style="transition-delay:0.25s">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="mlbl">Explore Topics</div><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+            <div><span class="pill">Disinfo</span><span class="pill">Civic tech</span><span class="pill">AI safety</span><span class="pill">Open feeds</span><span class="pill">Web3</span><span class="pill">Media</span><span class="pill">Privacy</span></div>
+          </div>
+          <!-- SECOND POST -->
+          <div class="card c-feat fu" style="transition-delay:0.05s">
+            <div>
+              <div class="post-meta">
+                <div class="avi" style="background:rgba(0,214,143,0.12);color:var(--green);">MV</div>
+                <div><div class="a-name">Maria Velázquez</div><div class="a-handle">@mvelazquez · 4h</div></div>
+                <div style="margin-left:auto"><span class="tag tag-green">Verified ✓</span></div>
+              </div>
+              <div class="post-body">Finally a feed that shows me WHY something is flagged instead of just removing it. The ThreatShield score breakdown is exactly what news literacy looks like in practice. This is what we've been asking for.</div>
+            </div>
+            <div class="post-acts">
+              <button class="act like-btn" onclick="toggleLike(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="lc">89</span></button>
+              <button class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>23</button>
+              <button class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>15</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar-right">
+      <div class="widget">
+        <div class="w-title">Truth Shield</div>
+        <div class="ts-row"><span class="ts-lbl" style="font-size:10px;color:var(--text-2)">Disinformation</span><div class="ts-bar-wrap"><div class="ts-bar" style="width:82%;background:var(--red)"></div></div><span class="ts-val" style="color:var(--red)">82%</span></div>
+        <div class="ts-row"><span class="ts-lbl" style="font-size:10px;color:var(--text-2)">Manipulation</span><div class="ts-bar-wrap"><div class="ts-bar" style="width:44%;background:var(--amber)"></div></div><span class="ts-val" style="color:var(--amber)">44%</span></div>
+        <div class="ts-row"><span class="ts-lbl" style="font-size:10px;color:var(--text-2)">Verified source</span><div class="ts-bar-wrap"><div class="ts-bar" style="width:91%;background:var(--green)"></div></div><span class="ts-val" style="color:var(--green)">91%</span></div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-3);margin-top:10px"><div class="dot" style="width:5px;height:5px"></div>Scanning 1,847 active posts</div>
+      </div>
+      <div class="widget">
+        <div class="w-title">Trending on Candor</div>
+        <div class="trend-item"><div class="trend-n">1</div><div><div class="trend-tag">#TruthShield</div><div class="trend-ct">2,841 posts</div></div></div>
+        <div class="trend-item"><div class="trend-n">2</div><div><div class="trend-tag">#OpenFeed</div><div class="trend-ct">1,203 posts</div></div></div>
+        <div class="trend-item"><div class="trend-n">3</div><div><div class="trend-tag">#MediaLiteracy</div><div class="trend-ct">894 posts</div></div></div>
+        <div class="trend-item"><div class="trend-n">4</div><div><div class="trend-tag">#CivicTech</div><div class="trend-ct">612 posts</div></div></div>
+      </div>
+      <div class="widget">
+        <div class="w-title">Who to follow</div>
+        <div class="who-item"><div class="who-avi" style="background:var(--amber-dim);color:var(--amber)">EJ</div><div><div class="who-name">Elena Juárez</div><div class="who-handle">@elenaj · Fact-checker</div></div><button class="follow">Follow</button></div>
+        <div class="who-item"><div class="who-avi" style="background:var(--accent-glow);color:var(--accent-hi)">DK</div><div><div class="who-name">Dev Kapoor</div><div class="who-handle">@devk · Open source</div></div><button class="follow">Follow</button></div>
+        <div class="who-item"><div class="who-avi" style="background:var(--green-dim);color:var(--green)">SA</div><div><div class="who-name">Sofia Andrade</div><div class="who-handle">@sofanda · Civic tech</div></div><button class="follow">Follow</button></div>
+      </div>
+      <div class="widget">
+        <div class="w-title" style="display:flex;align-items:center;justify-content:space-between">Infrastructure<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-family:'DM Mono',monospace"><div class="dot"></div>all systems go</div></div>
+        <div class="infra-row"><span class="infra-name">Netlify CDN</span><span class="infra-ok">● 99.9%</span></div>
+        <div class="infra-row"><span class="infra-name">DO Spaces</span><span class="infra-ok">● 100%</span></div>
+        <div class="infra-row"><span class="infra-name">Fly.io · 5 nodes</span><span class="infra-ok">● online</span></div>
+        <div class="infra-row"><span class="infra-name">PostgreSQL</span><span class="infra-ok">● healthy</span></div>
+        <div class="infra-row"><span class="infra-name">Claude Haiku API</span><span class="infra-ok">● active</span></div>
+      </div>
+      <div style="font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;padding:4px 4px 16px;line-height:1.8">© 2026 Open Feed Network<br><a href="https://candortheopenfeednetwork.com" style="color:var(--accent-hi);text-decoration:none">candortheopenfeednetwork.com</a></div>
+    </aside>
+
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="openCompose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+
+  <!-- BOTTOM TABS -->
+  <nav class="btabs">
+    <button class="btab active" onclick="setBTab(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="btab-lbl">Home</span></button>
+    <button class="btab" onclick="setBTab(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="btab-lbl">Explore</span></button>
+    <button class="btab" onclick="setBTab(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="btab-lbl">Shield</span></button>
+    <button class="btab" onclick="setBTab(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="btab-lbl">Alerts</span></button>
+    <button class="btab" onclick="setBTab(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="btab-lbl">Profile</span></button>
+  </nav>
+</div>
+
+<!-- COMPOSE -->
+<div class="compose-ov" id="compose" onclick="maybeClose(event)">
+  <div class="compose-sheet">
+    <div class="c-handle"></div>
+    <div class="c-meta"><div class="avi" style="width:32px;height:32px;background:rgba(108,92,231,0.18);color:var(--accent-hi);font-size:11px;">RC</div><div style="font-size:12px;color:var(--text-3)">Ronny Cruz · @ronnycruz</div></div>
+    <textarea class="c-ta" placeholder="What's true today?"></textarea>
+    <div class="c-foot">
+      <div class="c-acts">
+        <button class="c-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+        <button class="c-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></button>
+      </div>
+      <button class="c-post" onclick="closeCompose()">Post</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// page routing
+function showPage(p){
+  document.getElementById('hero-page').style.display = p==='hero'?'block':'none';
+  document.getElementById('feed-page').style.display = p==='feed'?'block':'none';
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active')});
+  var tabs = document.querySelectorAll('.nav-tab');
+  if(p==='hero') tabs[0].classList.add('active');
+  else if(p==='feed') tabs[1].classList.add('active');
+  window.scrollTo(0,0);
+}
+// init
+document.getElementById('hero-page').style.display='block';
+document.getElementById('feed-page').style.display='none';
+
+// likes
+function toggleLike(btn){
+  var isLiked=btn.classList.toggle('liked');
+  var lc=btn.querySelector('.lc');
+  var n=parseInt(lc.textContent.replace(/,/g,''));
+  lc.textContent=(isLiked?n+1:n-1).toLocaleString();
+  var svg=btn.querySelector('svg');
+  svg.style.transition='transform 0.18s cubic-bezier(0.34,1.56,0.64,1)';
+  svg.style.transform='scale(1.5)';
+  if(isLiked){svg.style.fill='var(--red)';svg.style.stroke='var(--red)'}
+  else{svg.style.fill='none';svg.style.stroke='currentColor'}
+  setTimeout(function(){svg.style.transform='scale(1)'},200);
+}
+
+// tabs
+function setFeedTab(t){document.querySelectorAll('.feed-tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active')}
+function setBTab(t){document.querySelectorAll('.btab').forEach(function(x){x.classList.remove('active')});t.classList.add('active')}
+document.querySelectorAll('.nav-tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.nav-tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active')})});
+document.querySelectorAll('.sl-link').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.sl-link').forEach(function(x){x.classList.remove('active')});t.classList.add('active')})});
+
+// compose
+function openCompose(){document.getElementById('compose').classList.add('open');setTimeout(function(){document.querySelector('.c-ta').focus()},350)}
+function closeCompose(){document.getElementById('compose').classList.remove('open')}
+function maybeClose(e){if(e.target===document.getElementById('compose'))closeCompose()}
+
+// scroll reveal
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:0.1});
+document.querySelectorAll('.fu').forEach(function(el){obs.observe(el)});
+</script>
+</body>
+</html>

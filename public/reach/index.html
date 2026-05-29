@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Candor Reach — Developer Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:        #0B0F17;
+  --surface:   #111722;
+  --surface2:  #1A2235;
+  --surface3:  #202C42;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #E2EAF6;
+  --muted:     #7A92B4;
+  --dim:       #4A5F7A;
+  --accent:    #3B9EFF;
+  --accent2:   #1A7AE0;
+  --green:     #29D08A;
+  --green-bg:  rgba(41,208,138,0.08);
+  --amber:     #F5C842;
+  --amber-bg:  rgba(245,200,66,0.08);
+  --red:       #FF6B6B;
+  --red-bg:    rgba(255,107,107,0.08);
+  --teal:      #00D4C8;
+  --mono:      'JetBrains Mono', monospace;
+  --serif:     'Fraunces', Georgia, serif;
+  --sans:      'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 268px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 0 0 48px;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.sidebar-top {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--teal));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.logo-text { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--text); }
+.logo-sub  { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+
+.version {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--green);
+  background: var(--green-bg);
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(41,208,138,0.2);
+}
+
+.nav-group { padding: 0 12px; margin-bottom: 4px; }
+.nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-transform: uppercase;
+  padding: 12px 8px 6px;
+  display: block;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.12s;
+  line-height: 1.4;
+}
+.sidebar a:hover { color: var(--text); background: var(--surface2); }
+.sidebar a.active { color: var(--accent); background: rgba(59,158,255,0.08); }
+.sidebar a .tag {
+  margin-left: auto;
+  font-size: 9px;
+  font-family: var(--mono);
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(59,158,255,0.15);
+  color: var(--accent);
+}
+
+/* ── Main ─────────────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  max-width: 900px;
+  padding: 56px 64px;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────── */
+h1 {
+  font-family: var(--serif);
+  font-size: 42px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+h1 em { font-style: italic; color: var(--accent); }
+
+h2 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin: 56px 0 16px;
+  padding-top: 56px;
+  border-top: 1px solid var(--border);
+}
+
+h2:first-of-type { border-top: none; padding-top: 0; margin-top: 32px; }
+
+h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 28px 0 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+}
+
+p { color: var(--muted); margin-bottom: 14px; line-height: 1.75; }
+p strong { color: var(--text); font-weight: 500; }
+p code { font-family: var(--mono); font-size: 12.5px; color: var(--teal); background: rgba(0,212,200,0.08); padding: 1px 6px; border-radius: 4px; }
+
+/* ── Code ────────────────────────────────────────────────────────────── */
+.code-block {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.code-lang {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.code-copy {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.code-copy:hover { color: var(--accent); }
+
+pre {
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  background: transparent;
+}
+
+pre::-webkit-scrollbar { height: 4px; }
+pre::-webkit-scrollbar-track { background: transparent; }
+pre::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+code { font-family: var(--mono); font-size: 13px; }
+pre code { color: #A8C4E0; }
+
+.kw  { color: #7BB8FF; }
+.str { color: #8FD9A8; }
+.key { color: #FFB86C; }
+.num { color: #BD93F9; }
+.cmt { color: #3D5470; font-style: italic; }
+.fn  { color: #50FAB4; }
+.op  { color: #FF79C6; }
+.cls { color: #F1FA8C; }
+
+/* ── Endpoint ────────────────────────────────────────────────────────── */
+.endpoint {
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+
+.ep-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.method {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 5px;
+  letter-spacing: 0.05em;
+}
+.method.get    { background: rgba(59,158,255,0.15); color: var(--accent); border: 1px solid rgba(59,158,255,0.3); }
+.method.post   { background: rgba(41,208,138,0.12); color: var(--green);  border: 1px solid rgba(41,208,138,0.25); }
+.method.delete { background: rgba(255,107,107,0.12); color: var(--red);   border: 1px solid rgba(255,107,107,0.25); }
+.method.ws     { background: rgba(245,200,66,0.12); color: var(--amber);  border: 1px solid rgba(245,200,66,0.25); }
+
+.ep-path {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+  flex: 1;
+}
+
+.ep-tag {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border2);
+  color: var(--dim);
+}
+
+.ep-body {
+  padding: 20px;
+  background: var(--surface);
+}
+
+.ep-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+
+/* ── Param table ─────────────────────────────────────────────────────── */
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.param-table thead tr th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--surface2);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-transform: uppercase;
+  font-family: var(--mono);
+  border-bottom: 1px solid var(--border);
+}
+
+.param-table tbody tr td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--muted);
+}
+
+.param-table tbody tr:last-child td { border-bottom: none; }
+.param-table tbody tr td:first-child { font-family: var(--mono); font-size: 12px; color: var(--teal); }
+
+.req  { font-size: 9px; font-family: var(--mono); background: rgba(255,107,107,0.1); color: var(--red); padding: 1px 5px; border-radius: 3px; margin-left: 6px; border: 1px solid rgba(255,107,107,0.2); }
+.opt  { font-size: 9px; font-family: var(--mono); background: rgba(59,158,255,0.08); color: var(--accent); padding: 1px 5px; border-radius: 3px; margin-left: 6px; border: 1px solid rgba(59,158,255,0.15); }
+
+/* ── Response fields ─────────────────────────────────────────────────── */
+.resp-row {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  align-items: baseline;
+}
+.resp-row:last-child { border-bottom: none; }
+.resp-name { font-family: var(--mono); color: var(--teal); min-width: 160px; font-size: 12px; }
+.resp-type { font-family: var(--mono); font-size: 11px; color: var(--accent); min-width: 80px; }
+.resp-desc { color: var(--muted); flex: 1; }
+
+/* ── Callout ─────────────────────────────────────────────────────────── */
+.callout {
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 14px;
+  margin: 16px 0;
+  border-left: 3px solid;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.callout.info    { background: rgba(59,158,255,0.06);  border-color: var(--accent); }
+.callout.success { background: var(--green-bg);         border-color: var(--green); }
+.callout.warning { background: var(--amber-bg);         border-color: var(--amber); }
+.callout strong  { color: var(--text); font-weight: 500; }
+
+/* ── Feature grid ────────────────────────────────────────────────────── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 18px;
+  transition: border-color 0.15s;
+}
+.feature-card:hover { border-color: rgba(59,158,255,0.3); }
+
+.feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.feature-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.feature-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── Object schema ───────────────────────────────────────────────────── */
+.schema-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+/* ── Error table ─────────────────────────────────────────────────────── */
+.error-row {
+  display: flex;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  align-items: baseline;
+}
+.error-row:last-child { border-bottom: none; }
+.http-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  min-width: 42px;
+  text-align: center;
+}
+.http-code.c2 { background: rgba(41,208,138,0.1); color: var(--green); }
+.http-code.c4 { background: rgba(255,107,107,0.1); color: var(--red); }
+.http-code.c5 { background: rgba(245,200,66,0.1); color: var(--amber); }
+.err-name { font-family: var(--mono); color: var(--teal); min-width: 240px; font-size: 12px; }
+.err-desc { color: var(--muted); }
+
+/* ── Tabs ────────────────────────────────────────────────────────────── */
+.tab-bar { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+.tab {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  transition: all 0.12s;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover  { color: var(--text); }
+.tab-panel  { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Hero ────────────────────────────────────────────────────────────── */
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(59,158,255,0.08);
+  border: 1px solid rgba(59,158,255,0.2);
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 20px;
+}
+
+.base-url {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 36px;
+}
+
+.base-url .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+section { scroll-margin-top: 32px; }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar" aria-label="Documentation navigation">
+  <div class="sidebar-top">
+    <div class="logo">
+      <div class="logo-mark">CR</div>
+      <div>
+        <div class="logo-text">Candor Reach</div>
+        <div class="logo-sub">Open Feed Network</div>
+      </div>
+    </div>
+    <div class="version"><span>●</span> v1.0  ·  open source</div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Getting started</span>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#authentication">Authentication</a>
+    <a href="#quickstart">Quickstart</a>
+    <a href="#sdks">SDKs & libraries</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Feed API</span>
+    <a href="#feed-subscribe">Subscribe to feed</a>
+    <a href="#feed-publish">Publish to feed</a>
+    <a href="#feed-query">Query feed</a>
+    <a href="#feed-search">Search</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Nodes</span>
+    <a href="#nodes-register">Register a node</a>
+    <a href="#nodes-list">List nodes</a>
+    <a href="#nodes-sync">Node sync protocol</a>
+    <a href="#nodes-health">Node health</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Accounts</span>
+    <a href="#accounts-create">Create account</a>
+    <a href="#accounts-get">Get account</a>
+    <a href="#accounts-follow">Follow / unfollow</a>
+    <a href="#notifications">Notifications</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Real-time</span>
+    <a href="#websocket">WebSocket feed <span class="tag">WS</span></a>
+    <a href="#websocket-events">Event types</a>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Reference</span>
+    <a href="#post-object">Post object</a>
+    <a href="#account-object">Account object</a>
+    <a href="#node-object">Node object</a>
+    <a href="#chronological">Chronological guarantee</a>
+    <a href="#errors">Error codes</a>
+    <a href="#rate-limits">Rate limits</a>
+    <a href="#open-source">Open source</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Overview -->
+  <section id="overview">
+    <div class="hero-tag"><span>●</span> Apache 2.0  ·  Open Source</div>
+
+    <h1>Build on the <em>unsuppressed</em> feed.</h1>
+
+    <p style="font-size:17px; color: var(--muted); max-width:600px; margin-bottom:28px; line-height:1.65;">
+      Candor Reach is the open-source infrastructure layer for the Open Feed Network —
+      a chronological, zero-suppression data pipeline that any developer can read from,
+      write to, and run a node on.
+    </p>
+
+    <div class="base-url">
+      <span class="dot"></span>
+      https://reach.candor.network/v1
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(59,158,255,0.1);">📡</div>
+        <div class="feature-title">Chronological feed</div>
+        <div class="feature-desc">Every post delivered in strict timestamp order. No algorithmic ranking, no shadowbanning, no suppression. Ever.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(41,208,138,0.1);">🌐</div>
+        <div class="feature-title">Federated nodes</div>
+        <div class="feature-desc">Run your own node. Sync with the network. Sovereignty distributed across independent servers worldwide.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,212,200,0.1);">⚡</div>
+        <div class="feature-title">Real-time WebSocket</div>
+        <div class="feature-desc">Subscribe to live feed events over WebSocket. Posts arrive within milliseconds of publication.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,200,66,0.1);">🔧</div>
+        <div class="feature-title">Open SDK</div>
+        <div class="feature-desc">Node.js, Python, and Go SDKs. Drop-in integration for any platform that wants to speak the Reach protocol.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Authentication -->
+  <section id="authentication">
+    <h2>Authentication</h2>
+    <p>Candor Reach uses two auth models depending on the operation. <strong>Read operations</strong> (subscribing to feeds, querying posts) require a public app key. <strong>Write operations</strong> (publishing posts, managing accounts) require a signed user token.</p>
+
+    <h3>App key — read access</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">http</span></div>
+      <pre><code>GET /v1/feed HTTP/1.1
+Host: reach.candor.network
+Authorization: App <span class="str">your_app_key_here</span>
+Accept: application/json</code></pre>
+    </div>
+
+    <h3>User token — write access</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">http</span></div>
+      <pre><code>POST /v1/posts HTTP/1.1
+Host: reach.candor.network
+Authorization: Bearer <span class="str">user_jwt_token_here</span>
+Content-Type: application/json</code></pre>
+    </div>
+
+    <div class="callout info">
+      <strong>Getting keys:</strong> Register your app at <code>reach.candor.network/developers</code> to receive an app key. User tokens are issued via the OAuth 2.0 flow — see the Authentication guide for the full flow.
+    </div>
+  </section>
+
+  <!-- Quickstart -->
+  <section id="quickstart">
+    <h2>Quickstart</h2>
+    <p>Subscribe to the live feed and publish your first post in under two minutes.</p>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab(this,'qs-node')">Node.js</button>
+      <button class="tab" onclick="switchTab(this,'qs-python')">Python</button>
+      <button class="tab" onclick="switchTab(this,'qs-curl')">curl</button>
+    </div>
+
+    <div id="qs-node" class="tab-panel active">
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">javascript</span></div>
+        <pre><code><span class="kw">import</span> { CandorReach } <span class="kw">from</span> <span class="str">'@candor/reach'</span>;
+
+<span class="kw">const</span> reach = <span class="kw">new</span> <span class="cls">CandorReach</span>({
+  appKey: process.env.CANDOR_APP_KEY,
+});
+
+<span class="cmt">// Subscribe to the live chronological feed</span>
+<span class="kw">const</span> feed = reach.<span class="fn">subscribe</span>({ limit: <span class="num">20</span> });
+
+feed.<span class="fn">on</span>(<span class="str">'post'</span>, (post) => {
+  console.<span class="fn">log</span>(<span class="str">`[${post.timestamp}] ${post.author.handle}: ${post.content}`</span>);
+});
+
+<span class="cmt">// Publish a post (requires user token)</span>
+<span class="kw">const</span> result = <span class="kw">await</span> reach.<span class="fn">publish</span>({
+  content:  <span class="str">'Hello from the open feed.'</span>,
+  userToken: process.env.CANDOR_USER_TOKEN,
+});
+
+console.<span class="fn">log</span>(<span class="str">`Published: ${result.postId}`</span>);</code></pre>
+      </div>
+    </div>
+
+    <div id="qs-python" class="tab-panel">
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">python</span></div>
+        <pre><code><span class="kw">from</span> candor_reach <span class="kw">import</span> CandorReach
+
+reach = <span class="cls">CandorReach</span>(app_key=<span class="str">"your_app_key"</span>)
+
+<span class="cmt"># Fetch the latest 20 posts</span>
+posts = reach.feed.<span class="fn">get</span>(limit=<span class="num">20</span>)
+<span class="kw">for</span> post <span class="kw">in</span> posts:
+    <span class="fn">print</span>(<span class="str">f"[{post.timestamp}] {post.author.handle}: {post.content}"</span>)
+
+<span class="cmt"># Publish a post</span>
+result = reach.<span class="fn">publish</span>(
+    content=<span class="str">"Hello from the open feed."</span>,
+    user_token=<span class="str">"your_user_token"</span>
+)
+<span class="fn">print</span>(<span class="str">f"Published: {result.post_id}"</span>)</code></pre>
+      </div>
+    </div>
+
+    <div id="qs-curl" class="tab-panel">
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">bash</span></div>
+        <pre><code><span class="cmt"># Fetch the live feed</span>
+curl https://reach.candor.network/v1/feed \
+  -H <span class="str">"Authorization: App your_app_key"</span>
+
+<span class="cmt"># Publish a post</span>
+curl -X POST https://reach.candor.network/v1/posts \
+  -H <span class="str">"Authorization: Bearer your_user_token"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"content":"Hello from the open feed."}'</span></code></pre>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <strong>Install the SDK:</strong> <code>npm install @candor/reach</code> · <code>pip install candor-reach</code> · <code>go get github.com/candor-network/reach-go</code>
+    </div>
+  </section>
+
+  <!-- Feed: Subscribe -->
+  <section id="feed-subscribe">
+    <h2>Subscribe to feed</h2>
+    <p>The primary read endpoint. Returns posts in strict chronological order — newest first. No ranking algorithm. No suppression. What was published is what you receive.</p>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/feed</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Fetch a paginated chronological slice of the feed. Use <code>before</code> for pagination.</p>
+
+        <h3>Query parameters</h3>
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>limit <span class="opt">optional</span></td><td>integer</td><td>Number of posts to return. Default 20, max 100.</td></tr>
+            <tr><td>before <span class="opt">optional</span></td><td>string</td><td>Post ID cursor — returns posts older than this ID. Use for pagination.</td></tr>
+            <tr><td>after <span class="opt">optional</span></td><td>string</td><td>Post ID cursor — returns posts newer than this ID.</td></tr>
+            <tr><td>node <span class="opt">optional</span></td><td>string</td><td>Filter to posts originating from a specific node ID.</td></tr>
+            <tr><td>author <span class="opt">optional</span></td><td>string</td><td>Filter to posts from a specific account handle or ID.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Response</h3>
+        <div class="resp-row"><span class="resp-name">posts</span><span class="resp-type">Post[]</span><span class="resp-desc">Array of Post objects in descending chronological order.</span></div>
+        <div class="resp-row"><span class="resp-name">cursor</span><span class="resp-type">string</span><span class="resp-desc">Pagination cursor — pass as <code>before</code> to fetch the next page.</span></div>
+        <div class="resp-row"><span class="resp-name">hasMore</span><span class="resp-type">boolean</span><span class="resp-desc">Whether additional posts exist beyond this page.</span></div>
+        <div class="resp-row"><span class="resp-name">nodeCount</span><span class="resp-type">integer</span><span class="resp-desc">Number of nodes that contributed to this feed slice.</span></div>
+
+        <div class="code-block" style="margin-top:16px;">
+          <div class="code-header"><span class="code-lang">json — example response</span></div>
+          <pre><code>{
+  <span class="key">"posts"</span>: [
+    {
+      <span class="key">"id"</span>:        <span class="str">"post_9f8e7d6c5b4a"</span>,
+      <span class="key">"content"</span>:  <span class="str">"The feed is live."</span>,
+      <span class="key">"timestamp"</span>: <span class="str">"2026-05-23T14:22:01.000Z"</span>,
+      <span class="key">"author"</span>: {
+        <span class="key">"id"</span>:     <span class="str">"acc_a1b2c3"</span>,
+        <span class="key">"handle"</span>: <span class="str">"rolando"</span>,
+        <span class="key">"displayName"</span>: <span class="str">"Rolando Cruz"</span>
+      },
+      <span class="key">"nodeId"</span>:   <span class="str">"node_iad_01"</span>,
+      <span class="key">"signature"</span>: <span class="str">"ed25519:a3f9c12d..."</span>
+    }
+  ],
+  <span class="key">"cursor"</span>:    <span class="str">"post_9f8e7d6c5b4a"</span>,
+  <span class="key">"hasMore"</span>:   <span class="kw">true</span>,
+  <span class="key">"nodeCount"</span>: <span class="num">5</span>
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feed: Publish -->
+  <section id="feed-publish">
+    <h2>Publish to feed</h2>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method post">POST</span>
+        <span class="ep-path">/v1/posts</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Publish a new post to the feed. The post is broadcast to all connected nodes within milliseconds and becomes immediately visible in the chronological feed. Requires a user token.</p>
+
+        <h3>Request body</h3>
+        <table class="param-table">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>content <span class="req">required</span></td><td>string</td><td>Post text content. Max 5,000 characters.</td></tr>
+            <tr><td>mediaUrls <span class="opt">optional</span></td><td>string[]</td><td>Array of media attachment URLs. Max 4 items.</td></tr>
+            <tr><td>replyTo <span class="opt">optional</span></td><td>string</td><td>Post ID this is a reply to.</td></tr>
+            <tr><td>visibility <span class="opt">optional</span></td><td>string</td><td><code>public</code> (default) or <code>followers</code>.</td></tr>
+            <tr><td>language <span class="opt">optional</span></td><td>string</td><td>BCP-47 language code, e.g. <code>en</code>, <code>es</code>. Used for search indexing.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Response</h3>
+        <div class="resp-row"><span class="resp-name">postId</span><span class="resp-type">string</span><span class="resp-desc">Unique ID of the created post.</span></div>
+        <div class="resp-row"><span class="resp-name">timestamp</span><span class="resp-type">string</span><span class="resp-desc">ISO 8601 timestamp of publication.</span></div>
+        <div class="resp-row"><span class="resp-name">nodeId</span><span class="resp-type">string</span><span class="resp-desc">ID of the node that accepted and broadcast the post.</span></div>
+        <div class="resp-row"><span class="resp-name">signature</span><span class="resp-type">string</span><span class="resp-desc">Ed25519 signature of the post payload for verification.</span></div>
+      </div>
+    </div>
+
+    <!-- Delete post -->
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method delete">DELETE</span>
+        <span class="ep-path">/v1/posts/:postId</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Delete a post you authored. The deletion is propagated to all nodes within the sync window. Only the original author can delete a post.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feed: Query -->
+  <section id="feed-query">
+    <h2>Query feed</h2>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/posts/:postId</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Fetch a single post by ID, including its full thread context.</p>
+        <h3>Query parameters</h3>
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>thread <span class="opt">optional</span></td><td>boolean</td><td>If <code>true</code>, includes the full reply thread. Default <code>false</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/accounts/:handle/posts</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Fetch all posts by a specific account in reverse chronological order. Supports the same <code>limit</code> and <code>before</code> cursor parameters as <code>/v1/feed</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feed: Search -->
+  <section id="feed-search">
+    <h2>Search</h2>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/search</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Full-text search across all posts indexed by the network. Results are ordered by relevance within a chronological window — not by engagement or ranking.</p>
+
+        <h3>Query parameters</h3>
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>q <span class="req">required</span></td><td>string</td><td>Search query. Supports quoted phrases and <code>-exclusions</code>.</td></tr>
+            <tr><td>limit <span class="opt">optional</span></td><td>integer</td><td>Results per page. Default 20, max 50.</td></tr>
+            <tr><td>since <span class="opt">optional</span></td><td>string</td><td>ISO 8601 date — restrict to posts after this time.</td></tr>
+            <tr><td>until <span class="opt">optional</span></td><td>string</td><td>ISO 8601 date — restrict to posts before this time.</td></tr>
+            <tr><td>language <span class="opt">optional</span></td><td>string</td><td>BCP-47 code to filter by post language.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nodes -->
+  <section id="nodes-register">
+    <h2>Run a node</h2>
+    <p>The Candor Reach network is federated. Any developer can run a node that syncs with the global network, serves local traffic, and contributes to network resilience. Nodes are the foundation of the decentralized architecture.</p>
+
+    <div class="callout info">
+      <strong>Node requirements:</strong> Any server with a public IP, 2GB RAM minimum, and 20GB disk. Node software is open source — <code>github.com/candor-network/reach-node</code>.
+    </div>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method post">POST</span>
+        <span class="ep-path">/v1/nodes/register</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Register a new node with the network. Once registered, the node begins receiving the feed sync stream and is listed in the public node directory.</p>
+
+        <h3>Request body</h3>
+        <table class="param-table">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>nodeUrl <span class="req">required</span></td><td>string</td><td>Public HTTPS URL of your node (e.g. <code>https://mynode.example.com</code>).</td></tr>
+            <tr><td>region <span class="req">required</span></td><td>string</td><td>ISO 3166-1 alpha-2 country code of the node's primary location.</td></tr>
+            <tr><td>operatorHandle <span class="opt">optional</span></td><td>string</td><td>Your Candor account handle — shown in the public node directory.</td></tr>
+            <tr><td>publicKey <span class="req">required</span></td><td>string</td><td>Ed25519 public key used to verify posts broadcast by this node.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Response</h3>
+        <div class="resp-row"><span class="resp-name">nodeId</span><span class="resp-type">string</span><span class="resp-desc">Assigned node identifier.</span></div>
+        <div class="resp-row"><span class="resp-name">syncToken</span><span class="resp-type">string</span><span class="resp-desc">Token used to authenticate the node's sync stream connection.</span></div>
+        <div class="resp-row"><span class="resp-name">syncUrl</span><span class="resp-type">string</span><span class="resp-desc">WebSocket URL to connect to for feed synchronization.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="nodes-list">
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/nodes</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">List all active nodes in the network. Includes region, uptime, and sync lag statistics.</p>
+        <h3>Query parameters</h3>
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>region <span class="opt">optional</span></td><td>string</td><td>Filter by country code.</td></tr>
+            <tr><td>status <span class="opt">optional</span></td><td>string</td><td><code>active</code> (default) · <code>all</code> · <code>degraded</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="nodes-health">
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/nodes/:nodeId/health</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Returns health metrics for a specific node: sync lag, post throughput, uptime, and last heartbeat.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Accounts -->
+  <section id="accounts-create">
+    <h2>Accounts</h2>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method post">POST</span>
+        <span class="ep-path">/v1/accounts</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Create a new account on the Candor Reach network. Accounts are portable across nodes.</p>
+        <h3>Request body</h3>
+        <table class="param-table">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>handle <span class="req">required</span></td><td>string</td><td>Unique username. 3–30 chars, alphanumeric and underscores. Immutable after creation.</td></tr>
+            <tr><td>displayName <span class="opt">optional</span></td><td>string</td><td>Display name shown on posts. Max 64 chars.</td></tr>
+            <tr><td>email <span class="req">required</span></td><td>string</td><td>Used for account recovery only. Never shown publicly.</td></tr>
+            <tr><td>publicKey <span class="req">required</span></td><td>string</td><td>Ed25519 public key for post signing and identity verification.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="accounts-get">
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/accounts/:handle</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Fetch a public account profile. Returns display name, bio, follower counts, and node affiliation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="accounts-follow">
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method post">POST</span>
+        <span class="ep-path">/v1/accounts/:handle/follow</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Follow an account. Following filters the <code>/v1/feed</code> endpoint when <code>filter=following</code> is passed. Requires user token.</p>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method delete">DELETE</span>
+        <span class="ep-path">/v1/accounts/:handle/follow</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Unfollow an account. Requires user token.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notifications -->
+  <section id="notifications">
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method get">GET</span>
+        <span class="ep-path">/v1/notifications</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Fetch notifications for the authenticated user: replies, mentions, follows, and reposts. Requires user token.</p>
+        <h3>Query parameters</h3>
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>type <span class="opt">optional</span></td><td>string</td><td>Filter by type: <code>reply</code> · <code>mention</code> · <code>follow</code> · <code>repost</code>. Omit for all.</td></tr>
+            <tr><td>unread <span class="opt">optional</span></td><td>boolean</td><td>If <code>true</code>, returns only unread notifications.</td></tr>
+            <tr><td>limit <span class="opt">optional</span></td><td>integer</td><td>Default 20, max 50.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- WebSocket -->
+  <section id="websocket">
+    <h2>WebSocket feed</h2>
+    <p>Connect to the live feed over WebSocket for real-time post delivery. Posts arrive within milliseconds of being published to any node in the network.</p>
+
+    <div class="endpoint">
+      <div class="ep-header">
+        <span class="method ws">WS</span>
+        <span class="ep-path">wss://reach.candor.network/v1/stream</span>
+      </div>
+      <div class="ep-body">
+        <p class="ep-desc">Establish a persistent WebSocket connection to receive live feed events. Authentication via query parameter on connect.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">javascript</span></div>
+          <pre><code><span class="kw">const</span> ws = <span class="kw">new</span> <span class="cls">WebSocket</span>(
+  <span class="str">`wss://reach.candor.network/v1/stream?appKey=${APP_KEY}`</span>
+);
+
+ws.<span class="fn">onopen</span> = () => {
+  <span class="cmt">// Subscribe to the global feed</span>
+  ws.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({
+    type: <span class="str">'subscribe'</span>,
+    channel: <span class="str">'feed.global'</span>,
+  }));
+
+  <span class="cmt">// Or subscribe to a specific account</span>
+  ws.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({
+    type: <span class="str">'subscribe'</span>,
+    channel: <span class="str">'feed.account'</span>,
+    handle: <span class="str">'rolando'</span>,
+  }));
+};
+
+ws.<span class="fn">onmessage</span> = ({ data }) => {
+  <span class="kw">const</span> event = JSON.<span class="fn">parse</span>(data);
+
+  <span class="kw">switch</span> (event.type) {
+    <span class="kw">case</span> <span class="str">'post.created'</span>:
+      console.<span class="fn">log</span>(<span class="str">'New post:'</span>, event.post);
+      <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="str">'post.deleted'</span>:
+      console.<span class="fn">log</span>(<span class="str">'Deleted:'</span>, event.postId);
+      <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="str">'node.joined'</span>:
+      console.<span class="fn">log</span>(<span class="str">'New node:'</span>, event.nodeId);
+      <span class="kw">break</span>;
+  }
+};</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WS Events -->
+  <section id="websocket-events">
+    <h2>WebSocket event types</h2>
+
+    <div class="resp-row"><span class="resp-name">post.created</span><span class="resp-type">feed</span><span class="resp-desc">A new post was published to the network. Payload includes the full Post object.</span></div>
+    <div class="resp-row"><span class="resp-name">post.deleted</span><span class="resp-type">feed</span><span class="resp-desc">A post was deleted. Payload includes <code>postId</code> and <code>authorHandle</code>.</span></div>
+    <div class="resp-row"><span class="resp-name">notification.new</span><span class="resp-type">account</span><span class="resp-desc">New notification for the authenticated user (reply, mention, follow, repost).</span></div>
+    <div class="resp-row"><span class="resp-name">node.joined</span><span class="resp-type">network</span><span class="resp-desc">A new node joined the federation.</span></div>
+    <div class="resp-row"><span class="resp-name">node.left</span><span class="resp-type">network</span><span class="resp-desc">A node went offline or de-registered.</span></div>
+    <div class="resp-row"><span class="resp-name">heartbeat</span><span class="resp-type">system</span><span class="resp-desc">Sent every 30 seconds. Respond with <code>{"type":"pong"}</code> to keep the connection alive.</span></div>
+  </section>
+
+  <!-- Post Object -->
+  <section id="post-object">
+    <h2>Post object</h2>
+    <div class="schema-block"><span class="key">{</span>
+  <span class="key">"id"</span>:          <span class="str">string</span>       <span class="cmt">// Unique post ID, prefixed post_</span>
+  <span class="key">"content"</span>:     <span class="str">string</span>       <span class="cmt">// Post text, max 5,000 chars</span>
+  <span class="key">"timestamp"</span>:   <span class="str">string</span>       <span class="cmt">// ISO 8601 UTC publication time</span>
+  <span class="key">"author"</span>:      <span class="str">AccountRef</span>   <span class="cmt">// { id, handle, displayName }</span>
+  <span class="key">"nodeId"</span>:      <span class="str">string</span>       <span class="cmt">// Node that accepted the post</span>
+  <span class="key">"replyTo"</span>:     <span class="str">string|null</span>  <span class="cmt">// Parent post ID if reply</span>
+  <span class="key">"mediaUrls"</span>:   <span class="str">string[]</span>     <span class="cmt">// Attachment URLs, max 4</span>
+  <span class="key">"visibility"</span>:  <span class="str">string</span>       <span class="cmt">// "public" | "followers"</span>
+  <span class="key">"language"</span>:    <span class="str">string|null</span>  <span class="cmt">// BCP-47 language code</span>
+  <span class="key">"signature"</span>:   <span class="str">string</span>       <span class="cmt">// Ed25519 signature for verification</span>
+  <span class="key">"repostCount"</span>: <span class="num">integer</span>      <span class="cmt">// Network-wide repost count</span>
+  <span class="key">"replyCount"</span>:  <span class="num">integer</span>      <span class="cmt">// Direct reply count</span>
+<span class="key">}</span></div>
+  </section>
+
+  <!-- Account Object -->
+  <section id="account-object">
+    <h2>Account object</h2>
+    <div class="schema-block"><span class="key">{</span>
+  <span class="key">"id"</span>:           <span class="str">string</span>    <span class="cmt">// Unique account ID, prefixed acc_</span>
+  <span class="key">"handle"</span>:       <span class="str">string</span>    <span class="cmt">// Unique username — immutable</span>
+  <span class="key">"displayName"</span>:  <span class="str">string</span>    <span class="cmt">// Display name</span>
+  <span class="key">"bio"</span>:          <span class="str">string</span>    <span class="cmt">// Profile bio, max 300 chars</span>
+  <span class="key">"avatarUrl"</span>:    <span class="str">string</span>    <span class="cmt">// Profile image URL</span>
+  <span class="key">"nodeId"</span>:       <span class="str">string</span>    <span class="cmt">// Home node for this account</span>
+  <span class="key">"publicKey"</span>:    <span class="str">string</span>    <span class="cmt">// Ed25519 public key</span>
+  <span class="key">"followerCount"</span>:<span class="num">integer</span>   <span class="cmt">// Number of followers</span>
+  <span class="key">"followingCount"</span>:<span class="num">integer</span>  <span class="cmt">// Number of accounts followed</span>
+  <span class="key">"postCount"</span>:    <span class="num">integer</span>   <span class="cmt">// Total posts published</span>
+  <span class="key">"createdAt"</span>:    <span class="str">string</span>    <span class="cmt">// ISO 8601 account creation time</span>
+<span class="key">}</span></div>
+  </section>
+
+  <!-- Chronological guarantee -->
+  <section id="chronological">
+    <h2>Chronological guarantee</h2>
+    <p>Candor Reach makes a hard protocol guarantee: <strong>posts are always delivered in timestamp order.</strong> There is no ranking algorithm, no engagement scoring, no promoted content, and no suppression mechanism in the protocol layer.</p>
+
+    <p>Every post is signed with the publishing node's Ed25519 key. Signatures include the post content, author ID, and timestamp — making it cryptographically verifiable that a post was not modified or reordered after publication.</p>
+
+    <div class="callout success">
+      <strong>Verification:</strong> Any client can verify a post's authenticity using the publishing node's public key from <code>GET /v1/nodes/:nodeId</code>. No trust required — verify yourself.
+    </div>
+
+    <h3>Sync lag</h3>
+    <p>In a federated network, posts originating on one node propagate to all other nodes via the sync protocol. Typical sync lag is under 500ms across nodes in the same region, and under 2s globally. The <code>nodeId</code> field on each post indicates where it originated.</p>
+  </section>
+
+  <!-- Errors -->
+  <section id="errors">
+    <h2>Error codes</h2>
+    <p>All errors return a consistent JSON body: <code>{ error, code, message }</code>.</p>
+
+    <div class="error-row"><span class="http-code c4">400</span><span class="err-name">INVALID_REQUEST</span><span class="err-desc">Malformed request body or missing required field.</span></div>
+    <div class="error-row"><span class="http-code c4">401</span><span class="err-name">MISSING_AUTH</span><span class="err-desc">No app key or user token provided.</span></div>
+    <div class="error-row"><span class="http-code c4">401</span><span class="err-name">INVALID_AUTH</span><span class="err-desc">App key or user token is invalid or expired.</span></div>
+    <div class="error-row"><span class="http-code c4">403</span><span class="err-name">FORBIDDEN</span><span class="err-desc">Authenticated user does not have permission for this operation.</span></div>
+    <div class="error-row"><span class="http-code c4">404</span><span class="err-name">NOT_FOUND</span><span class="err-desc">Post, account, or node does not exist.</span></div>
+    <div class="error-row"><span class="http-code c4">409</span><span class="err-name">HANDLE_TAKEN</span><span class="err-desc">Account handle is already registered.</span></div>
+    <div class="error-row"><span class="http-code c4">413</span><span class="err-name">CONTENT_TOO_LONG</span><span class="err-desc">Post content exceeds 5,000 characters.</span></div>
+    <div class="error-row"><span class="http-code c4">429</span><span class="err-name">RATE_LIMITED</span><span class="err-desc">Request rate limit exceeded. See Rate Limits.</span></div>
+    <div class="error-row"><span class="http-code c5">503</span><span class="err-name">NODE_UNAVAILABLE</span><span class="err-desc">The target node is temporarily offline. Retry after the <code>Retry-After</code> header value.</span></div>
+  </section>
+
+  <!-- Rate Limits -->
+  <section id="rate-limits">
+    <h2>Rate limits</h2>
+    <p>Limits are per app key for read operations and per user token for write operations.</p>
+
+    <table class="param-table">
+      <thead><tr><th>Operation</th><th>Limit</th><th>Window</th></tr></thead>
+      <tbody>
+        <tr><td>GET /v1/feed</td><td>300 requests</td><td>Per minute</td></tr>
+        <tr><td>GET /v1/search</td><td>60 requests</td><td>Per minute</td></tr>
+        <tr><td>POST /v1/posts</td><td>10 posts</td><td>Per minute per user</td></tr>
+        <tr><td>POST /v1/accounts</td><td>5 registrations</td><td>Per hour per IP</td></tr>
+        <tr><td>WebSocket messages</td><td>120 messages</td><td>Per minute per connection</td></tr>
+        <tr><td>Node registration</td><td>3 registrations</td><td>Per day per IP</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <strong>Rate limit headers:</strong> Every response includes <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, and <code>X-RateLimit-Reset</code>. When limited, a <code>429</code> is returned with a <code>Retry-After</code> header.
+    </div>
+  </section>
+
+  <!-- Open Source -->
+  <section id="open-source">
+    <h2>Open source</h2>
+    <p>Candor Reach is fully open source under the <strong>Apache 2.0 license</strong>. You can read the code, run your own node, submit issues, and contribute pull requests.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-title" style="font-family:var(--mono); color:var(--accent);">github.com/candor-network/reach</div>
+        <div class="feature-desc" style="margin-top:8px;">Core protocol, node software, and SDK source code.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title" style="font-family:var(--mono); color:var(--accent);">github.com/candor-network/reach-node</div>
+        <div class="feature-desc" style="margin-top:8px;">Standalone node server. Docker-ready. One command to join the network.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title" style="font-family:var(--mono); color:var(--accent);">github.com/candor-network/reach-sdk</div>
+        <div class="feature-desc" style="margin-top:8px;">Official SDKs for Node.js, Python, and Go.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title" style="font-family:var(--mono); color:var(--accent);">reach.candor.network/developers</div>
+        <div class="feature-desc" style="margin-top:8px;">Get your app key, manage apps, and view usage metrics.</div>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:8px;">
+      <strong>Contributing:</strong> Read <code>CONTRIBUTING.md</code> in the main repo. All contributors sign a standard CLA that assigns rights to Open Feed Network Corp while preserving the Apache 2.0 public license.
+    </div>
+  </section>
+
+</main>
+
+<script>
+function switchTab(btn, panelId) {
+  const container = btn.closest('.tab-bar').parentElement;
+  container.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  container.querySelector('#' + panelId).classList.add('active');
+}
+
+// Active sidebar link tracking
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.sidebar a[href^="#"]');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px' });
+
+sections.forEach(s => obs.observe(s));
+
+// Copy buttons
+document.querySelectorAll('.code-copy').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const code = btn.closest('.code-block').querySelector('pre').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1500);
+    });
+  });
+});
+</script>
+</body>
+</html>
