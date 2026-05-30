@@ -1,3 +1,5 @@
+import { register, collectDefaultMetrics } from "prom-client";
+collectDefaultMetrics();
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -118,6 +120,7 @@ app.get("/api/v1/search", async (req, res) => {
   const r = await db.query("SELECT p.*,u.username,u.avatar FROM posts p JOIN users u ON p.user_id=u.id WHERE p.content ILIKE $1 AND p.suppress_post=false ORDER BY p.created_at DESC LIMIT $2", ["%" + q + "%", limit]);
   res.json({ results: r.rows, type: "posts" });
 });
+app.get("/metrics", async (req, res) => { res.set("Content-Type", register.contentType); res.send(await register.metrics()); });
 app.get("/health", async (req, res) => {
   let dbOk = false;
   try { await db.query("SELECT 1"); dbOk = true; } catch {}
@@ -192,6 +195,54 @@ app.get("/api/v1/admin/stats", adminAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: "Stats query failed", detail: e.message }); }
 });
 // ─── END ADMIN ROUTES ─────────────────────────────────────────────────────────
+
+
+// ── MEDIA UPLOAD ─────────────────────────────────────────────
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import multer from "multer";
+import { createRequire } from "module";
+
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  },
+});
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ["image/jpeg","image/png","image/gif","image/webp","video/mp4","video/webm","video/quicktime"];
+    cb(null, ok.includes(file.mimetype));
+  },
+});
+
+function mediaExt(mime) {
+  return {"image/jpeg":"jpg","image/png":"png","image/gif":"gif","image/webp":"webp",
+          "video/mp4":"mp4","video/webm":"webm","video/quicktime":"mov"}[mime]||"bin";
+}
+
+app.post("/api/v1/posts/upload", auth, upload.single("media"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file" });
+    const key = `uploads/${req.user.id}/${uuid()}.${mediaExt(req.file.mimetype)}`;
+    await r2.send(new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+      CacheControl: "public, max-age=31536000",
+    }));
+    const url = `${process.env.R2_PUBLIC_URL}/${key}`;
+    res.json({ url, mediaType: req.file.mimetype.startsWith("image/") ? "image" : "video" });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
 
 app.listen(PORT, () => console.log("[Feed] Running on port " + PORT));
 export default app;
