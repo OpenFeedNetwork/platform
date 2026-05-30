@@ -1,6 +1,8 @@
 import { register, collectDefaultMetrics } from "prom-client";
 collectDefaultMetrics();
 import express from "express";
+import { createServer } from "http";
+import { WebSocketServer } from "ws";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -308,5 +310,25 @@ app.post("/api/v1/posts/upload", auth, upload.single("media"), async (req, res) 
   }
 });
 
-app.listen(PORT, () => console.log("[Feed] Running on port " + PORT));
+
+// ── WEBSOCKET SERVER ──────────────────────────────────────
+const server = createServer(app);
+const wss = new WebSocketServer({ server, path: "/ws/feed" });
+const wsClients = new Set();
+
+wss.on("connection", (ws) => {
+  wsClients.add(ws);
+  console.log("[WS] Client connected, total:", wsClients.size);
+  ws.send(JSON.stringify({ type: "connected" }));
+  ws.on("close", () => { wsClients.delete(ws); });
+  ws.on("error", () => { wsClients.delete(ws); });
+});
+
+function broadcast(msg) {
+  const data = JSON.stringify(msg);
+  wsClients.forEach(ws => { if (ws.readyState === 1) ws.send(data); });
+}
+
+server.listen(PORT, "0.0.0.0", () => console.log("[Feed] Running on port " + PORT));
+
 export default app;
