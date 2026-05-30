@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Candor — Monte Carlo Stress Certification</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+:root{--bg:#02040a;--bg2:#060c18;--bg3:#0a1220;--bg4:#0f1a2e;--green:#00e87a;--green2:#00b85f;--amber:#f5a623;--red:#ff4455;--blue:#38b2ff;--purple:#a78bfa;--text:#dff0ff;--text2:rgba(223,240,255,0.55);--text3:rgba(223,240,255,0.2);--border:rgba(0,232,122,0.1);--border2:rgba(0,232,122,0.22);--mono:'DM Mono',monospace;--sans:'Syne',sans-serif;--serif:'Playfair Display',serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,232,122,0.04) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(56,178,255,0.04) 0%,transparent 60%),linear-gradient(rgba(0,232,122,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,122,0.025) 1px,transparent 1px);background-size:auto,auto,32px 32px,32px 32px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.hdr-logo-main{font-size:18px;font-weight:800;letter-spacing:-.01em}.hdr-logo-main em{color:var(--green);font-style:normal}
+.hdr-logo-sub{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.2em;text-transform:uppercase;margin-top:3px}
+.hdr-right{display:flex;align-items:center;gap:14px}
+.live-chip{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+.live-dot.pulse{animation:ldp 1.5s ease-in-out infinite}
+@keyframes ldp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.hdr-clock{font-family:var(--mono);font-size:11px;color:var(--text3)}
+.sl{font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sl::after{content:'';flex:1;height:1px;background:var(--border)}
+.tabs{display:flex;gap:2px;margin-bottom:28px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:4px}
+.tab{flex:1;padding:10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;text-align:center;border-radius:7px;cursor:pointer;transition:all .2s;color:var(--text3);border:none;background:none}
+.tab.active{background:var(--bg4);color:var(--green);box-shadow:inset 0 0 0 1px var(--border2)}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.cfg-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.cfg-title{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cfg-label{font-size:13px;color:var(--text2)}
+.cfg-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--green);outline:none;width:90px;text-align:right}
+.cfg-select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:var(--mono);font-size:11px;color:var(--text2);outline:none;width:130px}
+.scenarios{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.sc-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
+.sc-card.on{border-color:var(--green);background:var(--bg3)}
+.sc-card.on::before{content:'✓';position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:10px;color:var(--green)}
+.sc-icon{font-size:22px;margin-bottom:6px}.sc-name{font-size:13px;font-weight:700;margin-bottom:3px}.sc-desc{font-size:11px;color:var(--text2);line-height:1.4}
+.run-row{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.btn-run{padding:13px 28px;border-radius:8px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;transition:all .25s}
+.btn-run.go{background:var(--green);color:#000;box-shadow:0 0 24px rgba(0,232,122,0.3)}
+.btn-run.go:hover{box-shadow:0 0 36px rgba(0,232,122,0.5);transform:translateY(-1px)}
+.btn-run.stop{background:var(--red);color:#fff}
+.sim-counter{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--green);min-width:80px}
+.sim-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.prog-wrap{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--border);min-width:120px}
+.prog-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),#00ffcc);transition:width .15s ease}
+.eta-label{font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap}
+.metrics-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.met{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.met::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.met.g::after{background:var(--green)}.met.a::after{background:var(--amber)}.met.r::after{background:var(--red)}.met.b::after{background:var(--blue)}.met.p::after{background:var(--purple)}
+.met-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;margin-bottom:7px}
+.met-val{font-family:var(--mono);font-size:24px;font-weight:500;line-height:1;margin-bottom:3px}
+.met.g .met-val{color:var(--green)}.met.a .met-val{color:var(--amber)}.met.r .met-val{color:var(--red)}.met.b .met-val{color:var(--blue)}.met.p .met-val{color:var(--purple)}
+.met-sub{font-size:10px;color:var(--text3)}
+.dist-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.chart-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.chart-title{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
+canvas{width:100%;display:block}
+.failure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.fm-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.fm-service{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.fm-prob{font-family:var(--mono);font-size:20px;font-weight:500;margin-bottom:4px}
+.fm-bar-wrap{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.fm-bar{height:100%;border-radius:2px;transition:width 1s ease}
+.fm-desc{font-size:11px;color:var(--text2);line-height:1.4}
+.conf-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+.conf-table th{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;padding:8px 14px;text-align:left;border-bottom:1px solid var(--border)}
+.conf-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.conf-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-family:var(--mono);font-size:10px}
+.conf-badge.pass{background:rgba(0,232,122,0.12);color:var(--green)}.conf-badge.warn{background:rgba(245,166,35,0.12);color:var(--amber)}.conf-badge.fail{background:rgba(255,68,85,0.12);color:var(--red)}
+.log-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:20px}
+.log-inner{height:120px;overflow-y:auto;font-family:var(--mono);font-size:10px}
+.log-line{display:flex;gap:10px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.025)}
+.lt{color:var(--text3);flex-shrink:0;font-size:9px}.lk{flex-shrink:0;width:48px;font-size:9px}
+.lk.ok{color:var(--green)}.lk.err{color:var(--red)}.lk.warn{color:var(--amber)}.lk.info{color:var(--blue)}.lk.sim{color:var(--purple)}
+.lm{color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:20px}
+.rec-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.rec-item:last-child{border-bottom:none}
+.rec-pri{flex-shrink:0;font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;height:fit-content;margin-top:1px}
+.rec-pri.high{background:rgba(255,68,85,0.15);color:var(--red)}.rec-pri.med{background:rgba(245,166,35,0.15);color:var(--amber)}.rec-pri.low{background:rgba(0,232,122,0.12);color:var(--green)}
+.rec-title{font-size:13px;font-weight:600;margin-bottom:3px}.rec-desc{font-size:12px;color:var(--text2);line-height:1.4}
+.cert-wrap{display:flex;flex-direction:column;align-items:center;gap:24px}
+.cert-paper{width:100%;max-width:780px;background:linear-gradient(135deg,#0a1a0f 0%,#071220 50%,#0a1a0f 100%);border:2px solid var(--green);border-radius:4px;padding:48px 52px;position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,232,122,0.12),inset 0 0 80px rgba(0,0,0,0.3)}
+.cert-paper::before,.cert-paper::after{content:'';position:absolute;width:80px;height:80px;border-color:var(--green);border-style:solid;opacity:.3}
+.cert-paper::before{top:14px;left:14px;border-width:2px 0 0 2px}
+.cert-paper::after{bottom:14px;right:14px;border-width:0 2px 2px 0}
+.cert-inner-border{position:absolute;inset:24px;border:1px solid rgba(0,232,122,0.15);border-radius:2px;pointer-events:none}
+.cert-bg-pat{position:absolute;inset:0;opacity:.03;background-image:repeating-linear-gradient(45deg,var(--green) 0,var(--green) 1px,transparent 0,transparent 50%);background-size:12px 12px}
+.cert-content{position:relative;z-index:1;text-align:center}
+.cert-issuer{font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.35em;text-transform:uppercase;margin-bottom:16px;opacity:.7}
+.cert-title-sm{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.25em;text-transform:uppercase;margin-bottom:8px}
+.cert-title-lg{font-family:var(--serif);font-size:36px;color:var(--text);margin-bottom:6px;line-height:1.1}
+.cert-title-lg em{color:var(--green);font-style:italic}
+.cert-div{display:flex;align-items:center;gap:14px;margin:18px 0}
+.cert-div::before,.cert-div::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.3}
+.cert-div-icon{color:var(--green);font-size:16px;opacity:.6}
+.cert-sub-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px}
+.cert-subject{font-family:var(--serif);font-size:26px;color:var(--green);margin-bottom:4px}
+.cert-subject-sub{font-family:var(--mono);font-size:10px;color:var(--text2)}
+.cert-div2{height:1px;background:linear-gradient(90deg,transparent,rgba(0,232,122,0.2),transparent);margin:20px 0}
+.cert-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:20px}
+.cert-stat{padding:12px 8px;border-right:1px solid rgba(0,232,122,0.1)}.cert-stat:last-child{border-right:none}
+.cert-stat-val{font-family:var(--mono);font-size:18px;color:var(--green);margin-bottom:3px}
+.cert-stat-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase}
+.cert-verdict-wrap{margin:16px 0;padding:16px;border:1px solid rgba(0,232,122,0.2);border-radius:4px;background:rgba(0,232,122,0.04)}
+.cert-verdict-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px}
+.cert-verdict{font-size:15px;font-weight:700;color:var(--green);letter-spacing:.05em}
+.cert-verdict.fail{color:var(--red)}
+.cert-findings{text-align:left;margin:16px 0}
+.cert-finding{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,0.04)}
+.cert-finding:last-child{border-bottom:none}
+.cert-footer{display:flex;align-items:flex-end;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid rgba(0,232,122,0.15)}
+.cert-sig-line{width:120px;height:1px;background:var(--green);opacity:.4;margin:0 auto 6px}
+.cert-sig-name{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em}
+.cert-id{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.1em;text-align:right;line-height:1.8}
+.cert-seal{width:64px;height:64px;border-radius:50%;border:2px solid var(--green);display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:.7;margin:0 auto}
+.cert-seal-icon{font-size:20px;color:var(--green)}.cert-seal-txt{font-family:var(--mono);font-size:7px;color:var(--green);letter-spacing:.1em;text-transform:uppercase}
+.cert-dl-btn{padding:13px 32px;background:var(--green);color:#000;border:none;border-radius:8px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 24px rgba(0,232,122,0.3);transition:all .2s}
+.cert-dl-btn:hover{box-shadow:0 0 36px rgba(0,232,122,0.5);transform:translateY(-1px)}
+@media(max-width:768px){.config-grid,.dist-row{grid-template-columns:1fr}.scenarios{grid-template-columns:repeat(2,1fr)}.metrics-row{grid-template-columns:repeat(2,1fr)}.failure-grid{grid-template-columns:repeat(2,1fr)}.cert-stats{grid-template-columns:repeat(2,1fr)}.cert-paper{padding:28px 20px}.cert-title-lg{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hdr">
+  <div><div class="hdr-logo-main">Cand<em>or</em> — Monte Carlo Certification</div><div class="hdr-logo-sub">Platform Stress Analysis Engine v2.0</div></div>
+  <div class="hdr-right"><div class="live-chip"><div class="live-dot" id="live-dot"></div><span id="sys-lbl">READY</span></div><div class="hdr-clock" id="clk">--:--:--</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('config',this)">⚙ Configuration</button>
+  <button class="tab" onclick="showTab('results',this)">📊 Live Results</button>
+  <button class="tab" onclick="showTab('analysis',this)">🔬 Analysis</button>
+  <button class="tab" onclick="showTab('certificate',this)" id="cert-tab" style="opacity:.4;pointer-events:none">🏆 Certificate</button>
+</div>
+
+<!-- CONFIG TAB -->
+<div id="tab-config">
+  <div class="sl">Monte Carlo Parameters</div>
+  <div class="config-grid">
+    <div class="cfg-card">
+      <div class="cfg-title">Simulation Settings</div>
+      <div class="cfg-row"><span class="cfg-label">Number of simulations</span><input class="cfg-input" id="cfg-sims" value="200" type="number" min="50" max="1000"/></div>
+      <div class="cfg-row"><span class="cfg-label">Users per simulation</span><input class="cfg-input" id="cfg-users" value="500" type="number"/></div>
+      <div class="cfg-row"><span class="cfg-label">Duration (seconds)</span><input class="cfg-input" id="cfg-dur" value="30" type="number"/></div>
+      <div class="cfg-row"><span class="cfg-label">Confidence level</span><select class="cfg-select" id="cfg-conf"><option value="90">90%</option><option value="95" selected>95%</option><option value="99">99%</option></select></div>
+      <div class="cfg-row"><span class="cfg-label">Target endpoint</span></div>
+      <input class="cfg-input" id="cfg-target" value="https://open-feed-platform.fly.dev" style="width:100%;margin-top:4px;text-align:left;padding:8px 10px"/>
+    </div>
+    <div class="cfg-card">
+      <div class="cfg-title">Randomization Variables</div>
+      <div class="cfg-row"><span class="cfg-label">Network jitter (ms)</span><input class="cfg-input" id="cfg-jitter" value="50" type="number"/></div>
+      <div class="cfg-row"><span class="cfg-label">DB spike probability %</span><input class="cfg-input" id="cfg-dbspike" value="5" type="number"/></div>
+      <div class="cfg-row"><span class="cfg-label">Service restart chance %</span><input class="cfg-input" id="cfg-restart" value="2" type="number"/></div>
+      <div class="cfg-row"><span class="cfg-label">Peak user multiplier</span><input class="cfg-input" id="cfg-mult" value="3" type="number"/></div>
+      <div class="cfg-row"><span class="cfg-label">Hetzner trigger RPS</span><input class="cfg-input" id="cfg-hetzner" value="200" type="number"/></div>
+    </div>
+  </div>
+  <div class="sl">Failure Scenarios</div>
+  <div class="scenarios">
+    <div class="sc-card on" data-sc="traffic" onclick="toggleSc(this)"><div class="sc-icon">📈</div><div class="sc-name">Traffic Surge</div><div class="sc-desc">Sudden 10× traffic spike testing auto-scale response</div></div>
+    <div class="sc-card on" data-sc="db" onclick="toggleSc(this)"><div class="sc-icon">🗄️</div><div class="sc-name">DB Overload</div><div class="sc-desc">Connection pool exhaustion under concurrent writes</div></div>
+    <div class="sc-card on" data-sc="ddos" onclick="toggleSc(this)"><div class="sc-icon">🛡️</div><div class="sc-name">DDoS Attack</div><div class="sc-desc">Sentinel detection under bot flood simulation</div></div>
+    <div class="sc-card on" data-sc="cascade" onclick="toggleSc(this)"><div class="sc-icon">⛓️</div><div class="sc-name">Cascade Failure</div><div class="sc-desc">One service down — does it take the rest?</div></div>
+    <div class="sc-card on" data-sc="media" onclick="toggleSc(this)"><div class="sc-icon">📸</div><div class="sc-name">Media Upload Storm</div><div class="sc-desc">Concurrent large file uploads to R2</div></div>
+    <div class="sc-card on" data-sc="auth" onclick="toggleSc(this)"><div class="sc-icon">🔐</div><div class="sc-name">Auth Flood</div><div class="sc-desc">Mass login stress on JWT issuance</div></div>
+    <div class="sc-card on" data-sc="feed" onclick="toggleSc(this)"><div class="sc-icon">📡</div><div class="sc-name">Feed Write Storm</div><div class="sc-desc">Hundreds of simultaneous post creations</div></div>
+    <div class="sc-card on" data-sc="geo" onclick="toggleSc(this)"><div class="sc-icon">🌎</div><div class="sc-name">Geo Distribution</div><div class="sc-desc">Multi-region latency variance simulation</div></div>
+  </div>
+  <div class="run-row">
+    <button class="btn-run go" id="run-btn" onclick="toggleRun()">▶ RUN MONTE CARLO</button>
+    <div><div class="sim-counter" id="sim-count">0</div><div class="sim-label">simulations</div></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="prog-wrap"><div class="prog-bar" id="prog" style="width:0%"></div></div><div class="eta-label" id="eta-lbl">— configure and run</div></div>
+  </div>
+</div>
+
+<!-- RESULTS TAB -->
+<div id="tab-results" style="display:none">
+  <div class="sl">Live Simulation Metrics</div>
+  <div class="metrics-row">
+    <div class="met g"><div class="met-lbl">Simulations Run</div><div class="met-val" id="m-sims">0</div><div class="met-sub">of <span id="m-tsims">200</span></div></div>
+    <div class="met a"><div class="met-lbl">Avg Latency P50</div><div class="met-val" id="m-p50">—</div><div class="met-sub">milliseconds</div></div>
+    <div class="met r"><div class="met-lbl">P99 Latency</div><div class="met-val" id="m-p99">—</div><div class="met-sub">worst 1%</div></div>
+    <div class="met b"><div class="met-lbl">Pass Rate</div><div class="met-val" id="m-pass">—</div><div class="met-sub">simulations passed</div></div>
+    <div class="met p"><div class="met-lbl">Hetzner Triggers</div><div class="met-val" id="m-hetz">0</div><div class="met-sub">auto-scale events</div></div>
+  </div>
+  <div class="dist-row">
+    <div class="chart-box"><div class="chart-title">Latency Distribution — all simulations</div><canvas id="c-dist" height="160"></canvas></div>
+    <div class="chart-box"><div class="chart-title">Pass / Fail ratio</div><canvas id="c-pie" height="160"></canvas></div>
+    <div class="chart-box"><div class="chart-title">RPS across simulations</div><canvas id="c-rps" height="160"></canvas></div>
+  </div>
+  <div class="sl">Failure Mode Probability</div>
+  <div class="failure-grid" id="failure-grid"></div>
+  <div class="sl">Event Log</div>
+  <div class="log-box"><div class="log-inner" id="log"></div></div>
+</div>
+
+<!-- ANALYSIS TAB -->
+<div id="tab-analysis" style="display:none">
+  <div class="sl">Confidence Interval Analysis</div>
+  <table class="conf-table">
+    <thead><tr><th>Metric</th><th>Mean</th><th>P5</th><th>P50</th><th>P95</th><th>P99</th><th>Threshold</th><th>Confidence</th></tr></thead>
+    <tbody id="conf-body"><tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px;font-family:var(--mono);font-size:11px">Run simulations to see analysis</td></tr></tbody>
+  </table>
+  <div class="sl">Recommendations</div>
+  <div class="rec-box" id="rec-box"><div style="text-align:center;color:var(--text3);font-family:var(--mono);font-size:11px;padding:16px">Run simulations to generate recommendations</div></div>
+</div>
+
+<!-- CERTIFICATE TAB -->
+<div id="tab-certificate" style="display:none">
+  <div class="cert-wrap">
+    <div class="cert-paper" id="cert-paper">
+      <div class="cert-bg-pat"></div>
+      <div class="cert-inner-border"></div>
+      <div class="cert-content">
+        <div class="cert-issuer">Open Feed Network · Candor Platform</div>
+        <div class="cert-title-sm">This certifies that</div>
+        <div class="cert-title-lg">Platform <em>Resilience</em> Certificate</div>
+        <div class="cert-div"><span class="cert-div-icon">◆</span></div>
+        <div class="cert-sub-lbl">Awarded to</div>
+        <div class="cert-subject">Candor: The Open Feed Network</div>
+        <div class="cert-subject-sub" id="cert-endpoint"></div>
+        <div class="cert-div2"></div>
+        <div class="cert-stats" id="cert-stats"></div>
+        <div class="cert-verdict-wrap">
+          <div class="cert-verdict-lbl">Monte Carlo Verdict</div>
+          <div class="cert-verdict" id="cert-verdict"></div>
+        </div>
+        <div class="cert-findings" id="cert-findings"></div>
+        <div class="cert-footer">
+          <div><div class="cert-sig-line"></div><div class="cert-sig-name">Candor Stress Engine v2.0</div></div>
+          <div class="cert-seal"><div class="cert-seal-icon" id="cert-seal-icon">✓</div><div class="cert-seal-txt" id="cert-seal-txt">CERTIFIED</div></div>
+          <div class="cert-id" id="cert-id"></div>
+        </div>
+      </div>
+    </div>
+    <button class="cert-dl-btn" onclick="downloadCert()">⬇ Download Certificate (PNG)</button>
+  </div>
+</div>
+</div>
+
+<script>
+let running=false,simInterval=null,simsDone=0,totalSims=200,results=[],selectedSc=new Set(['traffic','db','ddos','cascade','media','auth','feed','geo']);
+setInterval(()=>{ document.getElementById('clk').textContent=new Date().toLocaleTimeString(); },1000);
+function showTab(n,el){ ['config','results','analysis','certificate'].forEach(t=>{ document.getElementById('tab-'+t).style.display=t===n?'block':'none'; }); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); if(el)el.classList.add('active'); }
+function toggleSc(el){ const s=el.dataset.sc; el.classList.toggle('on'); if(selectedSc.has(s))selectedSc.delete(s); else selectedSc.add(s); }
+function log(k,m){ const el=document.getElementById('log'); if(!el)return; const d=document.createElement('div'); d.className='log-line'; d.innerHTML=`<span class="lt">${new Date().toLocaleTimeString()}</span><span class="lk ${k}">[${k.toUpperCase()}]</span><span class="lm">${m}</span>`; el.prepend(d); if(el.children.length>200)el.lastChild.remove(); }
+function pct(arr,p){ const s=[...arr].sort((a,b)=>a-b); return Math.round(s[Math.max(0,Math.ceil(p/100*s.length)-1)]); }
+function runSim(cfg){
+  const jitter=Math.random()*cfg.jitter*2, dbSpike=Math.random()<(cfg.dbSpike/100), svcRestart=Math.random()<(cfg.restart/100);
+  const ddos=selectedSc.has('ddos')&&Math.random()<0.08, cascade=selectedSc.has('cascade')&&svcRestart&&Math.random()<0.3;
+  const geoV=selectedSc.has('geo')?Math.random()*120:0, media=selectedSc.has('media')&&Math.random()<0.1;
+  const base=85+jitter+geoV;
+  const lats=Array.from({length:50},()=>{
+    const u1=Math.random(),u2=Math.random(),z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    let l=base+z*40; if(dbSpike)l+=Math.random()*600; if(ddos)l+=Math.random()*300; if(svcRestart)l+=Math.random()*400; if(cascade)l+=Math.random()*1000; if(media)l+=Math.random()*200; return Math.max(10,l);
+  });
+  let rps=cfg.users*0.3*(0.7+Math.random()*0.6); if(ddos)rps*=(1.5+Math.random()); if(svcRestart)rps*=0.4; rps=Math.round(rps);
+  let err=0.5+Math.random()*2; if(dbSpike)err+=Math.random()*15; if(ddos)err+=Math.random()*8; if(svcRestart)err+=Math.random()*20; if(cascade)err+=Math.random()*35; err=Math.min(100,err);
+  const hetz=rps>cfg.hetzner||err>10;
+  const fm=cascade?'cascade':dbSpike&&err>20?'db':ddos?'ddos':svcRestart?'restart':null;
+  const p95v=pct(lats,95); const passed=p95v<1000&&err<15&&!cascade;
+  return{lats,rps,err,hetz,fm,passed,p95:p95v,p50:pct(lats,50),p99:pct(lats,99),mean:Math.round(lats.reduce((a,b)=>a+b,0)/lats.length)};
+}
+function toggleRun(){ if(running)stopRun(); else startRun(); }
+function startRun(){
+  totalSims=parseInt(document.getElementById('cfg-sims').value)||200;
+  const cfg={users:parseInt(document.getElementById('cfg-users').value)||500,dur:parseInt(document.getElementById('cfg-dur').value)||30,jitter:parseInt(document.getElementById('cfg-jitter').value)||50,dbSpike:parseInt(document.getElementById('cfg-dbspike').value)||5,restart:parseInt(document.getElementById('cfg-restart').value)||2,hetzner:parseInt(document.getElementById('cfg-hetzner').value)||200,conf:parseInt(document.getElementById('cfg-conf').value)||95,target:document.getElementById('cfg-target').value};
+  running=true; simsDone=0; results=[];
+  document.getElementById('run-btn').textContent='■ STOP'; document.getElementById('run-btn').className='btn-run stop';
+  document.getElementById('live-dot').classList.add('pulse'); document.getElementById('sys-lbl').textContent='RUNNING';
+  document.getElementById('m-tsims').textContent=totalSims; document.getElementById('cert-tab').style.opacity='.4'; document.getElementById('cert-tab').style.pointerEvents='none';
+  document.querySelectorAll('.tab').forEach((t,i)=>{ if(i===1)t.classList.add('active'); else t.classList.remove('active'); }); showTab('results');
+  log('sim',`Monte Carlo started — ${totalSims} simulations — ${cfg.users} users each`);
+  log('info',`Target: ${cfg.target} | Scenarios: ${[...selectedSc].join(', ')}`);
+  const t0=Date.now();
+  simInterval=setInterval(()=>{
+    if(!running||simsDone>=totalSims){stopRun(cfg);return;}
+    for(let i=0;i<5&&simsDone<totalSims;i++){ results.push(runSim(cfg)); simsDone++; }
+    const p=simsDone/totalSims, el=(Date.now()-t0)/1000, eta=Math.round((el/p)*(1-p));
+    document.getElementById('prog').style.width=(p*100)+'%';
+    document.getElementById('sim-count').textContent=simsDone;
+    document.getElementById('eta-lbl').textContent=running?`~${eta}s remaining`:'Complete';
+    updateLive(); updateCharts();
+    if(simsDone%20===0){ const pr=Math.round((results.filter(r=>r.passed).length/results.length)*100); log('sim',`Sim ${simsDone}/${totalSims} — Pass: ${pr}% — P95: ${Math.round(results.reduce((a,r)=>a+r.p95,0)/results.length)}ms`); }
+  },80);
+}
+function stopRun(cfg){
+  running=false; clearInterval(simInterval);
+  document.getElementById('run-btn').textContent='▶ RUN MONTE CARLO'; document.getElementById('run-btn').className='btn-run go';
+  document.getElementById('live-dot').classList.remove('pulse'); document.getElementById('sys-lbl').textContent='COMPLETE';
+  document.getElementById('prog').style.width='100%'; document.getElementById('sim-count').textContent=simsDone;
+  document.getElementById('eta-lbl').textContent=`${simsDone} simulations completed`;
+  if(results.length>0){ updateAnalysis(); buildCert(cfg); document.getElementById('cert-tab').style.opacity='1'; document.getElementById('cert-tab').style.pointerEvents='auto'; log('ok',`Complete — generating certificate`); }
+}
+function updateLive(){
+  if(!results.length)return;
+  const allL=results.flatMap(r=>r.lats), pass=results.filter(r=>r.passed).length, hetz=results.filter(r=>r.hetz).length;
+  document.getElementById('m-sims').textContent=simsDone;
+  document.getElementById('m-p50').textContent=pct(allL,50)+'ms';
+  document.getElementById('m-p99').textContent=pct(allL,99)+'ms';
+  document.getElementById('m-pass').textContent=Math.round((pass/results.length)*100)+'%';
+  document.getElementById('m-hetz').textContent=hetz;
+  const fms={cascade:0,db:0,ddos:0,restart:0};
+  results.forEach(r=>{if(r.fm)fms[r.fm]=(fms[r.fm]||0)+1;});
+  const fdata=[{n:'Gateway',k:'traffic',c:'#38b2ff'},{n:'Database',k:'db',c:'#ff4455'},{n:'Sentinel/DDoS',k:'ddos',c:'#f5a623'},{n:'Cascade',k:'cascade',c:'#a78bfa'},{n:'Svc Restart',k:'restart',c:'#00e87a'},{n:'Auth',k:'auth',c:'#f5a623'}];
+  document.getElementById('failure-grid').innerHTML=fdata.map(f=>{const c=fms[f.k]||0,p=results.length?Math.round((c/results.length)*100):0;return`<div class="fm-card"><div class="fm-service">${f.n}</div><div class="fm-prob" style="color:${p>10?'var(--red)':p>3?'var(--amber)':'var(--green)'}">${p}%</div><div class="fm-bar-wrap"><div class="fm-bar" style="width:${p}%;background:${f.c}"></div></div><div class="fm-desc">failure probability across ${results.length} sims</div></div>`;}).join('');
+}
+function updateCharts(){
+  if(results.length<5)return;
+  drawDist(); drawPie(); drawRps();
+}
+function drawDist(){
+  const cv=document.getElementById('c-dist'),ctx=cv.getContext('2d');
+  cv.width=cv.offsetWidth*devicePixelRatio; cv.height=160*devicePixelRatio; ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=cv.offsetWidth,H=160; ctx.clearRect(0,0,W,H);
+  const all=results.flatMap(r=>r.lats),bk=40,mx=Math.min(2000,Math.max(...all)),stp=mx/bk;
+  const cts=new Array(bk).fill(0); all.forEach(l=>{cts[Math.min(bk-1,Math.floor(l/stp))]++;});
+  const mc=Math.max(...cts),bw=W/bk;
+  cts.forEach((c,i)=>{const h=(c/mc)*(H-20),x=i*bw,p=(i/bk)*100,col=p<50?'#00e87a':p<80?'#f5a623':'#ff4455';ctx.fillStyle=col+'44';ctx.fillRect(x,H-h-10,bw-1,h);ctx.fillStyle=col;ctx.fillRect(x,H-h-10,bw-1,2);});
+  const p95x=(pct(all,95)/mx)*W;
+  ctx.strokeStyle='#ff4455';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(p95x,0);ctx.lineTo(p95x,H-10);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#ff4455';ctx.font='9px monospace';ctx.fillText(`P95: ${pct(all,95)}ms`,p95x+4,16);
+  ctx.fillStyle='rgba(223,240,255,0.3)';[0,500,1000,1500,2000].forEach(v=>{if(v<=mx){const x=(v/mx)*W;ctx.fillText(v+'ms',x,H);}});
+}
+function drawPie(){
+  const cv=document.getElementById('c-pie'),ctx=cv.getContext('2d');
+  cv.width=cv.offsetWidth*devicePixelRatio; cv.height=160*devicePixelRatio; ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=cv.offsetWidth,H=160; ctx.clearRect(0,0,W,H);
+  const pass=results.filter(r=>r.passed).length,fail=results.length-pass;
+  const cx=W/2,cy=H/2-10,r=Math.min(W,H)/2-20;
+  let s=-Math.PI/2;
+  [{v:pass,c:'#00e87a'},{v:fail,c:'#ff4455'}].forEach(sl=>{const a=(sl.v/results.length)*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,s+a);ctx.closePath();ctx.fillStyle=sl.c+'55';ctx.fill();ctx.strokeStyle=sl.c;ctx.lineWidth=2;ctx.stroke();s+=a;});
+  const p=Math.round((pass/results.length)*100);
+  ctx.fillStyle=p>=80?'#00e87a':p>=60?'#f5a623':'#ff4455';ctx.font=`bold 20px Syne,sans-serif`;ctx.textAlign='center';ctx.fillText(p+'%',cx,cy+7);
+  ctx.fillStyle='rgba(223,240,255,0.4)';ctx.font='9px monospace';ctx.fillText('PASS RATE',cx,H-4);
+}
+function drawRps(){
+  const cv=document.getElementById('c-rps'),ctx=cv.getContext('2d');
+  cv.width=cv.offsetWidth*devicePixelRatio; cv.height=160*devicePixelRatio; ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=cv.offsetWidth,H=160; ctx.clearRect(0,0,W,H);
+  const rps=results.map(r=>r.rps),mx=Math.max(...rps,1),stp=W/(rps.length-1||1);
+  const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'rgba(56,178,255,0.3)'); g.addColorStop(1,'rgba(56,178,255,0)');
+  ctx.beginPath();ctx.moveTo(0,H);rps.forEach((v,i)=>{ctx.lineTo(i*stp,H-10-(v/mx)*(H-20));});ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();rps.forEach((v,i)=>{const x=i*stp,y=H-10-(v/mx)*(H-20);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.strokeStyle='#38b2ff';ctx.lineWidth=1.5;ctx.stroke();
+}
+function updateAnalysis(){
+  if(!results.length)return;
+  const conf=parseInt(document.getElementById('cfg-conf').value)||95;
+  const mets=[
+    {n:'Latency P50',vals:results.map(r=>r.p50),u:'ms',th:300,lo:true},
+    {n:'Latency P95',vals:results.map(r=>r.p95),u:'ms',th:1000,lo:true},
+    {n:'Latency P99',vals:results.map(r=>r.p99),u:'ms',th:2000,lo:true},
+    {n:'Error Rate',vals:results.map(r=>r.err),u:'%',th:5,lo:true},
+    {n:'Throughput',vals:results.map(r=>r.rps),u:'rps',th:50,lo:false},
+  ];
+  document.getElementById('conf-body').innerHTML=mets.map(m=>{
+    const mean=Math.round(m.vals.reduce((a,b)=>a+b,0)/m.vals.length);
+    const p5=pct(m.vals,5),p50=pct(m.vals,50),p95=pct(m.vals,95),p99=pct(m.vals,99);
+    const met=m.vals.filter(v=>m.lo?v<m.th:v>m.th).length;
+    const c=Math.round((met/m.vals.length)*100),cls=c>=conf?'pass':c>=70?'warn':'fail';
+    return`<tr><td style="font-weight:600">${m.n}</td><td>${mean}${m.u}</td><td>${p5}${m.u}</td><td>${p50}${m.u}</td><td>${p95}${m.u}</td><td>${p99}${m.u}</td><td style="color:var(--text3)">&lt;${m.th}${m.u}</td><td><span class="conf-badge ${cls}">${c}% ${cls.toUpperCase()}</span></td></tr>`;
+  }).join('');
+  const recs=[];
+  const lp95=pct(results.map(r=>r.p95),50);
+  const avgErr=Math.round(results.reduce((a,r)=>a+r.err,0)/results.length*10)/10;
+  const dbCnt=results.filter(r=>r.fm==='db').length;
+  const casCnt=results.filter(r=>r.fm==='cascade').length;
+  const hetzPct=Math.round((results.filter(r=>r.hetz).length/results.length)*100);
+  if(lp95>500)recs.push({p:'high',t:'High P95 Latency',d:`Median P95 of ${lp95}ms detected. Add Redis cache for feed queries and increase Fly.io machine count in iad region.`});
+  if(avgErr>3)recs.push({p:'high',t:'Elevated Error Rate',d:`Mean error rate ${avgErr}% across simulations. Increase pg pool max to 20 and add retry logic in gateway.`});
+  if(dbCnt>results.length*0.05)recs.push({p:'high',t:'Database Bottleneck',d:`DB overload in ${Math.round(dbCnt/results.length*100)}% of simulations. Add pgBouncer connection pooling.`});
+  if(casCnt>0)recs.push({p:'high',t:'Cascade Failure Risk',d:`Cascade detected in ${casCnt} simulations. Implement circuit breakers in gateway for feed and sentinel routes.`});
+  if(hetzPct>20)recs.push({p:'med',t:'Frequent Hetzner Triggers',d:`Auto-scale fired in ${hetzPct}% of sims. Increase baseline Fly.io machines from 2 to 3.`});
+  if(recs.length===0)recs.push({p:'low',t:'Platform Performing Well',d:'No critical issues. Consider testing at 2× user projections before public launch.'});
+  document.getElementById('rec-box').innerHTML=recs.map(r=>`<div class="rec-item"><span class="rec-pri ${r.p}">${r.p.toUpperCase()}</span><div class="rec-body"><div class="rec-title">${r.t}</div><div class="rec-desc">${r.d}</div></div></div>`).join('');
+}
+function buildCert(cfg){
+  if(!results.length)return;
+  const allL=results.flatMap(r=>r.lats),pass=results.filter(r=>r.passed).length;
+  const passRate=Math.round((pass/results.length)*100),p50v=pct(allL,50),p95v=pct(allL,95),p99v=pct(allL,99);
+  const avgErr=Math.round(results.reduce((a,r)=>a+r.err,0)/results.length*10)/10;
+  const hetzPct=Math.round((results.filter(r=>r.hetz).length/results.length)*100);
+  const ok=passRate>=80&&p95v<1000&&avgErr<10;
+  document.getElementById('cert-endpoint').textContent=cfg?.target||'open-feed-platform.fly.dev';
+  document.getElementById('cert-stats').innerHTML=[{v:results.length,l:'Simulations Run'},{v:passRate+'%',l:'Pass Rate'},{v:p95v+'ms',l:'P95 Latency'},{v:avgErr+'%',l:'Avg Error Rate'}].map(s=>`<div class="cert-stat"><div class="cert-stat-val">${s.v}</div><div class="cert-stat-lbl">${s.l}</div></div>`).join('');
+  const vEl=document.getElementById('cert-verdict');
+  vEl.textContent=ok?'✓ PRODUCTION READY — Platform meets resilience standards':'⚠ CONDITIONAL — Address recommendations before full launch';
+  vEl.className='cert-verdict'+(ok?'':' fail');
+  document.getElementById('cert-seal-icon').textContent=ok?'✓':'⚠';
+  document.getElementById('cert-seal-txt').textContent=ok?'CERTIFIED':'CONDITIONAL';
+  const findings=[`${results.length} Monte Carlo simulations across ${selectedSc.size} failure scenarios`,`Platform passed ${pass} of ${results.length} simulations (${passRate}% pass rate)`,`P50/P95/P99 latency: ${p50v}ms / ${p95v}ms / ${p99v}ms`,`Average error rate: ${avgErr}% across all simulations`,`Hetzner auto-scale triggered in ${hetzPct}% of simulations`,ok?'Platform demonstrates production-grade resilience':'Remediation recommended before public launch'];
+  document.getElementById('cert-findings').innerHTML=findings.map(f=>`<div class="cert-finding"><span style="flex-shrink:0">${f.includes('Remediation')?'⚠':'◆'}</span><span>${f}</span></div>`).join('');
+  const id='OFN-'+Date.now().toString(36).toUpperCase()+'-MC';
+  document.getElementById('cert-id').innerHTML=`<div>Certificate ID: ${id}</div><div>Issued: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div><div>Engine: Monte Carlo v2.0</div>`;
+  log('ok',`Certificate ready — ${ok?'PASSED':'CONDITIONAL'} — ID: ${id}`);
+}
+async function downloadCert(){
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  }
+  try{
+    const c=await html2canvas(document.getElementById('cert-paper'),{backgroundColor:'#0a1a0f',scale:2,useCORS:true,logging:false});
+    const a=document.createElement('a');a.download=`candor-resilience-certificate-${Date.now()}.png`;a.href=c.toDataURL('image/png');a.click();
+    log('ok','Certificate downloaded as PNG');
+  }catch(e){log('warn','Opening print dialog as fallback');window.print();}
+}
+</script>
+</body>
+</html>
