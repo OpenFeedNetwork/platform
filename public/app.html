@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Candor — The Open Feed Network</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +36,7 @@ a{color:inherit;text-decoration:none}
 .auth-mark{width:52px;height:52px;border-radius:16px;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--accent-hi)}
 .auth-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
 .auth-sub{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase}
-.auth-tagline{font-size:12px;color:var(--text-3);text-align:center;margin-top:2px}
+
 .auth-tabs{display:flex;border:0.5px solid var(--border);border-radius:10px;padding:3px;margin-bottom:24px}
 .auth-tab{flex:1;padding:8px;border-radius:7px;font-size:13px;font-weight:500;color:var(--text-3);transition:all 0.15s}
 .auth-tab.active{background:var(--accent);color:#fff}
@@ -185,7 +186,7 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
 .a-handle{font-size:11px;color:var(--text-3)}
 .post-content{font-size:14px;line-height:1.65;color:#d4d3de;margin-bottom:12px;word-break:break-word}
 .post-media{border-radius:10px;overflow:hidden;margin-bottom:12px;border:0.5px solid var(--border)}
-.post-media img{width:100%;height:auto;display:block;max-height:400px;object-fit:cover;cursor:pointer}
+.post-media{background:var(--surface2)}.post-media img{width:100%;height:auto;display:block;max-height:400px;object-fit:cover;cursor:pointer}
 .post-media video{width:100%;display:block;max-height:400px}
 .post-footer{display:flex;align-items:center;gap:4px;padding-top:10px;border-top:0.5px solid var(--border)}
 .pact{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);padding:5px 8px;border-radius:8px;transition:all 0.15s;flex:1;justify-content:center}
@@ -341,7 +342,7 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
       <div class="auth-mark">C</div>
       <div class="auth-title">Candor</div>
       <div class="auth-sub">The Open Feed Network</div>
-      <div class="auth-tagline">The platform that can't suppress your voice.</div>
+      <div class="auth-tagline"></div>
     </div>
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="setAuthMode('login',this)">Sign In</button>
@@ -593,7 +594,7 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
 
 <script>
 // STATE
-var _token=sessionStorage.getItem("candor_token"),_user=null,_tab='foryou',_cursor=null;
+var _token=sessionStorage.getItem('candor_token'),_user=JSON.parse(sessionStorage.getItem('candor_user')||'null'),_tab='foryou',_cursor=null;
 var _liked=new Set(),_reposted=new Set(),_following=new Set();
 var _mediaFiles=[],_liveStream=null,_liveTimer=null,_liveSeconds=0;
 var _ws=null,_profileTarget=null,_msgTarget=null;
@@ -608,7 +609,7 @@ async function api(method,path,body,isForm){
   if(body&&!isForm) opts.body=JSON.stringify(body);
   if(body&&isForm) opts.body=body;
   var res=await fetch(path,opts);
-  if(res.status===401){throw new Error('Session expired — please sign in again');}
+  if(res.status===401){sessionStorage.removeItem('candor_token');sessionStorage.removeItem('candor_user');_token=null;_user=null;if(document.getElementById('app'))document.getElementById('app').style.display='none';if(document.getElementById('auth-screen'))document.getElementById('auth-screen').style.display='flex';throw new Error('Session expired — please sign in again');}
   if(!res.ok){var e=await res.json().catch(function(){return{};});throw new Error(e.error||e.message||'HTTP '+res.status);}
   return res.json();
 }
@@ -643,7 +644,7 @@ async function doAuth(){
       if(!ev){showAuthErr('Email required.');btn.textContent='→ Create Account';btn.disabled=false;return;}
       data=await api('POST','/api/v1/auth/register',{username:uval,email:ev,password:pval});
     }
-    _token=data.token;_user=data.user;sessionStorage.setItem("candor_token",_token);
+    _token=data.token;_user=data.user;sessionStorage.setItem('candor_token',_token);sessionStorage.setItem('candor_user',JSON.stringify(_user));
     launchApp();
   }catch(e){
     showAuthErr(e.message||'Sign in failed.');
@@ -651,7 +652,7 @@ async function doAuth(){
   }
 }
 function showAuthErr(msg){var el=document.getElementById('a-err');el.textContent=msg;el.style.display='block';}
-function doLogout(){sessionStorage.removeItem("candor_token");_token=null;_user=null;if(_ws){_ws.close();_ws=null;}document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('a-user').value='';document.getElementById('a-pass').value='';}
+function doLogout(){sessionStorage.removeItem('candor_token');sessionStorage.removeItem('candor_user');_token=null;_user=null;if(_ws){_ws.close();_ws=null;}document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('a-user').value='';document.getElementById('a-pass').value='';}
 
 // LAUNCH
 function launchApp(){
@@ -1206,6 +1207,22 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function timeAgo(ts){if(!ts)return'just now';var d=new Date(ts),diff=Math.floor((Date.now()-d)/1000);if(diff<60)return'just now';if(diff<3600)return Math.floor(diff/60)+'m';if(diff<86400)return Math.floor(diff/3600)+'h';return Math.floor(diff/86400)+'d';}
 var _toastT;
 function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(function(){el.classList.remove('show');},3000);}
+
+
+// AUTO-LAUNCH IF VALID SESSION EXISTS
+(function(){
+  if(_token && _user){
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    var ini=(_user.username||'U').substring(0,2).toUpperCase();
+    document.getElementById('nav-avi').textContent=ini;
+    document.getElementById('sl-avi').textContent=ini;
+    document.getElementById('sl-name').textContent=_user.username;
+    document.getElementById('sl-handle').textContent='@'+_user.username;
+    document.getElementById('c-avi').textContent=ini;
+    loadFeed();loadStatus();loadNotifications();loadWhoToFollow();connectWS();
+  }
+})();
 
 // STYLE
 var s=document.createElement('style');
