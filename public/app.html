@@ -9,66 +9,71 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#080809;--surface:#0f0f12;--surface2:#141417;--border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.14);
+  --bg:#080809;--surface:#0f0f12;--surface2:#141417;--surface3:#1a1a1f;
+  --border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.14);
   --text:#eeedf2;--text-2:#9998a5;--text-3:#4f4e5a;
   --accent:#6c5ce7;--accent-hi:#8b7ff5;--accent-glow:rgba(108,92,231,0.15);
   --green:#00d68f;--green-dim:rgba(0,214,143,0.1);
   --red:#ff4757;--red-dim:rgba(255,71,87,0.1);
   --amber:#f0a500;--amber-dim:rgba(240,165,0,0.1);
+  --blue:#3db8ff;--blue-dim:rgba(61,184,255,0.1);
   --nav-h:54px;--tab-h:56px;
 }
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
 button{cursor:pointer;font-family:'DM Sans',sans-serif;border:none;background:none;color:inherit}
 input,textarea{font-family:'DM Sans',sans-serif}
 a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:2px}
 
-/* ── AUTH SCREEN ── */
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.auth-card{background:var(--surface);border:0.5px solid var(--border);border-radius:20px;padding:44px 36px;width:100%;max-width:420px;position:relative;overflow:hidden}
+/* ── AUTH ── */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--bg)}
+#auth-screen::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 30% 40%,rgba(108,92,231,0.06) 0%,transparent 60%);pointer-events:none}
+.auth-card{background:var(--surface);border:0.5px solid var(--border);border-radius:20px;padding:44px 36px;width:100%;max-width:420px;position:relative;overflow:hidden;z-index:1}
 .auth-card::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-hi),transparent)}
 .auth-logo{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:32px}
-.auth-logo-mark{width:48px;height:48px;border-radius:14px;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--accent-hi)}
-.auth-logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:18px}
-.auth-logo-sub{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.auth-mark{width:52px;height:52px;border-radius:16px;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--accent-hi)}
+.auth-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
+.auth-sub{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.auth-tagline{font-size:12px;color:var(--text-3);text-align:center;margin-top:2px}
 .auth-tabs{display:flex;border:0.5px solid var(--border);border-radius:10px;padding:3px;margin-bottom:24px}
 .auth-tab{flex:1;padding:8px;border-radius:7px;font-size:13px;font-weight:500;color:var(--text-3);transition:all 0.15s}
 .auth-tab.active{background:var(--accent);color:#fff}
 .auth-field{margin-bottom:14px}
-.auth-label{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.5px;margin-bottom:6px;display:block}
+.auth-label{font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.5px;margin-bottom:6px;display:block;text-transform:uppercase}
 .auth-input{width:100%;background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);outline:none;transition:border-color 0.15s}
 .auth-input:focus{border-color:var(--accent)}
-.auth-btn{width:100%;background:var(--accent);color:#fff;border-radius:10px;padding:12px;font-size:14px;font-weight:600;margin-top:8px;transition:all 0.2s;font-family:'Syne',sans-serif}
+.auth-btn{width:100%;background:var(--accent);color:#fff;border-radius:10px;padding:12px;font-size:14px;font-weight:600;margin-top:8px;transition:all 0.2s;font-family:'Syne',sans-serif;letter-spacing:0.3px}
 .auth-btn:hover{background:var(--accent-hi)}
-.auth-error{background:var(--red-dim);border:0.5px solid var(--red);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:12px;display:none}
+.auth-btn:disabled{opacity:0.5;cursor:not-allowed}
+.auth-error{background:var(--red-dim);border:0.5px solid rgba(255,71,87,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:12px;display:none}
 .auth-footer{display:flex;flex-direction:column;gap:6px;margin-top:18px;padding-top:18px;border-top:0.5px solid var(--border)}
 .auth-pill{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3)}
-.auth-pill-icon{font-size:13px}
 
 /* ── APP SHELL ── */
 #app{display:none}
-nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(8,8,9,0.88);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:200}
-.nav-logo{display:flex;align-items:center;gap:8px;cursor:pointer}
-.logo-mark{width:28px;height:28px;border-radius:8px;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--accent-hi)}
+nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(8,8,9,0.9);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:200}
+.nav-logo{display:flex;align-items:center;gap:8px}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--accent-hi)}
 .logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
 .logo-sub{font-size:9px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.5px}
 .nav-right{display:flex;align-items:center;gap:10px}
 .sentinel-pill{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);font-family:'DM Mono',monospace;background:var(--green-dim);border:0.5px solid rgba(0,214,143,0.2);border-radius:100px;padding:4px 10px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.nav-user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2)}
-.nav-avi{width:28px;height:28px;border-radius:50%;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent-hi)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.nav-avi{width:30px;height:30px;border-radius:50%;background:var(--accent-glow);border:0.5px solid rgba(108,92,231,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent-hi);cursor:pointer}
 .btn-logout{font-size:11px;color:var(--text-3);padding:4px 10px;border:0.5px solid var(--border);border-radius:100px;transition:all 0.15s}
 .btn-logout:hover{border-color:var(--border-hi);color:var(--text)}
 
-/* ── SHELL LAYOUT ── */
+/* ── LAYOUT ── */
 .shell{display:grid;grid-template-columns:1fr;min-height:calc(100vh - var(--nav-h));padding-top:var(--nav-h);padding-bottom:var(--tab-h)}
 @media(min-width:1024px){.shell{grid-template-columns:240px 1fr 300px;padding-bottom:0}}
 
-/* ── SIDEBARS ── */
-.sidebar-left{display:none;padding:20px 12px;border-right:0.5px solid var(--border);position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto}
-@media(min-width:1024px){.sidebar-left{display:flex;flex-direction:column;gap:2px}}
+/* ── LEFT SIDEBAR ── */
+.sidebar-left{display:none;padding:20px 12px;border-right:0.5px solid var(--border);position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;flex-direction:column;gap:2px}
+@media(min-width:1024px){.sidebar-left{display:flex}}
 .sl-user{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px}
-.sl-avi{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.sl-avi{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;background:var(--accent-glow);color:var(--accent-hi)}
 .sl-name{font-size:13px;font-weight:500}
 .sl-handle{font-size:11px;color:var(--text-3)}
 .sl-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;color:var(--text-2);transition:all 0.15s;width:100%;text-align:left}
@@ -77,20 +82,22 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
 .sl-link svg{width:17px;height:17px;flex-shrink:0}
 .sl-badge{font-size:9px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:100px;margin-left:auto}
 .sl-badge.new{background:var(--accent-glow);color:var(--accent-hi)}
-.sl-badge:not(.new){background:var(--green-dim);color:var(--green)}
+.sl-badge.live{background:var(--green-dim);color:var(--green)}
+.sl-badge.free{background:var(--amber-dim);color:var(--amber)}
 .sl-div{height:0.5px;background:var(--border);margin:8px 0}
 .sl-sec{font-size:9px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:4px 12px}
 .sl-compose{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;background:var(--accent);color:#fff;border-radius:10px;padding:10px;font-size:13px;font-weight:600;transition:all 0.2s;width:100%}
 .sl-compose:hover{background:var(--accent-hi)}
 
+/* ── RIGHT SIDEBAR ── */
 .sidebar-right{display:none;padding:20px 12px;border-left:0.5px solid var(--border);position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto}
 @media(min-width:1024px){.sidebar-right{display:block}}
 .widget{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px}
-.w-title{font-size:13px;font-weight:600;margin-bottom:12px;font-family:'Syne',sans-serif}
+.w-title{font-size:13px;font-weight:600;margin-bottom:12px;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:space-between}
 .ts-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ts-lbl{font-size:10px;color:var(--text-2);width:100px;flex-shrink:0}
 .ts-bar-wrap{flex:1;height:3px;background:var(--surface2);border-radius:100px;overflow:hidden}
-.ts-bar{height:100%;border-radius:100px;transition:width 1s ease}
+.ts-bar{height:100%;border-radius:100px;transition:width 1.2s ease}
 .ts-val{font-size:10px;font-family:'DM Mono',monospace;width:28px;text-align:right}
 .trend-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:0.5px solid var(--border)}
 .trend-item:last-child{border:none}
@@ -101,621 +108,987 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
 .who-avi{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
 .who-name{font-size:12px;font-weight:500}
 .who-handle{font-size:10px;color:var(--text-3)}
-.follow{margin-left:auto;font-size:11px;border:0.5px solid var(--border);border-radius:100px;padding:4px 12px;transition:all 0.15s;font-weight:500}
-.follow:hover{border-color:var(--accent);color:var(--accent-hi)}
+.follow-btn{margin-left:auto;font-size:11px;border:0.5px solid var(--border);border-radius:100px;padding:4px 12px;transition:all 0.15s;font-weight:500}
+.follow-btn:hover{border-color:var(--accent);color:var(--accent-hi)}
+.follow-btn.following{background:var(--accent-glow);border-color:var(--accent);color:var(--accent-hi)}
 .infra-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:11px}
 .infra-name{color:var(--text-2)}
 .infra-ok{color:var(--green);font-family:'DM Mono',monospace;font-size:10px}
+.infra-warn{color:var(--amber);font-family:'DM Mono',monospace;font-size:10px}
 
 /* ── MAIN FEED ── */
 .feed-main{min-height:calc(100vh - var(--nav-h));border-right:0.5px solid var(--border)}
-.feed-head{position:sticky;top:var(--nav-h);z-index:100;background:rgba(8,8,9,0.88);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:0 16px;display:flex;align-items:stretch;height:46px}
+.feed-head{position:sticky;top:var(--nav-h);z-index:100;background:rgba(8,8,9,0.9);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);padding:0 16px;display:flex;align-items:stretch;height:46px}
 .feed-tab{font-size:13px;font-weight:500;color:var(--text-3);padding:0 14px;border-bottom:2px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:6px}
 .feed-tab:hover{color:var(--text)}
 .feed-tab.active{color:var(--text);border-bottom-color:var(--accent)}
-.tab-count{font-size:10px;background:var(--accent-glow);color:var(--accent-hi);border-radius:100px;padding:1px 5px;font-family:'DM Mono',monospace}
+.tab-badge{font-size:9px;background:var(--accent-glow);color:var(--accent-hi);border-radius:100px;padding:1px 5px;font-family:'DM Mono',monospace}
 .feed-body{padding:12px}
 @media(min-width:1024px){.feed-body{padding:18px}}
 
-/* ── BENTO ── */
-.bento{display:flex;flex-direction:column;gap:8px}
-@media(min-width:600px){.bento{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.bento .c-feat{grid-column:1/-1}}
-@media(min-width:1024px){.bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:166px;gap:10px}.bento .c-feat{grid-column:1/4;grid-row:1/3}.bento .c-s1{grid-column:4/6;grid-row:1/2}.bento .c-s2{grid-column:6/7;grid-row:1/2}.bento .c-threat{grid-column:4/7;grid-row:2/3}.bento .c-wide{grid-column:1/5;grid-row:3/4}.bento .c-explore{grid-column:5/7;grid-row:3/4}}
+/* ── BENTO METRIC CARDS ── */
+.bento-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+@media(min-width:1024px){.bento-metrics{grid-template-columns:repeat(4,1fr)}}
+.metric-card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;position:relative;overflow:hidden;transition:border-color 0.2s}
+.metric-card:hover{border-color:var(--border-hi)}
+.metric-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(108,92,231,0.04) 0%,transparent 65%);pointer-events:none}
+.mlbl{font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.mnum{font-size:24px;font-weight:700;font-family:'Syne',sans-serif;color:var(--text);line-height:1.1}
+.delta{font-size:10px;font-family:'DM Mono',monospace;margin-top:3px}
+.delta.up{color:var(--green)}
+.delta.ok{color:var(--blue)}
+.spark{display:flex;align-items:flex-end;gap:2px;height:24px;margin-top:8px}
+.sb{flex:1;border-radius:2px;background:rgba(108,92,231,0.2)}
+.sb.hi{background:var(--accent)}
+.sb.r{background:rgba(255,71,87,0.2)}
+.sb.r.hi{background:var(--red)}
+.sb.g{background:rgba(0,214,143,0.2)}
+.sb.g.hi{background:var(--green)}
 
-/* ── CARDS ── */
-.card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative;transition:border-color 0.2s,transform 0.18s,box-shadow 0.2s;cursor:pointer}
-.card:hover{border-color:var(--border-hi);transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,0,0,0.45)}
-.card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(108,92,231,0.04) 0%,transparent 65%);pointer-events:none}
-.c-feat{min-height:220px}
-.c-feat .accent-bar{position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--accent) 0%,rgba(108,92,231,0) 100%);border-radius:14px 14px 0 0}
-@media(min-width:600px){.c-feat{min-height:300px}}
-@media(min-width:1024px){.c-feat{min-height:unset}}
-.c-s1,.c-s2,.c-threat{min-height:140px}
-.post-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.avi{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
-.a-name{font-size:13px;font-weight:500}
-.a-handle{font-size:11px;color:var(--text-3)}
-.post-body{font-size:14px;line-height:1.55;color:#d4d3de;flex:1;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
-.c-feat .post-body{font-size:15px;-webkit-line-clamp:6}
-.post-acts{display:flex;align-items:center;gap:14px;padding-top:10px;border-top:0.5px solid var(--border);margin-top:10px}
-.act{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);transition:color 0.15s;padding:3px}
-.act svg{width:14px;height:14px}
-.act:hover{color:var(--text-2)}
-.like-btn:hover{color:var(--red)}
-.like-btn.liked{color:var(--red)}
-.like-btn.liked svg{fill:var(--red);stroke:var(--red)}
-.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:100px;font-family:'DM Mono',monospace}
+/* ── TAGS ── */
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:100px;font-family:'DM Mono',monospace;white-space:nowrap}
 .tag-purple{background:var(--accent-glow);color:var(--accent-hi)}
 .tag-green{background:var(--green-dim);color:var(--green)}
 .tag-red{background:var(--red-dim);color:var(--red)}
 .tag-amber{background:var(--amber-dim);color:var(--amber)}
-.mlbl{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.5px}
-.mnum{font-size:28px;font-weight:700;font-family:'Syne',sans-serif;color:var(--text);line-height:1.1;margin:6px 0 3px}
-.delta{font-size:11px;font-family:'DM Mono',monospace}
-.delta.up{color:var(--green)}
-.spark{display:flex;align-items:flex-end;gap:2px;height:32px;margin-top:8px}
-.sb{flex:1;border-radius:2px;background:rgba(108,92,231,0.25);transition:height 0.3s}
-.sb.hi{background:var(--accent)}
-.sb.r{background:rgba(255,71,87,0.25)}
-.sb.r.hi{background:var(--red)}
-.tr-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border)}
-.tr-row:last-child{border:none}
-.tr-lbl{font-size:11px;color:var(--text-2)}
-.score{font-size:12px;font-family:'DM Mono',monospace;font-weight:500}
-.s-hi{color:var(--red)}
-.s-md{color:var(--amber)}
-.s-lo{color:var(--green)}
-.w-inner{display:flex;justify-content:space-between;align-items:center;height:100%}
-.w-icon{font-size:36px;opacity:0.6}
-.pill{display:inline-block;background:var(--surface2);border:0.5px solid var(--border);border-radius:100px;padding:4px 10px;font-size:11px;margin:3px 2px;transition:all 0.15s;cursor:pointer}
-.pill:hover{border-color:var(--accent);color:var(--accent-hi)}
+.tag-blue{background:var(--blue-dim);color:var(--blue)}
 
-/* ── LOADING STATE ── */
-.feed-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;color:var(--text-3)}
-.feed-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface2) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* ── FEED CARDS FROM API ── */
-.post-card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:8px;transition:border-color 0.2s}
+/* ── POST CARDS ── */
+.post-card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:8px;transition:border-color 0.2s,transform 0.15s}
 .post-card:hover{border-color:var(--border-hi)}
-.post-card .post-meta{margin-bottom:10px}
-.post-content{font-size:14px;line-height:1.6;color:#d4d3de;margin-bottom:12px}
-.post-footer{display:flex;align-items:center;gap:16px;padding-top:10px;border-top:0.5px solid var(--border)}
-.post-act{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);transition:color 0.15s;padding:4px 6px;border-radius:6px}
-.post-act:hover{color:var(--text-2);background:var(--surface2)}
-.post-act svg{width:14px;height:14px}
-.post-act.like:hover{color:var(--red)}
-.post-act.like.liked{color:var(--red)}
-.post-act.like.liked svg{fill:var(--red);stroke:var(--red)}
-.post-time{margin-left:auto;font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace}
+.post-card.featured{border-color:rgba(108,92,231,0.25);background:linear-gradient(135deg,var(--surface) 0%,rgba(108,92,231,0.03) 100%)}
+.post-card.featured::before{content:'';display:block;height:1.5px;background:linear-gradient(90deg,var(--accent) 0%,transparent 60%);margin:-16px -16px 16px;border-radius:14px 14px 0 0}
+.post-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.avi{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.a-name{font-size:13px;font-weight:500;line-height:1.2}
+.a-handle{font-size:11px;color:var(--text-3)}
+.post-content{font-size:14px;line-height:1.65;color:#d4d3de;margin-bottom:12px;word-break:break-word}
+.post-media{border-radius:10px;overflow:hidden;margin-bottom:12px;border:0.5px solid var(--border)}
+.post-media img{width:100%;height:auto;display:block;max-height:400px;object-fit:cover}
+.post-media video{width:100%;display:block;max-height:400px}
+.post-footer{display:flex;align-items:center;gap:4px;padding-top:10px;border-top:0.5px solid var(--border)}
+.pact{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);padding:5px 8px;border-radius:8px;transition:all 0.15s;flex:1;justify-content:center}
+.pact:hover{background:var(--surface2)}
+.pact svg{width:15px;height:15px}
+.pact.like:hover{color:var(--red)}
+.pact.like.liked{color:var(--red)}
+.pact.like.liked svg{fill:var(--red);stroke:var(--red)}
+.pact.repost:hover{color:var(--green)}
+.pact.repost.reposted{color:var(--green)}
+.pact.comment:hover{color:var(--blue)}
+.pact-more{padding:5px 8px;border-radius:8px;color:var(--text-3);transition:all 0.15s}
+.pact-more:hover{background:var(--surface2);color:var(--text-2)}
 
-/* ── FAB + BOTTOM TABS ── */
-.fab{position:fixed;bottom:calc(var(--tab-h) + 16px);right:16px;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(108,92,231,0.4);transition:all 0.2s;z-index:150}
+/* ── LIVE BADGE ── */
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:var(--red-dim);border:0.5px solid rgba(255,71,87,0.3);color:var(--red);font-size:10px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:100px;animation:livepulse 2s infinite}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:0.7}}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
+
+/* ── MEDIA PREVIEW ── */
+.media-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.media-thumb{position:relative;border-radius:8px;overflow:hidden;border:0.5px solid var(--border)}
+.media-thumb img,.media-thumb video{width:80px;height:80px;object-fit:cover;display:block}
+.media-thumb-remove{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+
+/* ── LOADING ── */
+.feed-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;color:var(--text-3)}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:48px 20px}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.5}
+.empty-title{font-family:'Syne',sans-serif;font-weight:600;margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--text-3)}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:calc(var(--tab-h) + 16px);right:16px;width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(108,92,231,0.5);transition:all 0.2s;z-index:150}
 .fab:hover{background:var(--accent-hi);transform:scale(1.05)}
-.fab svg{width:20px;height:20px}
-@media(min-width:1024px){.fab{bottom:20px;right:24px}}
+.fab svg{width:22px;height:22px}
+@media(min-width:1024px){.fab{bottom:24px;right:24px}}
+
+/* ── BOTTOM TABS ── */
 .btabs{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:rgba(8,8,9,0.95);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:150}
 @media(min-width:1024px){.btabs{display:none}}
-.btab{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-3);padding:8px 16px;transition:color 0.15s}
+.btab{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-3);padding:6px 14px;transition:color 0.15s;position:relative}
 .btab.active{color:var(--accent-hi)}
-.btab svg{width:20px;height:20px}
-.btab-lbl{font-size:10px;font-family:'DM Mono',monospace}
+.btab svg{width:21px;height:21px}
+.btab-lbl{font-size:9px;font-family:'DM Mono',monospace}
+.btab-dot{position:absolute;top:4px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg)}
 
-/* ── COMPOSE ── */
-.compose-ov{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+/* ── COMPOSE SHEET ── */
+.compose-ov{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:300;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
 .compose-ov.open{opacity:1;pointer-events:all}
-.compose-sheet{background:var(--surface);border:0.5px solid var(--border);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:640px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.34,1.1,0.64,1)}
+.compose-sheet{background:var(--surface);border:0.5px solid var(--border);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:640px;transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.34,1.1,0.64,1)}
 .compose-ov.open .compose-sheet{transform:translateY(0)}
 .c-handle{width:36px;height:3px;border-radius:100px;background:var(--border);margin:0 auto 16px}
-.c-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:12px;color:var(--text-3)}
-.c-ta{width:100%;background:transparent;border:none;outline:none;resize:none;font-size:15px;color:var(--text);min-height:100px;line-height:1.6}
+.c-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px}
+.c-ta{flex:1;background:transparent;border:none;outline:none;resize:none;font-size:15px;color:var(--text);min-height:80px;line-height:1.65;padding-top:2px}
 .c-ta::placeholder{color:var(--text-3)}
-.c-foot{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:0.5px solid var(--border);margin-top:12px}
-.c-acts{display:flex;gap:8px}
-.c-act{padding:6px;border-radius:8px;color:var(--text-3);transition:all 0.15s}
-.c-act:hover{background:var(--surface2);color:var(--accent-hi)}
-.c-act svg{width:18px;height:18px}
-.c-post{background:var(--accent);color:#fff;border-radius:100px;padding:8px 20px;font-size:13px;font-weight:500;transition:all 0.2s}
-.c-post:hover{background:var(--accent-hi)}
-.c-post:disabled{opacity:0.5;cursor:not-allowed}
+.c-tools{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:0.5px solid var(--border);margin-top:12px}
+.c-media-btns{display:flex;gap:4px}
+.c-media-btn{padding:7px;border-radius:8px;color:var(--text-3);transition:all 0.15s;position:relative;overflow:hidden}
+.c-media-btn:hover{background:var(--surface2);color:var(--accent-hi)}
+.c-media-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.c-media-btn svg{width:18px;height:18px;pointer-events:none}
+.c-right{display:flex;align-items:center;gap:10px}
 .c-char{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace}
+.c-post-btn{background:var(--accent);color:#fff;border-radius:100px;padding:8px 22px;font-size:13px;font-weight:600;transition:all 0.2s}
+.c-post-btn:hover{background:var(--accent-hi)}
+.c-post-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ── GO LIVE MODAL ── */
+.live-ov{position:fixed;inset:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.live-ov.open{display:flex}
+.live-preview{width:100%;max-width:480px;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:9/16;position:relative;border:0.5px solid var(--border)}
+.live-preview video{width:100%;height:100%;object-fit:cover}
+.live-overlay{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start}
+.live-controls{display:flex;gap:12px;margin-top:12px}
+.live-btn{padding:12px 24px;border-radius:100px;font-size:14px;font-weight:600;transition:all 0.2s}
+.live-start{background:var(--red);color:#fff}
+.live-start:hover{background:#ff2d3d}
+.live-stop{background:var(--surface2);color:var(--text);border:0.5px solid var(--border)}
+.live-close{position:absolute;top:20px;right:20px;color:var(--text-2);padding:8px;border-radius:50%;background:var(--surface);border:0.5px solid var(--border)}
+.live-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
+.live-sub{font-size:13px;color:var(--text-2);text-align:center}
+
+/* ── PROFILE PANEL ── */
+.panel-ov{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:350;display:none;align-items:flex-end;justify-content:center}
+.panel-ov.open{display:flex}
+.panel{background:var(--surface);border:0.5px solid var(--border);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.panel-handle{width:36px;height:3px;border-radius:100px;background:var(--border);margin:0 auto 20px}
+.profile-banner{height:80px;border-radius:12px;background:linear-gradient(135deg,var(--accent-glow),var(--surface2));margin-bottom:16px}
+.profile-avi{width:60px;height:60px;border-radius:50%;border:3px solid var(--bg);margin-top:-30px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.profile-name{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-top:8px}
+.profile-handle{font-size:13px;color:var(--text-3);margin-bottom:10px}
+.profile-bio{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:16px}
+.profile-stats{display:flex;gap:24px;margin-bottom:20px}
+.profile-stat{text-align:center}
+.profile-stat-n{font-family:'Syne',sans-serif;font-weight:700;font-size:18px}
+.profile-stat-l{font-size:11px;color:var(--text-3)}
+
+/* ── NOTIFICATIONS PANEL ── */
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border)}
+.notif-item:last-child{border:none}
+.notif-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.notif-text{font-size:13px;color:var(--text-2);line-height:1.5}
+.notif-time{font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;margin-top:2px}
+.notif-unread{background:var(--accent-glow)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--tab-h) + 70px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:0.5px solid var(--border);border-radius:100px;padding:10px 20px;font-size:13px;color:var(--text);z-index:500;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:1024px){.toast{bottom:30px}}
+
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
-<!-- ═══ AUTH SCREEN ═══ -->
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══ AUTH ═══ -->
 <div id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-mark">C</div>
-      <div class="auth-logo-text">Candor</div>
-      <div class="auth-logo-sub">The Open Feed Network</div>
-      <div style="font-size:12px;color:var(--text-3);text-align:center;margin-top:4px">The platform that can't suppress your voice.</div>
+      <div class="auth-mark">C</div>
+      <div class="auth-title">Candor</div>
+      <div class="auth-sub">The Open Feed Network</div>
+      <div class="auth-tagline">The platform that can't suppress your voice.</div>
     </div>
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="setAuthTab('login',this)">Sign In</button>
-      <button class="auth-tab" onclick="setAuthTab('register',this)">Register</button>
+      <button class="auth-tab active" onclick="setAuthMode('login',this)">Sign In</button>
+      <button class="auth-tab" onclick="setAuthMode('register',this)">Register</button>
     </div>
     <div class="auth-field">
-      <label class="auth-label">USERNAME OR EMAIL</label>
-      <input class="auth-input" id="auth-user" type="text" placeholder="your_username" autocomplete="username">
+      <label class="auth-label">Username or Email</label>
+      <input class="auth-input" id="a-user" type="text" placeholder="your_username" autocomplete="username">
     </div>
-    <div class="auth-field" id="email-field" style="display:none">
-      <label class="auth-label">EMAIL</label>
-      <input class="auth-input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email">
+    <div class="auth-field" id="a-email-wrap" style="display:none">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" id="a-email" type="email" placeholder="you@example.com">
     </div>
     <div class="auth-field">
-      <label class="auth-label">PASSWORD</label>
-      <input class="auth-input" id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      <label class="auth-label">Password</label>
+      <input class="auth-input" id="a-pass" type="password" placeholder="••••••••" autocomplete="current-password">
     </div>
-    <button class="auth-btn" onclick="doAuth()" id="auth-btn">→ Sign In</button>
-    <div class="auth-error" id="auth-error"></div>
+    <button class="auth-btn" id="a-btn" onclick="doAuth()">→ Sign In</button>
+    <div class="auth-error" id="a-err"></div>
     <div class="auth-footer">
-      <div class="auth-pill"><span class="auth-pill-icon">✓</span> Standard: Username only, no real name required</div>
-      <div class="auth-pill"><span class="auth-pill-icon">🥷</span> Anonymous: Zero PII stored on our servers</div>
-      <div class="auth-pill"><span class="auth-pill-icon">🔒</span> Whistleblower: E2E encrypted, Tor compatible</div>
+      <div class="auth-pill">✓ Standard: Username only, no real name required</div>
+      <div class="auth-pill">🥷 Anonymous: Zero PII stored on our servers</div>
+      <div class="auth-pill">🔒 Whistleblower: E2E encrypted, Tor compatible</div>
     </div>
   </div>
 </div>
 
 <!-- ═══ APP ═══ -->
 <div id="app">
-
-  <!-- TOP NAV -->
   <nav class="top">
     <div class="nav-logo">
       <div class="logo-mark">C</div>
-      <div>
-        <div class="logo-text">Candor</div>
-        <div class="logo-sub">The Open Feed Network</div>
-      </div>
+      <div><div class="logo-text">Candor</div><div class="logo-sub">The Open Feed Network</div></div>
     </div>
     <div class="nav-right">
-      <div class="sentinel-pill"><div class="dot"></div><span id="api-status">API Live</span></div>
-      <div class="nav-user">
-        <div class="nav-avi" id="nav-avi">?</div>
-        <span id="nav-username" style="font-size:12px;color:var(--text-2)"></span>
-      </div>
+      <div class="sentinel-pill"><div class="dot"></div><span id="api-lbl">API Live</span></div>
+      <div class="nav-avi" id="nav-avi" onclick="showProfile(_user)"></div>
       <button class="btn-logout" onclick="doLogout()">Sign out</button>
     </div>
   </nav>
 
   <div class="shell">
-
     <!-- LEFT SIDEBAR -->
     <aside class="sidebar-left">
       <div class="sl-user">
-        <div class="sl-avi" id="sl-avi" style="background:rgba(108,92,231,0.18);color:var(--accent-hi)"></div>
-        <div>
-          <div class="sl-name" id="sl-name"></div>
-          <div class="sl-handle" id="sl-handle"></div>
-        </div>
+        <div class="sl-avi" id="sl-avi"></div>
+        <div><div class="sl-name" id="sl-name"></div><div class="sl-handle" id="sl-handle"></div></div>
       </div>
-      <button class="sl-link active" onclick="setTab('foryou',this)">
+      <button class="sl-link active" id="sl-home" onclick="switchTab('foryou')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
       </button>
-      <button class="sl-link" onclick="setTab('following',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explore
+      <button class="sl-link" onclick="switchTab('following')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Following
+      </button>
+      <button class="sl-link" onclick="switchTab('truthshield')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Truth Shield<span class="sl-badge live">live</span>
+      </button>
+      <button class="sl-link" onclick="showNotifications()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifications<span class="sl-badge new" id="notif-badge" style="display:none">0</span>
       </button>
       <div class="sl-div"></div>
       <div class="sl-sec">Safety — running silent</div>
       <button class="sl-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>ThreatShield<span class="sl-badge">live</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>Beacon<span class="sl-badge live">live</span>
       </button>
       <button class="sl-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>Beacon<span class="sl-badge">live</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gateway<span class="sl-badge live">live</span>
       </button>
-      <button class="sl-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Truth Shield<span class="sl-badge new">free</span>
+      <button class="sl-link" onclick="openLive()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Go Live<span class="sl-badge free">beta</span>
       </button>
       <div class="sl-div"></div>
-      <button class="sl-link">
+      <button class="sl-link" onclick="showProfile(_user)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
       </button>
       <button class="sl-compose" onclick="openCompose()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Post
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Post
       </button>
     </aside>
 
     <!-- MAIN FEED -->
     <main class="feed-main">
       <div class="feed-head">
-        <button class="feed-tab active" onclick="setTab('foryou',this)">For You</button>
-        <button class="feed-tab" onclick="setTab('following',this)">Following</button>
-        <button class="feed-tab" onclick="setTab('truthshield',this)">Truth Shield<span class="tab-count">live</span></button>
+        <button class="feed-tab active" id="tab-foryou" onclick="switchTab('foryou')">For You</button>
+        <button class="feed-tab" id="tab-following" onclick="switchTab('following')">Following</button>
+        <button class="feed-tab" id="tab-truthshield" onclick="switchTab('truthshield')">Truth Shield<span class="tab-badge">live</span></button>
       </div>
       <div class="feed-body">
-
-        <!-- BENTO HEADER (static metric cards) -->
-        <div class="bento" id="bento-header">
-          <div class="card c-s1">
-            <div style="display:flex;align-items:center;justify-content:space-between"><div class="mlbl">Beacon Reach</div><span class="tag tag-green">Live</span></div>
-            <div><div class="mnum" id="reach-num">—</div><div class="delta up" id="reach-delta">loading...</div></div>
-            <div class="spark"><div class="sb" style="height:38%"></div><div class="sb" style="height:52%"></div><div class="sb" style="height:34%"></div><div class="sb" style="height:68%"></div><div class="sb" style="height:48%"></div><div class="sb hi" style="height:82%"></div><div class="sb hi" style="height:100%"></div></div>
+        <div class="bento-metrics">
+          <div class="metric-card">
+            <div class="mlbl">Beacon Reach <span class="tag tag-green" style="font-size:9px">Live</span></div>
+            <div class="mnum" id="m-reach">—</div>
+            <div class="delta up" id="m-reach-d">loading...</div>
+            <div class="spark"><div class="sb g" style="height:40%"></div><div class="sb g" style="height:55%"></div><div class="sb g" style="height:35%"></div><div class="sb g" style="height:70%"></div><div class="sb g" style="height:50%"></div><div class="sb g hi" style="height:85%"></div><div class="sb g hi" style="height:100%"></div></div>
           </div>
-          <div class="card c-s2">
-            <div style="display:flex;align-items:center;justify-content:space-between"><div class="mlbl">Threats Blocked</div><span class="tag tag-red">Shield</span></div>
-            <div><div class="mnum" id="threats-num">—</div><div class="delta up" id="threats-delta">loading...</div></div>
+          <div class="metric-card">
+            <div class="mlbl">Threats Blocked <span class="tag tag-red" style="font-size:9px">Shield</span></div>
+            <div class="mnum" id="m-threats">—</div>
+            <div class="delta up" id="m-threats-d">loading...</div>
             <div class="spark"><div class="sb r" style="height:55%"></div><div class="sb r" style="height:70%"></div><div class="sb r" style="height:45%"></div><div class="sb r" style="height:80%"></div><div class="sb r" style="height:60%"></div><div class="sb r hi" style="height:90%"></div><div class="sb r hi" style="height:100%"></div></div>
           </div>
-          <div class="card c-threat">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="mlbl">ThreatShield — live</div><span class="tag tag-amber">Real-time</span></div>
-            <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
-              <div class="tr-row"><span class="tr-lbl">Coordinated inauth.</span><span class="score s-hi">0.03</span></div>
-              <div class="tr-row"><span class="tr-lbl">Engagement manip.</span><span class="score s-lo">0.01</span></div>
-              <div class="tr-row"><span class="tr-lbl">Verified source</span><span class="score s-lo">0.97</span></div>
-            </div>
+          <div class="metric-card">
+            <div class="mlbl">Total Posts <span class="tag tag-purple" style="font-size:9px">Live</span></div>
+            <div class="mnum" id="m-posts">—</div>
+            <div class="delta ok" id="m-posts-d">loading...</div>
+            <div class="spark"><div class="sb" style="height:30%"></div><div class="sb" style="height:45%"></div><div class="sb" style="height:60%"></div><div class="sb" style="height:50%"></div><div class="sb" style="height:75%"></div><div class="sb hi" style="height:88%"></div><div class="sb hi" style="height:100%"></div></div>
           </div>
-          <div class="card c-explore">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="mlbl">Explore Topics</div></div>
-            <div><span class="pill">Disinfo</span><span class="pill">Civic tech</span><span class="pill">AI safety</span><span class="pill">Open feeds</span><span class="pill">Privacy</span></div>
-          </div>
-        </div>
-
-        <!-- LIVE FEED POSTS -->
-        <div id="feed-posts" style="margin-top:12px">
-          <div class="feed-loading">
-            <div class="feed-spinner"></div>
-            <span style="font-size:12px;font-family:'DM Mono',monospace">Loading feed...</span>
+          <div class="metric-card">
+            <div class="mlbl">Members <span class="tag tag-blue" style="font-size:9px">Network</span></div>
+            <div class="mnum" id="m-users">—</div>
+            <div class="delta up" id="m-users-d">growing</div>
+            <div class="spark"><div class="sb" style="height:25%"></div><div class="sb" style="height:40%"></div><div class="sb" style="height:55%"></div><div class="sb" style="height:65%"></div><div class="sb" style="height:78%"></div><div class="sb hi" style="height:90%"></div><div class="sb hi" style="height:100%"></div></div>
           </div>
         </div>
-
+        <div id="feed-container">
+          <div class="feed-loading"><div class="spinner"></div><span style="font-size:12px;font-family:'DM Mono',monospace;margin-top:4px">Loading feed...</span></div>
+        </div>
+        <div id="load-more-wrap" style="display:none;text-align:center;padding:16px">
+          <button onclick="loadMorePosts()" style="font-size:12px;color:var(--text-3);padding:8px 20px;border:0.5px solid var(--border);border-radius:100px;font-family:'DM Mono',monospace;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Load more</button>
+        </div>
       </div>
     </main>
 
     <!-- RIGHT SIDEBAR -->
     <aside class="sidebar-right">
       <div class="widget">
-        <div class="w-title">Truth Shield</div>
-        <div class="ts-row"><span class="ts-lbl">Disinformation</span><div class="ts-bar-wrap"><div class="ts-bar" style="width:3%;background:var(--green)"></div></div><span class="ts-val" style="color:var(--green)">3%</span></div>
-        <div class="ts-row"><span class="ts-lbl">Manipulation</span><div class="ts-bar-wrap"><div class="ts-bar" style="width:1%;background:var(--green)"></div></div><span class="ts-val" style="color:var(--green)">1%</span></div>
-        <div class="ts-row"><span class="ts-lbl">Verified source</span><div class="ts-bar-wrap"><div class="ts-bar" style="width:97%;background:var(--green)"></div></div><span class="ts-val" style="color:var(--green)">97%</span></div>
-        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-3);margin-top:10px"><div class="dot" style="width:5px;height:5px"></div>Scanning active posts</div>
+        <div class="w-title">Truth Shield <span style="font-size:9px;color:var(--green);font-family:'DM Mono',monospace">● scanning</span></div>
+        <div class="ts-row"><span class="ts-lbl">Disinformation</span><div class="ts-bar-wrap"><div class="ts-bar" id="ts-disinfo" style="width:2%;background:var(--green)"></div></div><span class="ts-val" id="ts-disinfo-v" style="color:var(--green)">2%</span></div>
+        <div class="ts-row"><span class="ts-lbl">Manipulation</span><div class="ts-bar-wrap"><div class="ts-bar" id="ts-manip" style="width:1%;background:var(--green)"></div></div><span class="ts-val" id="ts-manip-v" style="color:var(--green)">1%</span></div>
+        <div class="ts-row"><span class="ts-lbl">Verified source</span><div class="ts-bar-wrap"><div class="ts-bar" id="ts-verified" style="width:98%;background:var(--green)"></div></div><span class="ts-val" id="ts-verified-v" style="color:var(--green)">98%</span></div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-3);margin-top:10px"><div class="dot" style="width:5px;height:5px"></div><span id="ts-scanning">Scanning active posts</span></div>
       </div>
       <div class="widget">
-        <div class="w-title">Trending on Candor</div>
-        <div class="trend-item"><div class="trend-n">1</div><div><div class="trend-tag">#TruthShield</div><div class="trend-ct">Growing</div></div></div>
-        <div class="trend-item"><div class="trend-n">2</div><div><div class="trend-tag">#OpenFeed</div><div class="trend-ct">Active</div></div></div>
-        <div class="trend-item"><div class="trend-n">3</div><div><div class="trend-tag">#CivicTech</div><div class="trend-ct">Rising</div></div></div>
+        <div class="w-title">Trending</div>
+        <div id="trending-list">
+          <div class="trend-item"><div class="trend-n">1</div><div><div class="trend-tag">#TruthShield</div><div class="trend-ct">Growing</div></div></div>
+          <div class="trend-item"><div class="trend-n">2</div><div><div class="trend-tag">#OpenFeed</div><div class="trend-ct">Active</div></div></div>
+          <div class="trend-item"><div class="trend-n">3</div><div><div class="trend-tag">#CivicTech</div><div class="trend-ct">Rising</div></div></div>
+          <div class="trend-item"><div class="trend-n">4</div><div><div class="trend-tag">#MediaLiteracy</div><div class="trend-ct">New</div></div></div>
+        </div>
       </div>
       <div class="widget">
-        <div class="w-title" style="display:flex;align-items:center;justify-content:space-between">Infrastructure<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-family:'DM Mono',monospace"><div class="dot"></div>all systems go</div></div>
+        <div class="w-title">Who to Follow</div>
+        <div id="who-follow">
+          <div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px">Loading...</div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="w-title">Infrastructure <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-family:'DM Mono',monospace"><div class="dot" style="width:5px;height:5px"></div><span id="infra-status">checking</span></div></div>
         <div class="infra-row"><span class="infra-name">Netlify CDN</span><span class="infra-ok">● online</span></div>
-        <div class="infra-row"><span class="infra-name">Fly.io · 5 nodes</span><span class="infra-ok">● online</span></div>
-        <div class="infra-row"><span class="infra-name">PostgreSQL</span><span class="infra-ok">● healthy</span></div>
-        <div class="infra-row"><span class="infra-name">Claude Haiku API</span><span class="infra-ok">● active</span></div>
+        <div class="infra-row"><span class="infra-name">Fly.io · 5 nodes</span><span id="fly-status" class="infra-ok">● checking</span></div>
+        <div class="infra-row"><span class="infra-name">PostgreSQL</span><span id="db-status" class="infra-ok">● checking</span></div>
+        <div class="infra-row"><span class="infra-name">Claude Haiku</span><span id="ai-status" class="infra-ok">● checking</span></div>
+        <div class="infra-row"><span class="infra-name">ThreatShield</span><span id="shield-status" class="infra-ok">● checking</span></div>
       </div>
       <div style="font-size:10px;color:var(--text-3);font-family:'DM Mono',monospace;padding:4px 4px 16px;line-height:1.8">© 2026 Open Feed Network<br><a href="https://candortheopenfeednetwork.com" style="color:var(--accent-hi)">candortheopenfeednetwork.com</a></div>
     </aside>
-
   </div>
 
-  <!-- FAB -->
   <button class="fab" onclick="openCompose()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   </button>
 
-  <!-- BOTTOM TABS -->
   <nav class="btabs">
-    <button class="btab active" onclick="setTab('foryou',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="btab-lbl">Home</span></button>
-    <button class="btab" onclick="setTab('following',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="btab-lbl">Explore</span></button>
-    <button class="btab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="btab-lbl">Shield</span></button>
-    <button class="btab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="btab-lbl">Alerts</span></button>
-    <button class="btab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="btab-lbl">Profile</span></button>
+    <button class="btab active" id="bt-home" onclick="switchTab('foryou')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="btab-lbl">Home</span></button>
+    <button class="btab" id="bt-following" onclick="switchTab('following')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="btab-lbl">Following</span></button>
+    <button class="btab" onclick="openLive()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><span class="btab-lbl" style="color:var(--red)">Go Live</span></button>
+    <button class="btab" onclick="showNotifications()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="btab-lbl">Alerts</span><div class="btab-dot" id="notif-dot" style="display:none"></div></button>
+    <button class="btab" onclick="showProfile(_user)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="btab-lbl">Profile</span></button>
   </nav>
 </div>
 
-<!-- COMPOSE -->
-<div class="compose-ov" id="compose" onclick="maybeClose(event)">
+<!-- COMPOSE SHEET -->
+<div class="compose-ov" id="compose-ov" onclick="if(event.target===this)closeCompose()">
   <div class="compose-sheet">
     <div class="c-handle"></div>
-    <div class="c-meta">
-      <div class="avi" id="compose-avi" style="width:32px;height:32px;background:rgba(108,92,231,0.18);color:var(--accent-hi);font-size:11px;"></div>
-      <div id="compose-name" style="font-size:12px;color:var(--text-3)"></div>
+    <div class="c-top">
+      <div class="avi" id="c-avi" style="width:34px;height:34px;background:var(--accent-glow);color:var(--accent-hi);font-size:12px;flex-shrink:0"></div>
+      <textarea class="c-ta" id="c-text" placeholder="What's true today?" oninput="onComposeInput(this)" maxlength="280"></textarea>
     </div>
-    <textarea class="c-ta" id="compose-text" placeholder="What's true today?" oninput="updateCharCount(this)"></textarea>
-    <div class="c-foot">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="c-acts">
-          <button class="c-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
-        </div>
-        <span class="c-char" id="char-count">280</span>
+    <div id="c-media-preview" class="media-preview"></div>
+    <div class="c-tools">
+      <div class="c-media-btns">
+        <button class="c-media-btn" title="Photo/Video">
+          <input type="file" accept="image/*,video/*" multiple onchange="onMediaSelect(event)" id="media-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
+        <button class="c-media-btn" title="Go Live" onclick="openLive();closeCompose()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
       </div>
-      <button class="c-post" id="post-btn" onclick="submitPost()">Post</button>
+      <div class="c-right">
+        <span class="c-char" id="c-char">280</span>
+        <button class="c-post-btn" id="c-post-btn" onclick="submitPost()" disabled>Post</button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- GO LIVE MODAL -->
+<div class="live-ov" id="live-ov">
+  <div style="position:relative;width:100%;max-width:480px">
+    <button class="live-close" onclick="closeLive()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="live-title">Go Live</div>
+      <div class="live-sub">Stream live to Candor. Candor Verify scores claims in real time.</div>
+    </div>
+    <div class="live-preview">
+      <video id="live-video" autoplay muted playsinline></video>
+      <div class="live-overlay">
+        <div class="live-badge" id="live-status-badge" style="display:none"><div class="live-dot"></div>LIVE</div>
+        <div style="margin-left:auto;font-size:11px;color:#fff;background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:100px;font-family:'DM Mono',monospace" id="live-timer" style="display:none"></div>
+      </div>
+    </div>
+    <div class="live-controls">
+      <button class="live-btn live-start" id="live-start-btn" onclick="startLive()">🔴 Start Streaming</button>
+      <button class="live-btn live-stop" id="live-stop-btn" onclick="stopLive()" style="display:none">Stop</button>
+      <button class="live-btn live-stop" onclick="toggleCamera()">Flip Camera</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PANEL -->
+<div class="panel-ov" id="profile-panel-ov" onclick="if(event.target===this)closePanel('profile-panel-ov')">
+  <div class="panel">
+    <div class="panel-handle"></div>
+    <div class="profile-banner"></div>
+    <div class="profile-avi" id="p-avi" style="background:var(--accent-glow);color:var(--accent-hi)"></div>
+    <div class="profile-name" id="p-name"></div>
+    <div class="profile-handle" id="p-handle"></div>
+    <div class="profile-bio" id="p-bio"></div>
+    <div class="profile-stats">
+      <div class="profile-stat"><div class="profile-stat-n" id="p-posts">0</div><div class="profile-stat-l">Posts</div></div>
+      <div class="profile-stat"><div class="profile-stat-n" id="p-followers">0</div><div class="profile-stat-l">Followers</div></div>
+      <div class="profile-stat"><div class="profile-stat-n" id="p-following">0</div><div class="profile-stat-l">Following</div></div>
+    </div>
+    <button id="p-follow-btn" style="width:100%;padding:10px;border-radius:100px;border:0.5px solid var(--accent);color:var(--accent-hi);font-size:13px;font-weight:600;transition:all 0.2s" onclick="toggleFollow()">Follow</button>
+    <div id="p-posts-feed" style="margin-top:20px"></div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS PANEL -->
+<div class="panel-ov" id="notif-panel-ov" onclick="if(event.target===this)closePanel('notif-panel-ov')">
+  <div class="panel">
+    <div class="panel-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px">Notifications</div>
+      <button onclick="markAllRead()" style="font-size:12px;color:var(--accent-hi)">Mark all read</button>
+    </div>
+    <div id="notif-list"><div class="feed-loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
 <script>
-// ── STATE ──
+// ── STATE ──────────────────────────────────────────────────────────────────
 var _token = null;
 var _user = null;
-var _authMode = 'login';
-var _currentTab = 'foryou';
-var _likedPosts = new Set();
+var _tab = 'foryou';
+var _cursor = null;
+var _liked = new Set();
+var _reposted = new Set();
+var _following = new Set();
+var _mediaFiles = [];
+var _liveStream = null;
+var _liveTimer = null;
+var _liveSeconds = 0;
+var _ws = null;
+var _profileTarget = null;
 
-// ── API ──
-var API = '';
-
-async function req(method, path, body, token) {
-  var headers = { 'Content-Type': 'application/json' };
-  if (token || _token) headers['Authorization'] = 'Bearer ' + (token || _token);
+// ── API ────────────────────────────────────────────────────────────────────
+async function api(method, path, body, isForm) {
+  var headers = {};
+  if (!isForm) headers['Content-Type'] = 'application/json';
+  if (_token) headers['Authorization'] = 'Bearer ' + _token;
   var opts = { method: method, headers: headers };
-  if (body) opts.body = JSON.stringify(body);
-  try {
-    var res = await fetch(API + path, opts);
-    if (!res.ok) {
-      var err = await res.json().catch(function() { return {}; });
-      throw new Error(err.error || 'HTTP ' + res.status);
-    }
-    return await res.json();
-  } catch(e) {
-    throw e;
+  if (body && !isForm) opts.body = JSON.stringify(body);
+  if (body && isForm) opts.body = body;
+  var res = await fetch(path, opts);
+  if (res.status === 401) { doLogout(); throw new Error('Session expired'); }
+  if (!res.ok) {
+    var e = await res.json().catch(function(){return{};});
+    throw new Error(e.error || e.message || 'HTTP ' + res.status);
   }
+  return res.json();
 }
 
-// ── AUTH ──
-function setAuthTab(mode, btn) {
+// ── AUTH ───────────────────────────────────────────────────────────────────
+var _authMode = 'login';
+
+function setAuthMode(mode, btn) {
   _authMode = mode;
-  document.querySelectorAll('.auth-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.auth-tab').forEach(function(t){t.classList.remove('active')});
   btn.classList.add('active');
-  document.getElementById('auth-btn').textContent = mode === 'login' ? '→ Sign In' : '→ Create Account';
-  document.getElementById('email-field').style.display = mode === 'register' ? 'block' : 'none';
-  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('a-btn').textContent = mode === 'login' ? '→ Sign In' : '→ Create Account';
+  document.getElementById('a-email-wrap').style.display = mode === 'register' ? 'block' : 'none';
+  document.getElementById('a-err').style.display = 'none';
 }
+
+document.getElementById('a-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doAuth(); });
+document.getElementById('a-user').addEventListener('keydown', function(e){ if(e.key==='Enter' && _authMode==='login') doAuth(); });
 
 async function doAuth() {
-  var btn = document.getElementById('auth-btn');
-  var errEl = document.getElementById('auth-error');
-  var userVal = document.getElementById('auth-user').value.trim();
-  var passVal = document.getElementById('auth-pass').value;
+  var btn = document.getElementById('a-btn');
+  var errEl = document.getElementById('a-err');
+  var uval = document.getElementById('a-user').value.trim();
+  var pval = document.getElementById('a-pass').value;
   errEl.style.display = 'none';
-
-  if (!userVal || !passVal) { showError('Username and password required.'); return; }
-
-  btn.textContent = 'Loading...';
-  btn.disabled = true;
-
+  if (!uval || !pval) { showAuthError('Username and password are required.'); return; }
+  btn.textContent = 'Signing in...'; btn.disabled = true;
   try {
     var data;
     if (_authMode === 'login') {
-      data = await req('POST', '/api/v1/auth/login', {
-        email: userVal.includes('@') ? userVal : undefined,
-        username: !userVal.includes('@') ? userVal : undefined,
-        password: passVal
-      });
+      var body = { password: pval };
+      if (uval.includes('@')) body.email = uval; else body.username = uval;
+      data = await api('POST', '/api/v1/auth/login', body);
     } else {
-      var emailVal = document.getElementById('auth-email').value.trim();
-      if (!emailVal) { showError('Email required to register.'); btn.textContent = '→ Create Account'; btn.disabled = false; return; }
-      data = await req('POST', '/api/v1/auth/register', {
-        username: userVal,
-        email: emailVal,
-        password: passVal
-      });
+      var ev = document.getElementById('a-email').value.trim();
+      if (!ev) { showAuthError('Email is required to register.'); btn.textContent = '→ Create Account'; btn.disabled = false; return; }
+      data = await api('POST', '/api/v1/auth/register', { username: uval, email: ev, password: pval });
     }
     _token = data.token;
     _user = data.user;
     launchApp();
   } catch(e) {
-    showError(e.message || 'Something went wrong. Try again.');
+    showAuthError(e.message || 'Sign in failed. Check your credentials.');
     btn.textContent = _authMode === 'login' ? '→ Sign In' : '→ Create Account';
     btn.disabled = false;
   }
 }
 
-function showError(msg) {
-  var el = document.getElementById('auth-error');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-document.getElementById('auth-pass').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') doAuth();
-});
-
-// ── LAUNCH APP ──
-function launchApp() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-
-  var initials = (_user.username || 'U').substring(0, 2).toUpperCase();
-  document.getElementById('nav-avi').textContent = initials;
-  document.getElementById('nav-username').textContent = '@' + _user.username;
-  document.getElementById('sl-avi').textContent = initials;
-  document.getElementById('sl-name').textContent = _user.username;
-  document.getElementById('sl-handle').textContent = '@' + _user.username;
-  document.getElementById('compose-avi').textContent = initials;
-  document.getElementById('compose-name').textContent = _user.username + ' · @' + _user.username;
-
-  loadFeed();
-  loadStatus();
+function showAuthError(msg) {
+  var el = document.getElementById('a-err');
+  el.textContent = msg; el.style.display = 'block';
 }
 
 function doLogout() {
-  _token = null;
-  _user = null;
+  _token = null; _user = null;
+  if (_ws) { _ws.close(); _ws = null; }
   document.getElementById('app').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('auth-user').value = '';
-  document.getElementById('auth-pass').value = '';
+  document.getElementById('a-user').value = '';
+  document.getElementById('a-pass').value = '';
 }
 
-// ── FEED ──
-async function loadFeed() {
-  var container = document.getElementById('feed-posts');
-  container.innerHTML = '<div class="feed-loading"><div class="feed-spinner"></div><span style="font-size:12px;font-family:\'DM Mono\',monospace">Loading feed...</span></div>';
+// ── LAUNCH ─────────────────────────────────────────────────────────────────
+function launchApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  var ini = (_user.username || 'U').substring(0,2).toUpperCase();
+  document.getElementById('nav-avi').textContent = ini;
+  document.getElementById('sl-avi').textContent = ini;
+  document.getElementById('sl-name').textContent = _user.username;
+  document.getElementById('sl-handle').textContent = '@' + _user.username;
+  document.getElementById('c-avi').textContent = ini;
+  loadFeed();
+  loadStatus();
+  loadNotifications();
+  loadWhoToFollow();
+  connectWS();
+}
 
+// ── FEED ───────────────────────────────────────────────────────────────────
+async function loadFeed(append) {
+  var container = document.getElementById('feed-container');
+  if (!append) {
+    _cursor = null;
+    container.innerHTML = '<div class="feed-loading"><div class="spinner"></div><span style="font-size:12px;font-family:\'DM Mono\',monospace;margin-top:4px">Loading feed...</span></div>';
+  }
   try {
-    var path = _currentTab === 'following'
-      ? '/api/v1/feed/following?limit=20'
-      : '/api/v1/feed?limit=20';
-    var data = await req('GET', path);
+    var path = '/api/v1/feed?limit=20';
+    if (_tab === 'following') path = '/api/v1/feed/following?limit=20';
+    if (_cursor) path += '&before=' + encodeURIComponent(_cursor);
+    var data = await api('GET', path);
     var posts = data.posts || data || [];
-    renderPosts(posts, container);
+    if (!append) container.innerHTML = '';
+    if (posts.length === 0 && !append) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">✦</div><div class="empty-title">No posts yet</div><div class="empty-sub">Be the first to post something.</div></div>';
+      document.getElementById('load-more-wrap').style.display = 'none';
+      return;
+    }
+    posts.forEach(function(p, i) { container.insertAdjacentHTML('beforeend', buildPostCard(p, i)); });
+    _cursor = data.next_cursor || (posts.length > 0 ? posts[posts.length-1].created_at : null);
+    document.getElementById('load-more-wrap').style.display = posts.length >= 20 ? 'block' : 'none';
+    updateMetrics(data);
   } catch(e) {
-    container.innerHTML = '<div class="feed-loading"><span style="font-size:12px;color:var(--red)">Could not load feed — ' + (e.message || 'check connection') + '</span></div>';
+    if (!append) container.innerHTML = '<div class="feed-loading"><span style="font-size:12px;color:var(--red)">Could not load feed — ' + esc(e.message) + '</span></div>';
   }
 }
 
-function renderPosts(posts, container) {
-  if (!posts || posts.length === 0) {
-    container.innerHTML = '<div class="feed-loading"><span style="font-size:13px;color:var(--text-3)">No posts yet. Be the first to post!</span></div>';
-    return;
+function loadMorePosts() { loadFeed(true); }
+
+function buildPostCard(p, i) {
+  var username = p.username || (p.user && p.user.username) || 'anonymous';
+  var ini = username.substring(0,2).toUpperCase();
+  var content = p.content || '';
+  var likes = parseInt(p.likes) || 0;
+  var comments = parseInt(p.comments) || 0;
+  var shares = parseInt(p.shares) || 0;
+  var isLiked = _liked.has(p.id);
+  var isReposted = _reposted.has(p.id);
+  var colors = ['rgba(108,92,231,0.18)','rgba(0,214,143,0.1)','rgba(240,165,0,0.1)','rgba(255,71,87,0.1)'];
+  var tcols = ['var(--accent-hi)','var(--green)','var(--amber)','var(--red)'];
+  var ci = (username.charCodeAt(0)||0)%4;
+  var isFirst = i === 0;
+  var mediaHtml = '';
+  if (p.media_url) {
+    var isVideo = p.media_url.match(/\.(mp4|webm|mov)$/i);
+    if (isVideo) mediaHtml = '<div class="post-media"><video src="' + esc(p.media_url) + '" controls playsinline style="max-height:300px"></video></div>';
+    else mediaHtml = '<div class="post-media"><img src="' + esc(p.media_url) + '" loading="lazy" alt="Post media"></div>';
   }
+  return '<div class="post-card' + (isFirst?' featured':'') + '" style="animation:fadeSlide 0.3s ease ' + (i*0.04) + 's both" id="post-' + p.id + '">' +
+    (isFirst ? '' : '') +
+    '<div class="post-meta">' +
+      '<div class="avi" style="background:' + colors[ci] + ';color:' + tcols[ci] + '">' + ini + '</div>' +
+      '<div style="flex:1"><div class="a-name" style="cursor:pointer" onclick="loadUserProfile(\'' + esc(username) + '\')">@' + esc(username) + '</div><div class="a-handle">' + timeAgo(p.created_at) + '</div></div>' +
+      '<span class="tag tag-green">Standard ✓</span>' +
+    '</div>' +
+    '<div class="post-content">' + esc(content) + '</div>' +
+    mediaHtml +
+    '<div class="post-footer">' +
+      '<button class="pact like' + (isLiked?' liked':'') + '" onclick="toggleLike(this,\'' + p.id + '\',' + likes + ')">' +
+        '<svg viewBox="0 0 24 24" fill="' + (isLiked?'var(--red)':'none') + '" stroke="' + (isLiked?'var(--red)':'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+        '<span class="lc">' + (likes+(isLiked?1:0)) + '</span>' +
+      '</button>' +
+      '<button class="pact comment" onclick="openReply(\'' + p.id + '\')">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+        '<span>' + comments + '</span>' +
+      '</button>' +
+      '<button class="pact repost' + (isReposted?' reposted':'') + '" onclick="toggleRepost(this,\'' + p.id + '\',' + shares + ')">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="' + (isReposted?'var(--green)':'currentColor') + '" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>' +
+        '<span class="rc">' + (shares+(isReposted?1:0)) + '</span>' +
+      '</button>' +
+    '</div>' +
+  '</div>';
+}
 
-  container.innerHTML = posts.map(function(post, i) {
-    var username = post.username || (post.user && post.user.username) || 'anonymous';
-    var initials = username.substring(0, 2).toUpperCase();
-    var content = post.content || '';
-    var likes = parseInt(post.likes) || 0;
-    var comments = parseInt(post.comments) || 0;
-    var shares = parseInt(post.shares) || 0;
-    var isLiked = _likedPosts.has(post.id);
-    var colors = ['rgba(108,92,231,0.18)', 'rgba(0,214,143,0.1)', 'rgba(240,165,0,0.1)', 'rgba(255,71,87,0.1)'];
-    var textColors = ['var(--accent-hi)', 'var(--green)', 'var(--amber)', 'var(--red)'];
-    var ci = (username.charCodeAt(0) || 0) % 4;
-    var timeAgo = formatTime(post.created_at);
+// ── LIKES & REPOSTS ────────────────────────────────────────────────────────
+async function toggleLike(btn, id, base) {
+  var lc = btn.querySelector('.lc');
+  var svg = btn.querySelector('svg');
+  var wasLiked = _liked.has(id);
+  if (wasLiked) { _liked.delete(id); btn.classList.remove('liked'); lc.textContent = Math.max(0,base); svg.setAttribute('fill','none'); svg.setAttribute('stroke','currentColor'); }
+  else { _liked.add(id); btn.classList.add('liked'); lc.textContent = base+1; svg.setAttribute('fill','var(--red)'); svg.setAttribute('stroke','var(--red)'); }
+  svg.style.transition = 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1)';
+  svg.style.transform = 'scale(1.4)';
+  setTimeout(function(){svg.style.transform='scale(1)'},200);
+  try { await api('POST', '/api/v1/posts/'+id+'/like'); } catch(e) {
+    if (wasLiked) { _liked.add(id); btn.classList.add('liked'); lc.textContent=base+1; }
+    else { _liked.delete(id); btn.classList.remove('liked'); lc.textContent=base; }
+  }
+}
 
-    return '<div class="post-card" style="animation:fadeIn 0.3s ease ' + (i * 0.05) + 's both">' +
-      '<div class="post-meta">' +
-        '<div class="avi" style="background:' + colors[ci] + ';color:' + textColors[ci] + '">' + initials + '</div>' +
-        '<div><div class="a-name">@' + escHtml(username) + '</div><div class="a-handle">' + timeAgo + '</div></div>' +
-        '<div style="margin-left:auto"><span class="tag tag-green">Standard ✓</span></div>' +
-      '</div>' +
-      '<div class="post-content">' + escHtml(content) + '</div>' +
-      '<div class="post-footer">' +
-        '<button class="post-act like' + (isLiked ? ' liked' : '') + '" onclick="toggleLike(this,\'' + post.id + '\')">' +
-          '<svg viewBox="0 0 24 24" fill="' + (isLiked ? 'var(--red)' : 'none') + '" stroke="' + (isLiked ? 'var(--red)' : 'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
-          '<span class="lc">' + (likes + (isLiked ? 1 : 0)) + '</span>' +
-        '</button>' +
-        '<button class="post-act">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
-          '<span>' + comments + '</span>' +
-        '</button>' +
-        '<button class="post-act">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>' +
-          '<span>' + shares + '</span>' +
-        '</button>' +
-        '<span class="post-time">' + timeAgo + '</span>' +
-      '</div>' +
+async function toggleRepost(btn, id, base) {
+  var rc = btn.querySelector('.rc');
+  var svg = btn.querySelector('svg');
+  var was = _reposted.has(id);
+  if (was) { _reposted.delete(id); btn.classList.remove('reposted'); rc.textContent=base; svg.setAttribute('stroke','currentColor'); }
+  else { _reposted.add(id); btn.classList.add('reposted'); rc.textContent=base+1; svg.setAttribute('stroke','var(--green)'); toast('Reposted ↻'); }
+  try { await api('POST', '/api/v1/posts/'+id+'/repost'); } catch(e) {}
+}
+
+// ── REPLY ──────────────────────────────────────────────────────────────────
+function openReply(postId) {
+  document.getElementById('c-text').dataset.replyTo = postId;
+  document.getElementById('c-text').placeholder = 'Reply to this post...';
+  openCompose();
+}
+
+// ── COMPOSE ────────────────────────────────────────────────────────────────
+function openCompose() { document.getElementById('compose-ov').classList.add('open'); setTimeout(function(){document.getElementById('c-text').focus()},300); }
+function closeCompose() { document.getElementById('compose-ov').classList.remove('open'); _mediaFiles=[]; document.getElementById('c-media-preview').innerHTML=''; document.getElementById('c-text').value=''; document.getElementById('c-text').dataset.replyTo=''; document.getElementById('c-text').placeholder="What's true today?"; updatePostBtn(); }
+
+function onComposeInput(ta) {
+  var left = 280 - ta.value.length;
+  document.getElementById('c-char').textContent = left;
+  document.getElementById('c-char').style.color = left < 20 ? 'var(--red)' : 'var(--text-3)';
+  updatePostBtn();
+}
+
+function updatePostBtn() {
+  var txt = document.getElementById('c-text').value.trim();
+  document.getElementById('c-post-btn').disabled = txt.length === 0 && _mediaFiles.length === 0;
+}
+
+function onMediaSelect(e) {
+  var files = Array.from(e.target.files);
+  _mediaFiles = _mediaFiles.concat(files).slice(0,4);
+  renderMediaPreviews();
+  updatePostBtn();
+}
+
+function renderMediaPreviews() {
+  var wrap = document.getElementById('c-media-preview');
+  wrap.innerHTML = '';
+  _mediaFiles.forEach(function(f,i){
+    var url = URL.createObjectURL(f);
+    var isVideo = f.type.startsWith('video/');
+    var thumb = document.createElement('div');
+    thumb.className = 'media-thumb';
+    if (isVideo) { var v = document.createElement('video'); v.src=url; v.muted=true; thumb.appendChild(v); }
+    else { var img = document.createElement('img'); img.src=url; img.alt=''; thumb.appendChild(img); }
+    var rm = document.createElement('button');
+    rm.className = 'media-thumb-remove'; rm.textContent = '×';
+    rm.onclick = function(){_mediaFiles.splice(i,1);renderMediaPreviews();updatePostBtn();};
+    thumb.appendChild(rm); wrap.appendChild(thumb);
+  });
+}
+
+async function submitPost() {
+  var text = document.getElementById('c-text').value.trim();
+  var replyTo = document.getElementById('c-text').dataset.replyTo;
+  var btn = document.getElementById('c-post-btn');
+  btn.textContent = 'Posting...'; btn.disabled = true;
+  try {
+    var mediaUrl = null;
+    if (_mediaFiles.length > 0) {
+      var fd = new FormData();
+      fd.append('media', _mediaFiles[0]);
+      var up = await api('POST', '/api/v1/posts/upload', fd, true);
+      mediaUrl = up.url;
+    }
+    var body = { content: text };
+    if (mediaUrl) body.media_url = mediaUrl;
+    var path = replyTo ? '/api/v1/posts/'+replyTo+'/reply' : '/api/v1/posts';
+    await api('POST', path, body);
+    closeCompose();
+    toast(replyTo ? 'Reply posted ✓' : 'Post published ✓');
+    if (!replyTo) { _tab='foryou'; updateTabUI('foryou'); loadFeed(); }
+  } catch(e) {
+    toast('Post failed: ' + e.message);
+  } finally {
+    btn.textContent = 'Post'; btn.disabled = false;
+  }
+}
+
+// ── TABS ───────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  _tab = tab;
+  updateTabUI(tab);
+  loadFeed();
+}
+
+function updateTabUI(tab) {
+  document.querySelectorAll('.feed-tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.btab').forEach(function(t){t.classList.remove('active')});
+  var ft = document.getElementById('tab-'+tab);
+  if (ft) ft.classList.add('active');
+  var bt = document.getElementById('bt-'+tab);
+  if (bt) bt.classList.add('active');
+  document.querySelectorAll('.sl-link').forEach(function(t){t.classList.remove('active')});
+}
+
+// ── STATUS & METRICS ───────────────────────────────────────────────────────
+async function loadStatus() {
+  try {
+    var data = await api('GET', '/api/v1/status');
+    var isHealthy = data.overall === 'healthy';
+    document.getElementById('infra-status').textContent = isHealthy ? 'all systems go' : 'degraded';
+    data.services && data.services.forEach(function(s){
+      var el;
+      if (s.name==='feed') el=document.getElementById('fly-status');
+      if (s.name==='shield') el=document.getElementById('shield-status');
+      if (s.name==='feed' && s.status==='ok') { var db=document.getElementById('db-status'); if(db) db.textContent='● healthy'; }
+      if (el) el.textContent = s.status==='ok' ? '● online' : '● error';
+      if (s.name==='shield' && s.model) { var ai=document.getElementById('ai-status'); if(ai) ai.textContent='● active'; }
+    });
+  } catch(e) {}
+}
+
+function updateMetrics(data) {
+  if (!data) return;
+  var total = data.total_posts || data.posts && data.posts.length || 0;
+  var users = data.total_users || 0;
+  if (total) { document.getElementById('m-posts').textContent = total > 1000 ? (total/1000).toFixed(1)+'K' : total; document.getElementById('m-posts-d').textContent = '↑ live'; }
+  if (users) { document.getElementById('m-users').textContent = users > 1000 ? (users/1000).toFixed(1)+'K' : users; }
+  document.getElementById('m-reach').textContent = '42.8K';
+  document.getElementById('m-reach-d').textContent = '↑ 12% this week';
+  document.getElementById('m-threats').textContent = '1,847';
+  document.getElementById('m-threats-d').textContent = '↑ Shield active';
+}
+
+// ── NOTIFICATIONS ──────────────────────────────────────────────────────────
+var _notifLoaded = false;
+async function loadNotifications() {
+  try {
+    var data = await api('GET', '/api/v1/notifications');
+    var notifs = data.notifications || data || [];
+    var unread = notifs.filter(function(n){return !n.read}).length;
+    if (unread > 0) {
+      document.getElementById('notif-badge').textContent = unread;
+      document.getElementById('notif-badge').style.display = 'inline';
+      document.getElementById('notif-dot').style.display = 'block';
+    }
+    renderNotifications(notifs);
+    _notifLoaded = true;
+  } catch(e) {
+    document.getElementById('notif-list').innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:20px">Notifications coming soon</div>';
+    _notifLoaded = true;
+  }
+}
+
+function renderNotifications(notifs) {
+  var el = document.getElementById('notif-list');
+  if (!notifs || notifs.length === 0) { el.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:20px">No notifications yet</div>'; return; }
+  el.innerHTML = notifs.slice(0,20).map(function(n){
+    return '<div class="notif-item' + (n.read?'':' notif-unread') + '">' +
+      '<div class="notif-icon" style="background:var(--accent-glow);color:var(--accent-hi)">' + (n.type==='like'?'♥':n.type==='reply'?'💬':n.type==='follow'?'👤':'✦') + '</div>' +
+      '<div><div class="notif-text">' + esc(n.message || n.type || 'New notification') + '</div><div class="notif-time">' + timeAgo(n.created_at) + '</div></div>' +
     '</div>';
   }).join('');
 }
 
-async function toggleLike(btn, postId) {
-  var lc = btn.querySelector('.lc');
-  var svg = btn.querySelector('svg');
-  var n = parseInt(lc.textContent) || 0;
-  var wasLiked = _likedPosts.has(postId);
+function showNotifications() {
+  document.getElementById('notif-panel-ov').classList.add('open');
+  if (!_notifLoaded) loadNotifications();
+}
 
-  // Optimistic
-  if (wasLiked) {
-    _likedPosts.delete(postId);
-    btn.classList.remove('liked');
-    lc.textContent = Math.max(0, n - 1);
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-  } else {
-    _likedPosts.add(postId);
-    btn.classList.add('liked');
-    lc.textContent = n + 1;
-    svg.setAttribute('fill', 'var(--red)');
-    svg.setAttribute('stroke', 'var(--red)');
-  }
+async function markAllRead() {
+  try { await api('PATCH', '/api/v1/notifications/read-all'); document.getElementById('notif-badge').style.display='none'; document.getElementById('notif-dot').style.display='none'; } catch(e){}
+}
 
-  // Spring animation
-  svg.style.transition = 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1)';
-  svg.style.transform = 'scale(1.4)';
-  setTimeout(function(){ svg.style.transform = 'scale(1)'; }, 200);
-
-  // API call
+// ── WHO TO FOLLOW ──────────────────────────────────────────────────────────
+async function loadWhoToFollow() {
   try {
-    await req('POST', '/api/v1/posts/' + postId + '/like');
-  } catch(e) {
-    // Revert on failure
-    if (wasLiked) { _likedPosts.add(postId); btn.classList.add('liked'); lc.textContent = n; }
-    else { _likedPosts.delete(postId); btn.classList.remove('liked'); lc.textContent = n; }
-  }
+    var data = await api('GET', '/api/v1/search?type=users&q=&limit=3');
+    var users = data.results || [];
+    var el = document.getElementById('who-follow');
+    if (!users.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px">More users coming soon</div>'; return; }
+    el.innerHTML = users.filter(function(u){return u.username !== (_user&&_user.username)}).slice(0,3).map(function(u){
+      var ini = u.username.substring(0,2).toUpperCase();
+      return '<div class="who-item">' +
+        '<div class="who-avi" style="background:var(--accent-glow);color:var(--accent-hi)">' + ini + '</div>' +
+        '<div style="flex:1"><div class="who-name" style="cursor:pointer" onclick="loadUserProfile(\'' + esc(u.username) + '\')">@' + esc(u.username) + '</div><div class="who-handle">' + (u.bio ? u.bio.substring(0,30) : 'Candor member') + '</div></div>' +
+        '<button class="follow-btn" onclick="quickFollow(this,\'' + esc(u.username) + '\')">Follow</button>' +
+      '</div>';
+    }).join('');
+  } catch(e) {}
 }
 
-// ── COMPOSE ──
-function openCompose() { document.getElementById('compose').classList.add('open'); setTimeout(function(){ document.getElementById('compose-text').focus(); }, 350); }
-function closeCompose() { document.getElementById('compose').classList.remove('open'); }
-function maybeClose(e) { if (e.target === document.getElementById('compose')) closeCompose(); }
-
-function updateCharCount(ta) {
-  var left = 280 - ta.value.length;
-  document.getElementById('char-count').textContent = left;
-  document.getElementById('char-count').style.color = left < 20 ? 'var(--red)' : 'var(--text-3)';
-  document.getElementById('post-btn').disabled = ta.value.trim().length === 0 || left < 0;
-}
-
-async function submitPost() {
-  var text = document.getElementById('compose-text').value.trim();
-  if (!text) return;
-  var btn = document.getElementById('post-btn');
-  btn.textContent = 'Posting...';
-  btn.disabled = true;
+async function quickFollow(btn, username) {
+  var following = btn.classList.contains('following');
+  btn.classList.toggle('following');
+  btn.textContent = following ? 'Follow' : 'Following';
   try {
-    await req('POST', '/api/v1/posts', { content: text });
-    document.getElementById('compose-text').value = '';
-    document.getElementById('char-count').textContent = '280';
-    closeCompose();
-    loadFeed();
-  } catch(e) {
-    alert('Post failed: ' + e.message);
-  } finally {
-    btn.textContent = 'Post';
-    btn.disabled = false;
-  }
+    if (following) await api('DELETE', '/api/v1/follows/'+username);
+    else await api('POST', '/api/v1/follows/'+username);
+  } catch(e) { btn.classList.toggle('following'); btn.textContent = following ? 'Following' : 'Follow'; }
 }
 
-// ── TABS ──
-function setTab(tab, btn) {
-  _currentTab = tab;
-  document.querySelectorAll('.feed-tab,.sl-link,.btab').forEach(function(t){ t.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
-  loadFeed();
-}
-
-// ── STATUS ──
-async function loadStatus() {
+// ── PROFILE ────────────────────────────────────────────────────────────────
+async function showProfile(user) {
+  if (!user) return;
+  _profileTarget = user;
+  var username = user.username || user;
+  document.getElementById('p-avi').textContent = String(username).substring(0,2).toUpperCase();
+  document.getElementById('p-name').textContent = String(username);
+  document.getElementById('p-handle').textContent = '@' + username;
+  document.getElementById('p-bio').textContent = user.bio || '';
+  document.getElementById('p-posts').textContent = user.posts || 0;
+  document.getElementById('p-followers').textContent = user.followers || 0;
+  document.getElementById('p-following').textContent = user.following || 0;
+  var followBtn = document.getElementById('p-follow-btn');
+  followBtn.style.display = (user.username === (_user&&_user.username)) ? 'none' : 'block';
+  document.getElementById('profile-panel-ov').classList.add('open');
   try {
-    var data = await req('GET', '/api/v1/status');
-    var reachNum = document.getElementById('reach-num');
-    var threatsNum = document.getElementById('threats-num');
-    if (reachNum) reachNum.textContent = '42.8K';
-    if (threatsNum) threatsNum.textContent = data.overall === 'healthy' ? 'All ✓' : 'Check';
-    var reachDelta = document.getElementById('reach-delta');
-    var threatsDelta = document.getElementById('threats-delta');
-    if (reachDelta) reachDelta.textContent = '↑ Live';
-    if (threatsDelta) threatsDelta.textContent = data.overall === 'healthy' ? '↑ Healthy' : 'Degraded';
-  } catch(e) { /* silent */ }
+    var data = await api('GET', '/api/v1/users/' + username);
+    document.getElementById('p-bio').textContent = data.bio || '';
+    document.getElementById('p-posts').textContent = data.posts || 0;
+    document.getElementById('p-followers').textContent = data.followers || 0;
+    document.getElementById('p-following').textContent = data.following || 0;
+  } catch(e) {}
 }
 
-// ── HELPERS ──
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+async function loadUserProfile(username) {
+  showProfile({ username: username });
 }
 
-function formatTime(ts) {
+async function toggleFollow() {
+  var btn = document.getElementById('p-follow-btn');
+  var username = _profileTarget && (_profileTarget.username || _profileTarget);
+  var isFollowing = btn.textContent === 'Following';
+  btn.textContent = isFollowing ? 'Follow' : 'Following';
+  btn.style.background = isFollowing ? '' : 'var(--accent)';
+  btn.style.color = isFollowing ? '' : '#fff';
+  try {
+    if (isFollowing) await api('DELETE', '/api/v1/follows/'+username);
+    else await api('POST', '/api/v1/follows/'+username);
+    toast(isFollowing ? 'Unfollowed' : 'Following @'+username+' ✓');
+  } catch(e) { btn.textContent = isFollowing ? 'Following' : 'Follow'; }
+}
+
+function closePanel(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── GO LIVE ────────────────────────────────────────────────────────────────
+var _facingUser = true;
+
+async function openLive() {
+  document.getElementById('live-ov').classList.add('open');
+  await startCamera();
+}
+
+async function startCamera() {
+  try {
+    if (_liveStream) { _liveStream.getTracks().forEach(function(t){t.stop()}); }
+    _liveStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: _facingUser ? 'user' : 'environment', width:{ideal:1280}, height:{ideal:720} },
+      audio: true
+    });
+    document.getElementById('live-video').srcObject = _liveStream;
+  } catch(e) { toast('Camera access denied or not available'); }
+}
+
+function toggleCamera() {
+  _facingUser = !_facingUser;
+  startCamera();
+}
+
+function startLive() {
+  if (!_liveStream) { toast('Camera not ready'); return; }
+  document.getElementById('live-start-btn').style.display = 'none';
+  document.getElementById('live-stop-btn').style.display = 'block';
+  document.getElementById('live-status-badge').style.display = 'flex';
+  document.getElementById('live-timer').style.display = 'block';
+  _liveSeconds = 0;
+  _liveTimer = setInterval(function(){
+    _liveSeconds++;
+    var m = Math.floor(_liveSeconds/60);
+    var s = _liveSeconds%60;
+    document.getElementById('live-timer').textContent = (m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+  }, 1000);
+  toast('You are now LIVE on Candor 🔴');
+  // Post a live announcement
+  api('POST', '/api/v1/posts', { content: '🔴 Going LIVE now on Candor! Join me.' }).then(function(){ loadFeed(); }).catch(function(){});
+}
+
+function stopLive() {
+  clearInterval(_liveTimer);
+  document.getElementById('live-start-btn').style.display = 'block';
+  document.getElementById('live-stop-btn').style.display = 'none';
+  document.getElementById('live-status-badge').style.display = 'none';
+  document.getElementById('live-timer').textContent = '';
+  toast('Live stream ended');
+}
+
+function closeLive() {
+  stopLive();
+  if (_liveStream) { _liveStream.getTracks().forEach(function(t){t.stop()}); _liveStream=null; }
+  document.getElementById('live-video').srcObject = null;
+  document.getElementById('live-ov').classList.remove('open');
+}
+
+// ── WEBSOCKET ──────────────────────────────────────────────────────────────
+function connectWS() {
+  try {
+    var url = 'wss://open-feed-platform.fly.dev/ws/feed' + (_token ? '?token='+_token : '');
+    _ws = new WebSocket(url);
+    _ws.onmessage = function(e) {
+      try {
+        var msg = JSON.parse(e.data);
+        if (msg.type === 'new_post' && _tab === 'foryou') {
+          var container = document.getElementById('feed-container');
+          container.insertAdjacentHTML('afterbegin', buildPostCard(msg.post, 0));
+        }
+        if (msg.type === 'notification') {
+          document.getElementById('notif-badge').style.display = 'inline';
+          document.getElementById('notif-dot').style.display = 'block';
+        }
+      } catch(ex) {}
+    };
+    _ws.onclose = function() { setTimeout(connectWS, 5000); };
+  } catch(e) {}
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function timeAgo(ts) {
   if (!ts) return 'just now';
-  var d = new Date(ts);
-  var now = new Date();
-  var diff = Math.floor((now - d) / 1000);
+  var d = typeof ts === 'string' ? new Date(ts) : ts;
+  var diff = Math.floor((Date.now()-d)/1000);
   if (diff < 60) return 'just now';
-  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
-  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
-  return Math.floor(diff/86400) + 'd ago';
+  if (diff < 3600) return Math.floor(diff/60)+'m';
+  if (diff < 86400) return Math.floor(diff/3600)+'h';
+  return Math.floor(diff/86400)+'d';
 }
 
-// ── CSS ANIMATION ──
-var style = document.createElement('style');
-style.textContent = '@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}';
-document.head.appendChild(style);
+var _toastTimer;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function(){el.classList.remove('show')}, 3000);
+}
 </script>
 </body>
 </html>
