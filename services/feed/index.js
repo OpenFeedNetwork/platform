@@ -131,6 +131,42 @@ app.get("/health", async (req, res) => {
 // ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
 const mfaSessions = new Map();
 
+// ── SENDGRID EMAIL ────────────────────────────────────────────────────────────
+async function sendAdminEmail(to, subject, body) {
+  const SENDGRID_KEY = process.env.SENDGRID_API_KEY;
+  const FROM_EMAIL = process.env.ADMIN_FROM_EMAIL || 'admin@candortheopenfeednetwork.com';
+  if (!SENDGRID_KEY || SENDGRID_KEY === 'your_sendgrid_key_here') {
+    console.warn('[MFA] SendGrid not configured — code:', body);
+    return false;
+  }
+  try {
+    const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + SENDGRID_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }] }],
+        from: { email: FROM_EMAIL, name: 'Candor Admin' },
+        subject: subject,
+        content: [{ type: 'text/html', value: body }]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('[MFA] SendGrid error:', err);
+      return false;
+    }
+    console.log('[MFA] Email sent to:', to);
+    return true;
+  } catch(e) {
+    console.error('[MFA] Email failed:', e.message);
+    return false;
+  }
+}
+
+
 async function sendSMS(to, message) {
   const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
   const TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
@@ -158,8 +194,32 @@ const adminAuth = (req, res, next) => {
 app.post("/api/v1/admin/auth/password", async (req, res) => {
   const { password } = req.body;
   if (!password || password !== process.env.ADMIN_PASSWORD) return res.status(401).json({ error: "Invalid password" });
-  const token = jwt.sign({ role: "admin" }, (process.env.JWT_SECRET || "change-me") + "_admin", { expiresIn: "1h" });
-  res.json({ success: true, token });
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+  if (!ADMIN_EMAIL || ADMIN_EMAIL === 'your_admin_email_here') {
+    // No MFA configured — direct login
+    const token = jwt.sign({ role: "admin" }, (process.env.JWT_SECRET || "change-me") + "_admin", { expiresIn: "1h" });
+    return res.json({ success: true, token });
+  }
+  // MFA flow — generate and email code
+  const session_id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  mfaSessions.set(session_id, { code, expires: Date.now() + 10 * 60 * 1000 });
+  const emailBody = `
+    <div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:24px">
+      <h2 style="color:#6c5ce7;margin-bottom:8px">Candor Admin Login</h2>
+      <p style="color:#666;margin-bottom:20px">Your verification code:</p>
+      <div style="background:#f5f5f5;border-radius:12px;padding:20px;text-align:center;font-size:32px;font-weight:700;letter-spacing:8px;color:#111">${code}</div>
+      <p style="color:#999;font-size:12px;margin-top:16px">Expires in 10 minutes. Do not share this code.</p>
+    </div>
+  `;
+  const sent = await sendAdminEmail(ADMIN_EMAIL, 'Candor Admin Login Code: ' + code, emailBody);
+  if (sent) {
+    res.json({ success: true, mfa_required: true, session_id });
+  } else {
+    // Fallback — direct login if email fails
+    const token = jwt.sign({ role: "admin" }, (process.env.JWT_SECRET || "change-me") + "_admin", { expiresIn: "1h" });
+    res.json({ success: true, token, warning: 'MFA email failed — direct login granted' });
+  }
 });
 
 app.post("/api/v1/admin/auth/mfa", (req, res) => {
@@ -179,7 +239,11 @@ app.post("/api/v1/admin/auth/resend", async (req, res) => {
   if (!session) return res.status(404).json({ error: "Session not found" });
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   session.code = code; session.expires = Date.now() + 10 * 60 * 1000;
-  await sendSMS(process.env.ADMIN_PHONE, `Candor Admin: Your new login code is ${code}. Expires in 10 minutes.`);
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+  if (ADMIN_EMAIL) {
+    const emailBody = `<div style="font-family:sans-serif;padding:24px"><h2 style="color:#6c5ce7">New Code</h2><div style="background:#f5f5f5;border-radius:12px;padding:20px;text-align:center;font-size:32px;font-weight:700;letter-spacing:8px">${code}</div><p style="color:#999;font-size:12px;margin-top:16px">Expires in 10 minutes.</p></div>`;
+    await sendAdminEmail(ADMIN_EMAIL, 'Candor Admin New Code: ' + code, emailBody);
+  }
   res.json({ success: true });
 });
 
