@@ -1,4 +1,4 @@
-import { powMiddleware, attackMonetization } from "./attack-monetization.js";
+import { attackMonetizationMiddleware } from "./attack-monetization.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -108,7 +108,7 @@ app.get("/api/v1/sentinel/metrics", (req, res) => {
 
 app.use(sentinelGuard);
 
-app.use(attackMonetization); app.use(powMiddleware); app.use("/api/v1/auth",      proxy(SERVICES.feed));
+app.use(attackMonetizationMiddleware); app.use("/api/v1/auth",      proxy(SERVICES.feed));
 app.use("/api/v1/users",     proxy(SERVICES.feed));
 app.use("/api/v1/posts",     proxy(SERVICES.feed));
 app.use("/api/v1/feed",      proxy(SERVICES.feed));
