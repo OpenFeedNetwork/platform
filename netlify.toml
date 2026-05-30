@@ -2,4 +2,5 @@
   publish = "public"
 
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "AIzaSyCncLYsn9zR0pk13dKZ2oi3XzmtxJX9It8"
+  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIzaSyCncLYsn9zR0pk13dKZ2oi3XzmtxJX9It8"
+  SECRETS_SCAN_OMIT_PATHS = "public/signup.html"
