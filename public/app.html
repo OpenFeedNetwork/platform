@@ -335,9 +335,9 @@ function PostCard({ post, token, onAudit }) {
         {/* Engagement */}
         <div style={{ display:"flex", gap:12 }}>
           {[
-            { icon:"♥", val:post.engagement.likes+(liked?1:0), active:liked, color:T.red,    onClick:()=>setLiked(!liked) },
-            { icon:"↻", val:post.engagement.shares+(shared?1:0), active:shared, color:T.green, onClick:()=>setShared(!shared) },
-            { icon:"◯", val:post.engagement.comments, active:false, color:T.blueSoft, onClick:()=>{} },
+            { icon:"♥", val:( post.engagement && post.engagement.likes || 0)+(liked?1:0), active:liked, color:T.red,    onClick:()=>setLiked(!liked) },
+            { icon:"↻", val:(post.engagement && post.engagement.shares || 0)+(shared?1:0), active:shared, color:T.green, onClick:()=>setShared(!shared) },
+            { icon:"◯", val:(post.engagement && post.engagement.comments || 0), active:false, color:T.blueSoft, onClick:()=>{} },
           ].map(e=>(
             <button key={e.icon} onClick={e.onClick} style={{
               background:"none", border:"none", cursor:"pointer",
