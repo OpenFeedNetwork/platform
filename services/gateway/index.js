@@ -1,3 +1,4 @@
+import { checkAutoScale, getHetznerStatus } from "./hetzner-autoscale.js";
 import { register, collectDefaultMetrics } from "prom-client";
 collectDefaultMetrics();
 import { attackMonetizationMiddleware } from "./attack-monetization.js";
@@ -136,6 +137,7 @@ app.get("/api/v1/status", async (req, res) => {
   res.status(services.every(s => s.status === "ok") ? 200 : 207).json({ platform: "Candor: The Open Feed Network", version: "2.0.0", overall: services.every(s => s.status === "ok") ? "healthy" : "degraded", services, timestamp: new Date().toISOString() });
 });
 
+app.get("/api/v1/hetzner/status",(req,res)=>res.json(getHetznerStatus()));
 app.get("/metrics", async (req, res) => { res.set("Content-Type", register.contentType); res.send(await register.metrics()); });
 app.get("/api/v1/grafana/metrics", async (req, res) => { try { const r = await fetch(process.env.GRAFANA_URL + "/api/datasources/proxy/uid/grafanacloud-prom/api/v1/query_range?query=up&start=" + (Math.floor(Date.now()/1000)-3600) + "&end=" + Math.floor(Date.now()/1000) + "&step=60", { headers: { "Authorization": "Bearer " + process.env.GRAFANA_API_KEY } }); const d = await r.json(); res.json(d); } catch(e) { res.status(500).json({ error: e.message }); } });
 app.listen(PORT, "0.0.0.0", () => console.log(`[Gateway] Candor v2.0 running on port ${PORT}`));

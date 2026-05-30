@@ -1,5 +1,6 @@
 /api/*  https://open-feed-platform.fly.dev/api/:splat  200!
 /app  /app.html  200
+/admin  /admin.html  200
 /app/*  /app.html  200
 /reach/*  /reach/index.html  200
 /sentinel/*  /sentinel/index.html  200
