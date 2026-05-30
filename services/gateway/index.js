@@ -1,3 +1,5 @@
+import { register, collectDefaultMetrics } from "prom-client";
+collectDefaultMetrics();
 import { attackMonetizationMiddleware } from "./attack-monetization.js";
 import express from "express";
 import cors from "cors";
