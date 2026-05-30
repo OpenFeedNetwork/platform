@@ -111,6 +111,17 @@ app.get("/api/v1/sentinel/metrics", (req, res) => {
 
 app.use(sentinelGuard);
 
+// ── WEBSOCKET PROXY ───────────────────────────────────────────────────────────
+import { createProxyMiddleware } from "http-proxy-middleware";
+const wsProxy = createProxyMiddleware({
+  target: process.env.FEED_URL || "https://candor-feed.fly.dev",
+  changeOrigin: true,
+  ws: true,
+  on: { error: (err) => console.error("[WS] Proxy error:", err.message) }
+});
+app.use("/ws", wsProxy);
+
+
 app.use(attackMonetizationMiddleware); app.use("/api/v1/auth",      proxy(SERVICES.feed));
 app.use("/api/v1/users",     proxy(SERVICES.feed));
 app.use("/api/v1/posts",     proxy(SERVICES.feed));
