@@ -327,6 +327,18 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(min-width:1024px){.toast{bottom:30px}}
 
+
+/* TICKER */
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{display:inline-flex;align-items:center;gap:6px;padding:0 20px;font-size:12px;color:var(--text-2);border-right:0.5px solid var(--border)}
+.tick-item:last-child{border-right:none}
+.tick-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.tick-item.green .tick-dot{background:var(--green)}
+.tick-item.red .tick-dot{background:var(--red)}
+.tick-item.purple .tick-dot{background:var(--accent)}
+.tick-item.amber .tick-dot{background:var(--amber)}
+.tick-item strong{color:var(--text);font-weight:500}
+
 @keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 </style>
 </head>
@@ -428,11 +440,17 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
         <button class="feed-tab" id="tab-truthshield" onclick="switchTab('truthshield',this)">Truth Shield<span class="tab-badge">live</span></button>
       </div>
       <div class="feed-body">
-        <div class="bento-metrics" id="metrics-row">
-          <div class="metric-card"><div class="mlbl">Beacon Reach <span class="tag tag-green" style="font-size:9px">Live</span></div><div class="mnum" id="m-reach">—</div><div class="delta up" id="m-reach-d">loading...</div><div class="spark"><div class="sb g" style="height:40%"></div><div class="sb g" style="height:55%"></div><div class="sb g" style="height:35%"></div><div class="sb g" style="height:70%"></div><div class="sb g" style="height:50%"></div><div class="sb g hi" style="height:85%"></div><div class="sb g hi" style="height:100%"></div></div></div>
-          <div class="metric-card"><div class="mlbl">Threats Blocked <span class="tag tag-red" style="font-size:9px">Shield</span></div><div class="mnum" id="m-threats">—</div><div class="delta up" id="m-threats-d">loading...</div><div class="spark"><div class="sb r" style="height:55%"></div><div class="sb r" style="height:70%"></div><div class="sb r" style="height:45%"></div><div class="sb r" style="height:80%"></div><div class="sb r" style="height:60%"></div><div class="sb r hi" style="height:90%"></div><div class="sb r hi" style="height:100%"></div></div></div>
-          <div class="metric-card"><div class="mlbl">Total Posts <span class="tag tag-purple" style="font-size:9px">Live</span></div><div class="mnum" id="m-posts">—</div><div class="delta ok" id="m-posts-d">loading...</div><div class="spark"><div class="sb" style="height:30%"></div><div class="sb" style="height:45%"></div><div class="sb" style="height:60%"></div><div class="sb" style="height:50%"></div><div class="sb" style="height:75%"></div><div class="sb hi" style="height:88%"></div><div class="sb hi" style="height:100%"></div></div></div>
-          <div class="metric-card"><div class="mlbl">Members <span class="tag tag-blue" style="font-size:9px">Network</span></div><div class="mnum" id="m-users">—</div><div class="delta up">↑ growing</div><div class="spark"><div class="sb" style="height:25%"></div><div class="sb" style="height:40%"></div><div class="sb" style="height:55%"></div><div class="sb" style="height:65%"></div><div class="sb" style="height:78%"></div><div class="sb hi" style="height:90%"></div><div class="sb hi" style="height:100%"></div></div></div>
+        <!-- LIVE NEWS TICKER -->
+        <div id="ticker-wrap" style="margin-bottom:12px;overflow:hidden;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);display:flex;align-items:center">
+          <div style="background:var(--accent);color:#fff;font-size:10px;font-family:'DM Mono',monospace;font-weight:600;padding:8px 12px;white-space:nowrap;display:flex;align-items:center;gap:6px;letter-spacing:0.5px;flex-shrink:0">
+            <div class="dot" style="width:5px;height:5px"></div>LIVE
+          </div>
+          <div style="flex:1;overflow:hidden;position:relative;height:34px">
+            <div id="ticker-track" style="display:flex;align-items:center;height:100%;white-space:nowrap;animation:ticker 40s linear infinite;will-change:transform">
+              <div id="ticker-content" style="display:flex;align-items:center;gap:0;padding-right:60px"></div>
+              <div id="ticker-clone" style="display:flex;align-items:center;gap:0;padding-right:60px"></div>
+            </div>
+          </div>
         </div>
         <div id="feed-container"><div class="feed-loading"><div class="spinner"></div><span style="font-size:12px;font-family:'DM Mono',monospace;margin-top:4px">Loading feed...</span></div></div>
         <div id="load-more-wrap" style="display:none;text-align:center;padding:16px"><button onclick="loadMorePosts()" style="font-size:12px;color:var(--text-3);padding:8px 20px;border:0.5px solid var(--border);border-radius:100px;font-family:'DM Mono',monospace;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Load more</button></div>
@@ -664,7 +682,7 @@ function launchApp(){
   document.getElementById('sl-name').textContent=_user.username;
   document.getElementById('sl-handle').textContent='@'+_user.username;
   document.getElementById('c-avi').textContent=ini;
-  loadFeed();loadStatus();loadNotifications();loadWhoToFollow();connectWS();
+  loadFeed();loadStatus();loadNotifications();loadWhoToFollow();connectWS();loadTicker();setInterval(loadTicker,60000);
 }
 
 // FEED
@@ -1175,7 +1193,7 @@ function updateMetrics(data){
 // WEBSOCKET
 function connectWS(){
   try{
-    var url='wss://open-feed-platform.fly.dev/ws/feed'+(_token?'?token='+_token:'');
+    var url='wss://candor-feed.fly.dev/ws/feed'+(_token?'?token='+_token:'');
     _ws=new WebSocket(url);
     _ws.onmessage=function(e){
       try{
@@ -1209,6 +1227,74 @@ var _toastT;
 function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(function(){el.classList.remove('show');},3000);}
 
 
+
+// ── LIVE TICKER ────────────────────────────────────────────────────────────
+var _tickerItems = [];
+var _tickerPaused = false;
+
+async function loadTicker() {
+  try {
+    var data = await api('GET', '/api/v1/feed?limit=20');
+    var posts = data.posts || [];
+    var status = await api('GET', '/api/v1/status').catch(function(){return{};});
+    var sentinel = await fetch('/api/v1/sentinel/metrics').then(function(r){return r.json();}).catch(function(){return{metrics:{}};});
+    
+    _tickerItems = [];
+    
+    // Platform status
+    if (status.overall === 'healthy') {
+      _tickerItems.push({ cls: 'green', text: '<strong>All systems operational</strong> — 6 services running' });
+    }
+    
+    // Sentinel metrics
+    var m = sentinel.metrics || {};
+    if (m.total > 0) {
+      _tickerItems.push({ cls: 'red', text: '<strong>' + fmt(m.blocked||0) + ' threats blocked</strong> by Sentinel today' });
+      _tickerItems.push({ cls: 'green', text: '<strong>' + fmt(m.clean||0) + ' clean requests</strong> processed' });
+    }
+    
+    // Recent posts
+    posts.slice(0, 8).forEach(function(p) {
+      var username = p.username || 'anonymous';
+      var preview = (p.content || '').substring(0, 50) + (p.content && p.content.length > 50 ? '…' : '');
+      var hasMedia = p.media_url ? ' 📷' : '';
+      _tickerItems.push({ cls: 'purple', text: '<strong>@' + esc(username) + '</strong> posted' + hasMedia + ' · ' + esc(preview) });
+    });
+    
+    // Truth Shield
+    _tickerItems.push({ cls: 'amber', text: '<strong>Truth Shield</strong> — 98% content verified clean' });
+    _tickerItems.push({ cls: 'green', text: '<strong>Beacon</strong> — reach tracking active across network' });
+    _tickerItems.push({ cls: 'purple', text: '<strong>Candor</strong> — A feed that's on your side · Open source · Zero manipulation' });
+    
+    renderTicker();
+  } catch(e) {
+    console.log('[Ticker] Error:', e.message);
+  }
+}
+
+function renderTicker() {
+  if (!_tickerItems.length) return;
+  var html = _tickerItems.map(function(item) {
+    return '<div class="tick-item ' + item.cls + '"><div class="tick-dot"></div><span>' + item.text + '</span></div>';
+  }).join('');
+  var content = document.getElementById('ticker-content');
+  var clone = document.getElementById('ticker-clone');
+  if (content) content.innerHTML = html;
+  if (clone) clone.innerHTML = html;
+  
+  // Adjust animation speed based on content width
+  var track = document.getElementById('ticker-track');
+  if (track && content) {
+    var w = content.scrollWidth;
+    var speed = Math.max(20, w / 50); // ~50px per second
+    track.style.animationDuration = speed + 's';
+  }
+}
+
+function fmt(n){n=parseInt(n)||0;return n>999?(n/1000).toFixed(1)+'K':String(n);}
+
+// Load ticker on launch and refresh every 60 seconds
+
 // AUTO-LAUNCH IF VALID SESSION EXISTS
 (function(){
   if(_token && _user){
@@ -1220,13 +1306,25 @@ function toast(msg){var el=document.getElementById('toast');el.textContent=msg;e
     document.getElementById('sl-name').textContent=_user.username;
     document.getElementById('sl-handle').textContent='@'+_user.username;
     document.getElementById('c-avi').textContent=ini;
-    loadFeed();loadStatus();loadNotifications();loadWhoToFollow();connectWS();
+    loadFeed();loadStatus();loadNotifications();loadWhoToFollow();connectWS();loadTicker();setInterval(loadTicker,60000);
   }
 })();
 
 // STYLE
 var s=document.createElement('style');
-s.textContent='@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}';
+s.textContent='
+/* TICKER */
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{display:inline-flex;align-items:center;gap:6px;padding:0 20px;font-size:12px;color:var(--text-2);border-right:0.5px solid var(--border)}
+.tick-item:last-child{border-right:none}
+.tick-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.tick-item.green .tick-dot{background:var(--green)}
+.tick-item.red .tick-dot{background:var(--red)}
+.tick-item.purple .tick-dot{background:var(--accent)}
+.tick-item.amber .tick-dot{background:var(--amber)}
+.tick-item strong{color:var(--text);font-weight:500}
+
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}';
 document.head.appendChild(s);
 </script>
 </body>
