@@ -593,7 +593,7 @@ nav.top{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(
 
 <script>
 // STATE
-var _token=null,_user=null,_tab='foryou',_cursor=null;
+var _token=sessionStorage.getItem("candor_token"),_user=null,_tab='foryou',_cursor=null;
 var _liked=new Set(),_reposted=new Set(),_following=new Set();
 var _mediaFiles=[],_liveStream=null,_liveTimer=null,_liveSeconds=0;
 var _ws=null,_profileTarget=null,_msgTarget=null;
@@ -608,7 +608,7 @@ async function api(method,path,body,isForm){
   if(body&&!isForm) opts.body=JSON.stringify(body);
   if(body&&isForm) opts.body=body;
   var res=await fetch(path,opts);
-  if(res.status===401){doLogout();throw new Error('Session expired');}
+  if(res.status===401){throw new Error('Session expired — please sign in again');}
   if(!res.ok){var e=await res.json().catch(function(){return{};});throw new Error(e.error||e.message||'HTTP '+res.status);}
   return res.json();
 }
@@ -643,7 +643,7 @@ async function doAuth(){
       if(!ev){showAuthErr('Email required.');btn.textContent='→ Create Account';btn.disabled=false;return;}
       data=await api('POST','/api/v1/auth/register',{username:uval,email:ev,password:pval});
     }
-    _token=data.token;_user=data.user;
+    _token=data.token;_user=data.user;sessionStorage.setItem("candor_token",_token);
     launchApp();
   }catch(e){
     showAuthErr(e.message||'Sign in failed.');
@@ -651,7 +651,7 @@ async function doAuth(){
   }
 }
 function showAuthErr(msg){var el=document.getElementById('a-err');el.textContent=msg;el.style.display='block';}
-function doLogout(){_token=null;_user=null;if(_ws){_ws.close();_ws=null;}document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('a-user').value='';document.getElementById('a-pass').value='';}
+function doLogout(){sessionStorage.removeItem("candor_token");_token=null;_user=null;if(_ws){_ws.close();_ws=null;}document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('a-user').value='';document.getElementById('a-pass').value='';}
 
 // LAUNCH
 function launchApp(){
