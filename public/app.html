@@ -309,10 +309,10 @@ function PostCard({ post, token, onAudit }) {
 
       {/* Content */}
       <p style={{ fontSize:12, color:T.text, lineHeight:1.65, margin:"0 0 10px" }}>
-        {expanded || post.content.length < 220
-          ? post.content
-          : post.content.substring(0, 220) + "…"}
-        {post.content.length >= 220 && (
+        {expanded || (post.content || "").length < 220
+          ? (post.content || "")
+          : (post.content || "").substring(0, 220) + "…"}
+        {(post.content || "").length >= 220 && (
           <button onClick={()=>setExpanded(!expanded)}
             style={{ background:"none", border:"none", color:T.blueSoft,
               cursor:"pointer", fontSize:11, marginLeft:4, fontFamily:"monospace" }}>
