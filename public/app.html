@@ -323,7 +323,7 @@ function PostCard({ post, token, onAudit }) {
 
       {/* Tags */}
       <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:10 }}>
-        {post.tags.map(t=>(
+        {(post.tags || []).map(t=>(
           <span key={t} style={{ fontSize:9, background:T.bg4, color:T.textDim,
             padding:"2px 7px", borderRadius:8, border:`1px solid ${T.border}`,
             fontFamily:"monospace" }}>#{t}</span>
