@@ -24,9 +24,7 @@ const { useState, useEffect, useCallback, useRef } = React;
 // API CLIENT — wired to real backend endpoints
 // Base URL switches between local dev and production
 // ─────────────────────────────────────────────────────────────────────────────
-const API_BASE = typeof window !== "undefined" && window.location.hostname !== "localhost"
-  ? "https://open-feed-platform.fly.dev/api"
-  : "http://localhost:3000";
+const API_BASE = "";
 
 const api = {
   async request(method, path, body = null, token = null) {
@@ -409,7 +407,7 @@ function ComposePanel({ token, userTier, onClose, onPosted }) {
       const fd = new FormData();
       fd.append("media", file);
       const interval = setInterval(() => setUploadPct(p => Math.min(p+15, 85)), 200);
-      const r = await fetch("https://open-feed-platform.fly.dev/api/v1/posts/upload", {
+      const r = await fetch("/api/v1/posts/upload", {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         body: fd,
@@ -1388,7 +1386,7 @@ function App() {
       {composing && (
         <ComposePanel token={user.token} userTier={user.tier}
           onClose={()=>setComposing(false)}
-          onPosted={loadFeed} apiBase="https://open-feed-platform.fly.dev/api" />
+          onPosted={loadFeed} apiBase="" />
       )}
 
       {/* AUDIT MODAL */}
